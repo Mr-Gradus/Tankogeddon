@@ -12,8 +12,11 @@ ATankPawn::ATankPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
+	RootComponent = Collision;
+
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank body"));
-	RootComponent = BodyMesh;
+	BodyMesh->SetupAttachment(RootComponent);
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
 	TurretMesh->SetupAttachment(BodyMesh);
@@ -34,10 +37,12 @@ void ATankPawn::MoveForward(float AxisValue)
 	TargetForwardAxisValue = AxisValue;
 }
 
-void ATankPawn::MoveRight(float AxisValue)
+void ATankPawn::RotateRight(float AxisValue)
 {
 	TargetRightAxisValue = AxisValue;
 }
+
+
 // Called when the game starts or when spawned
 void ATankPawn::BeginPlay()
 {
@@ -50,7 +55,32 @@ void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector currentLocation = GetActorLocation();
+	auto Location = GetActorLocation();
+	auto ForwardVector = GetActorForwardVector();
+	SetActorLocation(Location + ForwardVector * TargetForwardAxisValue * MoveSpeed * DeltaTime);
+
+	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue,
+	TargetRightAxisValue, InterpolationKey);
+
+	auto yawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
+	FRotator currentRotation = GetActorRotation();
+
+	yawRotation = currentRotation.Yaw + yawRotation;
+
+	FRotator newRotation = FRotator(0, yawRotation, 0);
+
+	SetActorRotation(newRotation);
+	
+
+	/*auto Rotation = GetActorRotation();
+	Rotation.Yaw = Rotation.Yaw * RotationSpeed * TargetRightAxisValue * DeltaTime;
+	SetActorRotation(Rotation * RotationSpeed * TargetRightAxisValue * DeltaTime);*/
+	
+	
+	
+
+
+	/*FVector currentLocation = GetActorLocation();
 
 	FVector forwardVector = GetActorForwardVector();
 
@@ -62,7 +92,7 @@ void ATankPawn::Tick(float DeltaTime)
 	
 	SetActorLocation(movePosition, true);
 	//SetActorLocation(rmovePosition, true);
-
+*/
 }
 
 // Called to bind functionality to input

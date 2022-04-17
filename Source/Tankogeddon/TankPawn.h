@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "TankPawn.generated.h"
 
@@ -15,7 +16,11 @@ class TANKOGEDDON_API ATankPawn : public APawn
 {
 	GENERATED_BODY()
 
-protected:
+public:
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* Collision;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* BodyMesh;
 
@@ -32,30 +37,36 @@ protected:
 	float MoveSpeed = 500;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-	float RotationSpeed = 500;
+	float RotationSpeed = 100;
 
-	float TargetForwardAxisValue;
-	float TargetRightAxisValue;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+	float InterpolationKey = 0.1f;
 	
-public:
-	// Sets default values for this pawn's properties
-	ATankPawn();
-
-	UFUNCTION()
-
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
 	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Sets default values for this pawn's properties
+	ATankPawn();
+
+	UFUNCTION()
+	void MoveForward(float AxisValue);
+	UFUNCTION()
+	void RotateRight(float AxisValue);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	
+
+private:
+	float TargetForwardAxisValue = 0;
+	float TargetRightAxisValue = 0;
+	float CurrentRightAxisValue = 0;
+	
 
 };
