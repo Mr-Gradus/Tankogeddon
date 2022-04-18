@@ -10,6 +10,7 @@
 class UStaticMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
+class ATankPlayerController;
 
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public APawn
@@ -40,9 +41,14 @@ public:
 	float RotationSpeed = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-	float InterpolationKey = 0.1f;
+	float InterpolationKey = 0.07f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
+	float TurretRotationInterpolationKey = 0.5f;
 	
-	
+	UPROPERTY()
+	ATankPlayerController* TankController;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -60,7 +66,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 	
 
 private:

@@ -21,11 +21,19 @@ public:
 	
 	virtual void SetupInputComponent() override;
 
-	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	
+	FVector GetMousePos() { return MousePos; };
+	
 
 protected:
 	UPROPERTY()
 	ATankPawn* TankPawn;
+
+	UPROPERTY()
+	FVector MousePos;
+	
+	virtual void BeginPlay() override;
 
 	void MoveForward(float AxisValue);
 

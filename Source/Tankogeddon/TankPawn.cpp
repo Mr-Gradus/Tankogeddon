@@ -5,6 +5,11 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "TankPlayerController.h"
+#include "Kismet/KismetMathLibrary.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(TankLog, All, All);
+DEFINE_LOG_CATEGORY(TankLog);
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -47,6 +52,7 @@ void ATankPawn::RotateRight(float AxisValue)
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	TankController = Cast<ATankPlayerController>(GetController());
 	
 }
 
@@ -59,27 +65,42 @@ void ATankPawn::Tick(float DeltaTime)
 	auto ForwardVector = GetActorForwardVector();
 	SetActorLocation(Location + ForwardVector * TargetForwardAxisValue * MoveSpeed * DeltaTime);
 
-	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue,
-	TargetRightAxisValue, InterpolationKey);
+	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue 	= %f"), CurrentRightAxisValue, TargetRightAxisValue);
+	
 	auto yawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
 	FRotator currentRotation = GetActorRotation();
 
 	yawRotation = currentRotation.Yaw + yawRotation;
-
 	FRotator newRotation = FRotator(0, yawRotation, 0);
 
 	SetActorRotation(newRotation);
-	
+
+	if(TankController)
+	{
+
+		auto MousePos = TankController->GetMousePos(); 
+		auto TurretRotation = TurretMesh->GetComponentRotation(); 
+		FRotator MouseRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), MousePos);
+		MouseRotation.Roll = TurretRotation.Roll; 
+		MouseRotation.Pitch = TurretRotation.Pitch;  
+		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, MouseRotation, TurretRotationInterpolationKey));
+
+		//крутит башню только если камера сверху под прямым углом
+		/*FVector mousePos = TankController->GetMousePos();
+		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), mousePos);
+		FRotator currRotation = TurretMesh->GetComponentRotation();
+		targetRotation.Pitch = currRotation.Pitch;
+		targetRotation.Roll = currRotation.Roll;
+		TurretMesh->SetWorldRotation(FMath::Lerp(currRotation, targetRotation, TurretRotationInterpolationKey));*/
+	}
+}
 
 	/*auto Rotation = GetActorRotation();
 	Rotation.Yaw = Rotation.Yaw * RotationSpeed * TargetRightAxisValue * DeltaTime;
 	SetActorRotation(Rotation * RotationSpeed * TargetRightAxisValue * DeltaTime);*/
 	
-	
-	
-
-
 	/*FVector currentLocation = GetActorLocation();
 
 	FVector forwardVector = GetActorForwardVector();
@@ -91,9 +112,9 @@ void ATankPawn::Tick(float DeltaTime)
 //	FVector rmovePosition = currentLocation + rightVector * RotationSpeed * TargetRightAxisValue * DeltaTime;
 	
 	SetActorLocation(movePosition, true);
-	//SetActorLocation(rmovePosition, true);
-*/
-}
+	//SetActorLocation(rmovePosition, true);*/
+
+
 
 // Called to bind functionality to input
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
