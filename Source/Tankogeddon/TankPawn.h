@@ -43,8 +43,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float InterpolationKey = 0.07f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+	float SpeedInterpolationKey = 0.06f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
-	float TurretRotationInterpolationKey = 0.5f;
+	float TurretRotationInterpolationKey = 0.02f;
 	
 	UPROPERTY()
 	ATankPlayerController* TankController;
@@ -71,6 +74,7 @@ protected:
 
 private:
 	float TargetForwardAxisValue = 0;
+	float CurrentForwardAxisValue = 0;
 	float TargetRightAxisValue = 0;
 	float CurrentRightAxisValue = 0;
 	

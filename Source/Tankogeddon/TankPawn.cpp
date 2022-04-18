@@ -8,8 +8,6 @@
 #include "TankPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(TankLog, All, All);
-DEFINE_LOG_CATEGORY(TankLog);
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -61,9 +59,12 @@ void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+	CurrentForwardAxisValue = FMath::Lerp(CurrentForwardAxisValue, TargetForwardAxisValue, SpeedInterpolationKey);
+
 	auto Location = GetActorLocation();
 	auto ForwardVector = GetActorForwardVector();
-	SetActorLocation(Location + ForwardVector * TargetForwardAxisValue * MoveSpeed * DeltaTime);
+	SetActorLocation(Location + ForwardVector * CurrentForwardAxisValue * MoveSpeed * DeltaTime, false);
 
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 
