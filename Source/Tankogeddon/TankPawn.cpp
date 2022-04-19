@@ -2,6 +2,8 @@
 
 
 #include "TankPawn.h"
+
+#include "Tankogeddon.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -33,6 +35,9 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	CannonSpawnPoint = CreateDefaultSubobject<UArrowComponent>("CannonSpawnPoint");
+	CannonSpawnPoint->SetupAttachment(TurretMesh);
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -51,7 +56,26 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
+
+	if (CannonClass)
+	{
+		auto Transform = CannonSpawnPoint->GetComponentTransform();
+		Cannon = Cast<ACannon>(GetWorld()->SpawnActor(CannonClass, &Transform));
+		Cannon->AttachToComponent(CannonSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+}
+
+void ATankPawn::Destroyed()
+{
 	
+if (Cannon)
+	Cannon->Destroy();
+}
+
+void ATankPawn::Shoot()
+{
+	if (Cannon)
+		Cannon->Fire();
 }
 
 // Called every frame
@@ -68,7 +92,7 @@ void ATankPawn::Tick(float DeltaTime)
 
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 
-	//UE_LOG(LogTemp, Warning, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue 	= %f"), CurrentRightAxisValue, TargetRightAxisValue);
+	//UE_LOG(LogTanks, Warning, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue 	= %f"), CurrentRightAxisValue, TargetRightAxisValue);
 	
 	auto yawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
 	FRotator currentRotation = GetActorRotation();
@@ -77,6 +101,8 @@ void ATankPawn::Tick(float DeltaTime)
 	FRotator newRotation = FRotator(0, yawRotation, 0);
 
 	SetActorRotation(newRotation);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
 
 	if(TankController)
 	{

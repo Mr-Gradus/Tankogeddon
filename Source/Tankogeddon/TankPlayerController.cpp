@@ -17,6 +17,8 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ATankPlayerController::MoveForward);
 
 	InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
+
+	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Shoot);
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -26,11 +28,15 @@ void ATankPlayerController::Tick(float DeltaTime)
 
 	FVector ScreenMousePosition;
 	FVector MouseDirection; 
+
 	DeprojectMousePositionToWorld(ScreenMousePosition, MouseDirection); 
 	auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
-	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
 
-//крутит башню только если камера сверху под прямым углом
+	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
+	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Red, false, 0.1f, 0.5);
+
+
+	//крутит башню только если камера сверху под прямым углом
 	/*FVector mouseDirection;
 	DeprojectMousePositionToWorld(MousePos, mouseDirection);
 
@@ -58,6 +64,12 @@ void ATankPlayerController::MoveForward(float AxisValue)
 void ATankPlayerController::RotateRight(float AxisValue)
 {
 	TankPawn->RotateRight(AxisValue);
+}
+
+void ATankPlayerController::Shoot()
+{
+	if (TankPawn)
+		TankPawn->Shoot();
 }
 
 

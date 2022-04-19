@@ -4,4 +4,6 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Tankogeddon, "Tankogeddon" );
-DEFINE_LOG_CATEGORY(TankLog);
+
+DEFINE_LOG_CATEGORY(LogTanks)
+

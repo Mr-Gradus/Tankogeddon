@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Cannon.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "TankPawn.generated.h"
@@ -34,6 +35,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UCameraComponent * Camera;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UArrowComponent* CannonSpawnPoint;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float MoveSpeed = 500;
 
@@ -49,8 +53,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 	float TurretRotationInterpolationKey = 0.02f;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Armory")
+	TSubclassOf<ACannon> CannonClass;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Armory")
+	ACannon* Cannon;
+	
 	UPROPERTY()
 	ATankPlayerController* TankController;
+
+
+	void Shoot();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -69,7 +82,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+	virtual void Destroyed() override;
 	
 
 private:

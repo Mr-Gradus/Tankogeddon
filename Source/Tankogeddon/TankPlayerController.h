@@ -18,7 +18,7 @@ class TANKOGEDDON_API ATankPlayerController : public APlayerController
 
 public:
 	ATankPlayerController();
-	
+
 	virtual void SetupInputComponent() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -26,7 +26,8 @@ public:
 	FVector GetMousePos() { return MousePos; };
 	
 
-protected:
+private:
+	
 	UPROPERTY()
 	ATankPawn* TankPawn;
 
@@ -38,7 +39,8 @@ protected:
 	void MoveForward(float AxisValue);
 
 	void RotateRight(float AxisValue);
-	
+
+	void Shoot();
 
 	
 	
