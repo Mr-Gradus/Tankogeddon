@@ -62,8 +62,13 @@ void ACannon::FireSpecial()
 	{
 		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Yellow, "Fire - trace");
 	}
+<<<<<<< Updated upstream
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 2 / FireRate, false);
+=======
+	bReadyToFire = false;
+	GetWorld()->GetTimerManager().SetTimer(ReloadHandle, this, &ACannon::OnReload, FireRate, false);
+>>>>>>> Stashed changes
 }
 
 

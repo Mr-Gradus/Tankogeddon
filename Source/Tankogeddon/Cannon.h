@@ -8,12 +8,21 @@
 #include "GameFramework/Actor.h"
 #include "Cannon.generated.h"
 
+<<<<<<< Updated upstream
 /*UENUM()
 enum class  ECannonType
 {
 	Projectile UMETA(DisplayName = "Projectile"),
 	Trace UMETA(DisplayName = "Trace")
 };*/
+=======
+UENUM(BlueprintType)
+enum class  ECannonType : uint8
+{
+FireProjectile = 0 UMETA(DisplayName = "Projectile"),
+FireTrace = 1 UMETA(DisplayName = "Trace")
+};
+>>>>>>> Stashed changes
 
 
 UCLASS()
