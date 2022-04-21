@@ -2,13 +2,12 @@
 
 
 #include "TankPawn.h"
-
-#include "Tankogeddon.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "TankPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/ArrowComponent.h"
 
 
 // Sets default values
@@ -26,6 +25,10 @@ ATankPawn::ATankPawn()
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
 	TurretMesh->SetupAttachment(BodyMesh);
 
+	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
+    CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
 	SpringArm->SetupAttachment(BodyMesh);
 	SpringArm->bDoCollisionTest = false;
@@ -35,9 +38,6 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
-	CannonSpawnPoint = CreateDefaultSubobject<UArrowComponent>("CannonSpawnPoint");
-	CannonSpawnPoint->SetupAttachment(TurretMesh);
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -56,14 +56,26 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
-
-	if (CannonClass)
-	{
-		auto Transform = CannonSpawnPoint->GetComponentTransform();
-		Cannon = Cast<ACannon>(GetWorld()->SpawnActor(CannonClass, &Transform));
-		Cannon->AttachToComponent(CannonSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
+	SetupCannon();
 }
+
+
+
+void ATankPawn::SetupCannon()
+{
+	if(Cannon)
+	{
+		Cannon->Destroy();
+	}
+	
+	FActorSpawnParameters params;
+	params.Instigator = this;
+	params.Owner = this;
+
+	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
+	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
 
 void ATankPawn::Destroyed()
 {
@@ -72,11 +84,14 @@ if (Cannon)
 	Cannon->Destroy();
 }
 
-void ATankPawn::Shoot()
+void ATankPawn::Fire()
 {
-	if (Cannon)
-		Cannon->Fire();
+	if(Cannon)
+	{
+	Cannon->Fire();
+	}
 }
+
 
 // Called every frame
 void ATankPawn::Tick(float DeltaTime)

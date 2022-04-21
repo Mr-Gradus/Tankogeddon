@@ -24,9 +24,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	FVector GetMousePos() { return MousePos; };
-	
 
-private:
+	void Fire();
+
+protected:
 	
 	UPROPERTY()
 	ATankPawn* TankPawn;
@@ -40,11 +41,6 @@ private:
 
 	void RotateRight(float AxisValue);
 
-	void Shoot();
-
 	
-	
-	
-
 	
 };

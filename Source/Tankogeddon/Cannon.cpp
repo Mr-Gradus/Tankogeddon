@@ -2,59 +2,62 @@
 
 
 #include "Cannon.h"
+#include "Components/ArrowComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "TimerManager.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 ACannon::ACannon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
+	USceneComponent * sceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+    RootComponent = sceeneCpm;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	Mesh->SetupAttachment(RootComponent);
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cannon mesh"));
+    Mesh->SetupAttachment(RootComponent);
 
-	SpawnPoint = CreateDefaultSubobject<UArrowComponent>("SpawnPoint");
-	SpawnPoint->SetupAttachment(RootComponent);
+	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawnpoint"));
+    ProjectileSpawnPoint->SetupAttachment(Mesh);
 }
+
 
 void ACannon::Fire()
 {
-	if (bReadyToFire)
-		return;
-	
-	switch (Type)
-	{
-	case ECannonType::Projectile:
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::Printf(TEXT("Projectile")));
-		break;
-	case ECannonType::Trace:
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::Printf(TEXT("Projectile")));
-		break;
-	}
-	bReadyToFire = false;
-	GetWorld()->GetTimerManager().SetTimer(ReloadHandle, this, &ACannon::OnReload, 1/FireRate, false);
+    if(!ReadyToFire)
+    {
+    return;
+    }
+    ReadyToFire = false;
+
+	if(Type == ECannonType::FireProjectile)
+    {
+    GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - projectile");
+    }
+    else
+    {
+    GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - trace");
+    }
+
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
 
-// Called when the game starts or when spawned
+
+bool ACannon::IsReadyToFire()
+{
+	return ReadyToFire;
+}
+
+void ACannon::Reload()
+{
+	ReadyToFire = true;
+}
+
 void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ACannon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	auto Remaining = GetWorld()->GetTimerManager().GetTimerRemaining(ReloadHandle);
-
-	GEngine->AddOnScreenDebugMessage(87348, -1, FColor::Blue, FString::Printf(TEXT("Until Reload %f"), Remaining));
-}
-
-void ACannon::OnReload()
-{
-	bReadyToFire = true;
+	Reload();
 }
 

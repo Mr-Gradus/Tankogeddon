@@ -3,16 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameStructs.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "Cannon.generated.h"
 
-UENUM()
+/*UENUM()
 enum class  ECannonType
 {
 	Projectile UMETA(DisplayName = "Projectile"),
 	Trace UMETA(DisplayName = "Trace")
-};
+};*/
 
 
 UCLASS()
@@ -20,36 +21,39 @@ class TANKOGEDDON_API ACannon : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UArrowComponent* SpawnPoint;
+	UArrowComponent * ProjectileSpawnPoint;
 
-	// Sets default values for this actor's properties
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	float FireRate = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	float FireRange = 1000;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	float FireDamage = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	ECannonType Type = ECannonType::FireProjectile;
+
+	FTimerHandle ReloadTimerHandle;
+
+	bool ReadyToFire = false;
+
+public:
 	ACannon();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Cannon")
-	ECannonType Type;
-
-	float FireRate = 1.0f;
-
-	
 	void Fire();
+
 	
+	bool IsReadyToFire();
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void OnReload();
-
-	bool bReadyToFire = true;
-
-	FTimerHandle ReloadHandle;
-	
-
+	void Reload();
 };
