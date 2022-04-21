@@ -36,18 +36,6 @@ void ATankPlayerController::Tick(float DeltaTime)
 	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Red, false, 0.1f, 0.5);
 
 
-	//крутит башню только если камера сверху под прямым углом
-	/*FVector mouseDirection;
-	DeprojectMousePositionToWorld(MousePos, mouseDirection);
-
-	FVector pawnPos = TankPawn->GetActorLocation();
-	MousePos.Z = pawnPos.Z;
-
-	FVector dir = MousePos - pawnPos;
-	dir.Normalize();
-
-	MousePos = pawnPos + dir * 1000;
-	DrawDebugLine(GetWorld(), pawnPos, MousePos, FColor::Green, false, 0.1f, 0.5);*/
 }
 
 void ATankPlayerController::BeginPlay()
@@ -70,6 +58,7 @@ void ATankPlayerController::Fire()
 {
 	if (TankPawn)
 		TankPawn->Fire();
+
 }
 
 void ATankPlayerController::FireSpecial()
@@ -77,7 +66,3 @@ void ATankPlayerController::FireSpecial()
 	if (TankPawn)
 		TankPawn->FireSpecial();
 }
-
-
-
-

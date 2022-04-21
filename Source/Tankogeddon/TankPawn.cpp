@@ -88,7 +88,7 @@ void ATankPawn::Fire()
 {
 	if(Cannon)
 	{
-	Cannon->Fire();
+		Cannon->Fire();
 	}
 }
 
@@ -144,4 +144,3 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-

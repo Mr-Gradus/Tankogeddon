@@ -26,12 +26,14 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
-    if(!ReadyToFire)
-    {
-    return;
-    }
-    ReadyToFire = false;
+	if(ReadyToFire)
+	{
+		return;
+	}
+	ReadyToFire = false;
 
+	
+	
 	if(Type == ECannonType::FireProjectile)
     {
     GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - projectile");
@@ -63,6 +65,11 @@ void ACannon::FireSpecial()
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 2 / FireRate, false);
 }
+
+
+
+
+
 
 
 bool ACannon::IsReadyToFire()

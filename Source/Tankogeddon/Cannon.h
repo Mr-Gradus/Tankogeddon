@@ -38,6 +38,9 @@ protected:
 	float FireDamage = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	int AmmoCount = 3;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	ECannonType Type = ECannonType::FireProjectile;
 
 	FTimerHandle ReloadTimerHandle;
@@ -52,9 +55,13 @@ public:
 	void FireSpecial();	
 	
 	bool IsReadyToFire();
+
+	
 protected:
 
 	virtual void BeginPlay() override;
 
 	void Reload();
+
+	
 };
