@@ -92,6 +92,14 @@ void ATankPawn::Fire()
 	}
 }
 
+void ATankPawn::FireSpecial()
+{
+	if(Cannon)
+	{
+		Cannon->FireSpecial();
+	}
+}
+
 
 // Called every frame
 void ATankPawn::Tick(float DeltaTime)
@@ -121,42 +129,14 @@ void ATankPawn::Tick(float DeltaTime)
 
 	if(TankController)
 	{
-
 		auto MousePos = TankController->GetMousePos(); 
 		auto TurretRotation = TurretMesh->GetComponentRotation(); 
 		FRotator MouseRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), MousePos);
 		MouseRotation.Roll = TurretRotation.Roll; 
 		MouseRotation.Pitch = TurretRotation.Pitch;  
 		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, MouseRotation, TurretRotationInterpolationKey));
-
-		//крутит башню только если камера сверху под прямым углом
-		/*FVector mousePos = TankController->GetMousePos();
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), mousePos);
-		FRotator currRotation = TurretMesh->GetComponentRotation();
-		targetRotation.Pitch = currRotation.Pitch;
-		targetRotation.Roll = currRotation.Roll;
-		TurretMesh->SetWorldRotation(FMath::Lerp(currRotation, targetRotation, TurretRotationInterpolationKey));*/
 	}
 }
-
-	/*auto Rotation = GetActorRotation();
-	Rotation.Yaw = Rotation.Yaw * RotationSpeed * TargetRightAxisValue * DeltaTime;
-	SetActorRotation(Rotation * RotationSpeed * TargetRightAxisValue * DeltaTime);*/
-	
-	/*FVector currentLocation = GetActorLocation();
-
-	FVector forwardVector = GetActorForwardVector();
-
-	FVector rightVector = GetActorRightVector();
-	
-	FVector movePosition = currentLocation + ((forwardVector * MoveSpeed * TargetForwardAxisValue) + (rightVector * RotationSpeed * TargetRightAxisValue)) * DeltaTime;
-
-//	FVector rmovePosition = currentLocation + rightVector * RotationSpeed * TargetRightAxisValue * DeltaTime;
-	
-	SetActorLocation(movePosition, true);
-	//SetActorLocation(rmovePosition, true);*/
-
-
 
 // Called to bind functionality to input
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

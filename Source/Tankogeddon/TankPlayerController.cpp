@@ -17,6 +17,7 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ATankPlayerController::MoveForward);
 	InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
+	InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
 }
 
 
@@ -69,6 +70,12 @@ void ATankPlayerController::Fire()
 {
 	if (TankPawn)
 		TankPawn->Fire();
+}
+
+void ATankPlayerController::FireSpecial()
+{
+	if (TankPawn)
+		TankPawn->FireSpecial();
 }
 
 

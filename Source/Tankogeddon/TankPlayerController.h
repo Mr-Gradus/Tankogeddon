@@ -19,6 +19,7 @@ class TANKOGEDDON_API ATankPlayerController : public APlayerController
 public:
 	ATankPlayerController();
 
+	
 	virtual void SetupInputComponent() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -26,6 +27,8 @@ public:
 	FVector GetMousePos() { return MousePos; };
 
 	void Fire();
+
+	void FireSpecial();
 
 protected:
 	
