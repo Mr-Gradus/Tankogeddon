@@ -32,22 +32,24 @@ void ACannon::Fire()
 	}
 	ReadyToFire = false;
 	
-	AmmoCount--;
-	if(AmmoCount == 0)
-	{
-		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Red, "Reload");
-		return;
-	}
-	
 	if(Type == ECannonType::FireProjectile)
     {
-    GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - projectile");
-    }
+	GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - projectile");
+	}
     else
     {
     GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - trace");
     }
+	
+	Ammo--;
+	GEngine->AddOnScreenDebugMessage(10, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
 
+	if(Ammo == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(13, 1,FColor::Red, "Need reload");
+		return;
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
 

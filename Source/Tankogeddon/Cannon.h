@@ -31,7 +31,7 @@ protected:
 	float FireDamage = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
-	int AmmoCount = 3;
+	int Ammo = 3;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	ECannonType Type = ECannonType::FireProjectile;
@@ -39,6 +39,7 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 
 	bool ReadyToFire = false;
+	
 
 public:
 	ACannon();
@@ -49,7 +50,7 @@ public:
 	
 	bool IsReadyToFire();
 
-	
+	//int Ammo = 2;
 protected:
 
 	virtual void BeginPlay() override;
