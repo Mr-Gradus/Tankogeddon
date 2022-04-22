@@ -26,13 +26,18 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
-	if(ReadyToFire)
+	if(!ReadyToFire)
 	{
 		return;
 	}
 	ReadyToFire = false;
-
 	
+	AmmoCount--;
+	if(AmmoCount == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Red, "Reload");
+		return;
+	}
 	
 	if(Type == ECannonType::FireProjectile)
     {
@@ -62,20 +67,9 @@ void ACannon::FireSpecial()
 	{
 		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Yellow, "Fire - trace");
 	}
-<<<<<<< Updated upstream
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 2 / FireRate, false);
-=======
-	bReadyToFire = false;
-	GetWorld()->GetTimerManager().SetTimer(ReloadHandle, this, &ACannon::OnReload, FireRate, false);
->>>>>>> Stashed changes
 }
-
-
-
-
-
-
 
 bool ACannon::IsReadyToFire()
 {
