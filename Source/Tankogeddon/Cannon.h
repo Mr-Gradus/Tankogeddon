@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameStructs.h"
+#include "Projectile.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "Cannon.generated.h"
 
+class UArrowComponent;
 
 UCLASS()
 class TANKOGEDDON_API ACannon : public AActor
@@ -15,6 +17,7 @@ class TANKOGEDDON_API ACannon : public AActor
 	GENERATED_BODY()
 	
 protected:
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
 
@@ -22,7 +25,7 @@ protected:
 	UArrowComponent * ProjectileSpawnPoint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
-	float FireRate = 1;
+	float FireRate = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	float FireRange = 1000;
@@ -35,6 +38,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	ECannonType Type = ECannonType::FireProjectile;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	TSubclassOf<AProjectile> ProjectileClass;
 
 	FTimerHandle ReloadTimerHandle;
 
@@ -50,7 +56,6 @@ public:
 	
 	bool IsReadyToFire();
 
-	//int Ammo = 2;
 protected:
 
 	virtual void BeginPlay() override;

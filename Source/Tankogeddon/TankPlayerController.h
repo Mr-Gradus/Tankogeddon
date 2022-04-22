@@ -16,20 +16,6 @@ class TANKOGEDDON_API ATankPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
-	ATankPlayerController();
-
-	
-	virtual void SetupInputComponent() override;
-
-	virtual void Tick(float DeltaTime) override;
-	
-	FVector GetMousePos() { return MousePos; };
-
-	void Fire();
-
-	void FireSpecial();
-
 protected:
 	
 	UPROPERTY()
@@ -43,4 +29,20 @@ protected:
 	void MoveForward(float AxisValue);
 
 	void RotateRight(float AxisValue);
+
+	//void TurretRotateRight(float AxisValue);
+
+	void Fire();
+
+	void FireSpecial();
+
+public:
+	ATankPlayerController();
+
+	virtual void SetupInputComponent() override;
+
+	virtual void Tick(float DeltaTime) override;
+	
+	FVector GetMousePos() { return MousePos; };
+	
 };

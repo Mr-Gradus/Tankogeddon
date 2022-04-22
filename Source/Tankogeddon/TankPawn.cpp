@@ -16,17 +16,14 @@ ATankPawn::ATankPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
-	RootComponent = Collision;
-
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank body"));
-	BodyMesh->SetupAttachment(RootComponent);
+	RootComponent = BodyMesh;
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
 	TurretMesh->SetupAttachment(BodyMesh);
-
+	
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
-    CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
+	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
@@ -40,6 +37,7 @@ ATankPawn::ATankPawn()
 	Camera->SetupAttachment(SpringArm);
 }
 
+
 void ATankPawn::MoveForward(float AxisValue)
 {
 	TargetForwardAxisValue = AxisValue;
@@ -50,6 +48,10 @@ void ATankPawn::RotateRight(float AxisValue)
 	TargetRightAxisValue = AxisValue;
 }
 
+void ATankPawn::TurretRotateRight(float AxisValue)
+{
+	TargetRightAxisValue = AxisValue;
+}
 
 // Called when the game starts or when spawned
 void ATankPawn::BeginPlay()
@@ -57,9 +59,12 @@ void ATankPawn::BeginPlay()
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
 	SetupCannon();
+
+	if(!GetController())
+	{
+		SpawnDefaultController();
+	}
 }
-
-
 
 void ATankPawn::SetupCannon()
 {
@@ -76,13 +81,14 @@ void ATankPawn::SetupCannon()
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-
+/*
 void ATankPawn::Destroyed()
 {
 	
 if (Cannon)
 	Cannon->Destroy();
 }
+*/
 
 void ATankPawn::Fire()
 {
@@ -143,4 +149,10 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ATankPawn::SetupCannon(TSubclassOf<ACannon> NewCannonClass)
+{
+	CannonClass = NewCannonClass;
+	SetupCannon();
 }

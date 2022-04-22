@@ -4,6 +4,8 @@
 #include "TankPlayerController.h"
 #include "DrawDebugHelpers.h"
 #include "TankPawn.h"
+#include "Engine/Engine.h"
+
 
 ATankPlayerController::ATankPlayerController()
 {
@@ -18,6 +20,8 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
 	InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
+	//nputComponent->BindAxis("TurretRotateRight", this, &ATankPlayerController::TurretRotateRight);
+
 }
 
 
@@ -31,9 +35,9 @@ void ATankPlayerController::Tick(float DeltaTime)
 
 	DeprojectMousePositionToWorld(ScreenMousePosition, MouseDirection); 
 	auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
-
+	
 	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
-	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Red, false, 0.1f, 0.5);
+	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Green, false, 0.1f, 0.5);
 
 
 }
@@ -54,6 +58,13 @@ void ATankPlayerController::RotateRight(float AxisValue)
 	TankPawn->RotateRight(AxisValue);
 }
 
+/*
+void ATankPlayerController::TurretRotateRight(float AxisValue)
+{
+	TankPawn->TurretRotateRight(AxisValue);
+	GEngine->AddOnScreenDebugMessage(5,1,FColor::Blue, FString::SanitizeFloat(AxisValue));
+}
+*/
 void ATankPlayerController::Fire()
 {
 	if (TankPawn)
