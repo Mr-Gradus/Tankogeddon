@@ -34,19 +34,19 @@ void ACannon::Fire()
 	
 	if(Type == ECannonType::FireProjectile)
     {
-	GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - projectile");
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - projectile");
 	}
     else
     {
-    GEngine->AddOnScreenDebugMessage(10, 1,FColor::Green, "Fire - trace");
+    GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - trace");
     }
 	
 	Ammo--;
-	GEngine->AddOnScreenDebugMessage(10, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
 
 	if(Ammo == 0)
 	{
-		GEngine->AddOnScreenDebugMessage(13, 1,FColor::Red, "Need reload");
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Need reload");
 		return;
 	}
 	
