@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "AmmoBox.generated.h"
 
+class UStaticMeshComponent;
+class ACannon;
+
 UCLASS()
 class TANKOGEDDON_API AAmmoBox : public AActor
 {
@@ -19,20 +22,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	TSubclassOf<ACannon> CannonClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
+	int Ammo = 5;
 
-	virtual void BeginPlay() override;
+	//virtual void BeginPlay() override;
+	
 public:	
-	// Sets default values for this actor's properties
 	AAmmoBox();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	UFUNCTION()
-	void OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const
-	FHitResult& SweepResult);
+	void OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 

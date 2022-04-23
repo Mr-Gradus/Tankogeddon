@@ -10,11 +10,9 @@
 #include "TimerManager.h"
 #include "Engine/Engine.h"
 
-// Sets default values
 ACannon::ACannon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	USceneComponent * sceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = sceeneCpm;
@@ -29,6 +27,12 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
+	if (Ammo == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Need reload");
+		return;
+	}
+
 	if(!ReadyToFire)
 	{
 		return;	
@@ -38,27 +42,103 @@ void ACannon::Fire()
 	if(Type == ECannonType::FireProjectile)
 	{
 
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - projectile");
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Black, "Fire - projectile");
+
+		//FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
+		//ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
+
+		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		if (Projectile)
+		{
+			Projectile->SetInstigator(GetInstigator());
+			Projectile->Start();
+		}
+	}
+	/*
+	if(Type == ECannonType::FirePlasma)
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - plasma");
 
 		FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
 		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
 
-		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass,
-		                                                              ProjectileSpawnPoint->GetComponentLocation(),
-		                                                              ProjectileSpawnPoint->GetComponentRotation());
-/*
-		Ammo--;
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
-		if (Ammo == 0)
+		FHitResult hitResult;
+		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FirePlasma")), true, this);
+
+		AProjectile* Plasma = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		
+		if(Plasma)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Need reload");
-			return;
+			Plasma->Start();		
 		}
-*/
-		if(projectile)
+	}
+	*/
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
+		FHitResult hitResult;
+		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+		traceParams.bTraceComplex = true;
+		traceParams.bReturnPhysicalMaterial = false;
+		
+		FVector start = ProjectileSpawnPoint->GetComponentLocation();
+		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+		if(GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
 		{
-			projectile->Start();		
+			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+			if(hitResult.Actor.Get())
+			{
+				hitResult.Actor.Get()->Destroy();
+			}
 		}
+		else
+		{
+			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+		}
+	}
+	Ammo--;
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
+}
+
+
+void ACannon::FireSpecial()
+{
+	if (Ammo == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Need reload");
+		return;
+	}
+	if(!ReadyToFire)
+	{
+		return;
+	}
+	ReadyToFire = false;
+
+	CurrentQueue = FireSpecialNumber;
+	GetWorldTimerManager().SetTimer(QueueTimerHandle, this, &ACannon::Special, 1.0f / FireSpecialRate, true);
+	Ammo--;
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
+}
+
+	void ACannon::Special()
+	{
+		if (--CurrentQueue <= 0)
+		{
+			GetWorldTimerManager().ClearTimer(QueueTimerHandle);
+		}
+	if(Type == ECannonType::FireProjectile)
+	{
+		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Yellow, "Fire - Special");
+
+		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		if (Projectile)
+		{
+			Projectile->Start();
+		}
+
+		//FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
+		//		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
 	}
 	else
 	{
@@ -83,28 +163,6 @@ void ACannon::Fire()
 			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
 		}
 	}
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
-}
-
-
-void ACannon::FireSpecial()
-{
-	if(!ReadyToFire)
-	{
-		return;
-	}
-	ReadyToFire = false;
-
-	if(Type == ECannonType::FireProjectile)
-	{
-		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Yellow, "Fire - Special");
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(10, 1,FColor::Yellow, "Fire - trace");
-	}
-
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 2 / FireRate, false);
 }
 
 bool ACannon::IsReadyToFire()
@@ -123,3 +181,11 @@ void ACannon::BeginPlay()
 	Reload();
 }
 
+int ACannon::GetAmmo()
+{
+	return Ammo;
+}
+void ACannon::SetAmmo(int SaveAmmo)
+{
+	Ammo = SaveAmmo;
+}

@@ -25,6 +25,8 @@ ATankPawn::ATankPawn()
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
+	BodyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BodyMesh->SetGenerateOverlapEvents(true);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
 	SpringArm->SetupAttachment(BodyMesh);
@@ -36,6 +38,10 @@ ATankPawn::ATankPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 }
+
+
+
+
 
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -50,7 +56,12 @@ void ATankPawn::RotateRight(float AxisValue)
 
 void ATankPawn::TurretRotateRight(float AxisValue)
 {
-	TargetRightAxisValue = AxisValue;
+	TargetTurretRightAxisValue = AxisValue;
+}
+
+void ATankPawn::IncreaseAmmo(int Ammo)
+{
+	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
 }
 
 // Called when the game starts or when spawned
@@ -107,6 +118,7 @@ void ATankPawn::FireSpecial()
 }
 
 
+
 // Called every frame
 void ATankPawn::Tick(float DeltaTime)
 {
@@ -131,7 +143,7 @@ void ATankPawn::Tick(float DeltaTime)
 
 	SetActorRotation(newRotation);
 
-	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
+	GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
 
 	if(TankController)
 	{

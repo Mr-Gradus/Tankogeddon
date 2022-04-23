@@ -32,6 +32,11 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 {
 	UE_LOG(LogTemp, Warning, TEXT("Projectile %s collided with %s. "), *GetName(), *OtherActor->GetName());
 
+
+
+
+
+
 	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
 	{
 		Destroy();

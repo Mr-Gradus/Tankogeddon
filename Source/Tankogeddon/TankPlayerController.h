@@ -36,9 +36,12 @@ protected:
 
 	void FireSpecial();
 
+
+
 public:
 	ATankPlayerController();
 
+	
 	virtual void SetupInputComponent() override;
 
 	virtual void Tick(float DeltaTime) override;

@@ -64,7 +64,8 @@ protected:
 	float CurrentForwardAxisValue = 0;
 	float TargetRightAxisValue = 0;
 	float CurrentRightAxisValue = 0;
-	
+	float TargetTurretRightAxisValue = 0;
+
 public:
 
 	// Sets default values for this pawn's properties
@@ -81,16 +82,26 @@ public:
 
 	UFUNCTION()
 	void MoveForward(float AxisValue);
+
 	UFUNCTION()
 	void RotateRight(float AxisValue);
+
 	UFUNCTION()
 	void TurretRotateRight(float AxisValue);
+
 	UFUNCTION()
 	void Fire();
+
 	UFUNCTION()
 	void FireSpecial();
-	
-	
+
+	//UFUNCTION()
+	//void ChangeCannon();
+
+	UFUNCTION()
+	void IncreaseAmmo(int Ammo);
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -98,7 +109,6 @@ protected:
 	//virtual void Destroyed() override;
 
 
-private:
 	
 	
 
