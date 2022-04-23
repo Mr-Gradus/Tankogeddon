@@ -26,6 +26,13 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
+	
+	if(Ammo == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Need reload");
+		return;
+	}
+	
 	if(!ReadyToFire)
 	{
 		return;
@@ -43,12 +50,6 @@ void ACannon::Fire()
 	
 	Ammo--;
 	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
-
-	if(Ammo == 0)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Need reload");
-		return;
-	}
 	
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
