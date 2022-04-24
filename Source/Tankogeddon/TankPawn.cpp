@@ -9,6 +9,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Cannon.h"
+#include "Components/BoxComponent.h"
+
 
 
 // Sets default values
@@ -26,8 +28,8 @@ ATankPawn::ATankPawn()
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
-	BodyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	BodyMesh->SetGenerateOverlapEvents(true);
+	//BodyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//BodyMesh->SetGenerateOverlapEvents(true);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
 	SpringArm->SetupAttachment(BodyMesh);
@@ -39,11 +41,6 @@ ATankPawn::ATankPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 }
-
-
-
-
-
 
 void ATankPawn::MoveForward(float AxisValue)
 {
@@ -70,49 +67,11 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
-	SetupCannon();
+	//SetupCannon(CurrentCannon);
 
 	if(!GetController())
 	{
 		SpawnDefaultController();
-	}
-}
-/*
-void ATankPawn::SetupCannon()
-}
-	CurrentCannon = CannonClass;
-}
-*/
-void ATankPawn::SetupCannon()
-{
-	if(Cannon)
-	{
-		Cannon->Destroy();
-		Cannon = nullptr;
-
-	}
-
-	FActorSpawnParameters params;
-	params.Instigator = this;
-	params.Owner = this;
-
-	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
-	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
-
-void ATankPawn::SetNewCannon(TSubclassOf<ACannon> InCannonClass)
-{
-	if (CurrentCannon == CannonClass)
-	{
-		CurrentCannon = InCannonClass;
-		CannonClass = InCannonClass;
-		SetupCannon(CannonClass);
-	}
-	else
-	{
-		CurrentCannon = InCannonClass;
-		CannonClassSecond = InCannonClass;
-		SetupCannon(CannonClassSecond);
 	}
 }
 
@@ -121,8 +80,8 @@ void ATankPawn::ChangeCannon()
 	if (CurrentCannon == CannonClass)
 	{
 		int32 current = Cannon->GetAmmo();
-		SetupCannon(CannonClassSecond);
-		CurrentCannon = CannonClassSecond;
+		SetupCannon(SecondCannonClass);
+		CurrentCannon = SecondCannonClass;
 		Cannon->SetAmmo(current);
 	}
 	else
@@ -134,6 +93,37 @@ void ATankPawn::ChangeCannon()
 	}
 }
 
+void ATankPawn::SetupCannon(TSubclassOf<ACannon> SelectCannonClass)
+{
+	if (Cannon)
+	{
+		Cannon->Destroy();
+		Cannon = nullptr;
+	}
+
+	FActorSpawnParameters Params;
+	Params.Instigator = this;
+	Params.Owner = this;
+	Cannon = GetWorld()->SpawnActor<ACannon>(SelectCannonClass, Params);
+	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
+void ATankPawn::SetNewCannon(TSubclassOf<ACannon> SelectCannonClass)
+{
+	if (CurrentCannon == CannonClass)
+	{
+		CurrentCannon = SelectCannonClass;
+		CannonClass = SelectCannonClass;
+		SetupCannon(CannonClass);
+	}
+	else
+	{
+		CurrentCannon = SelectCannonClass;
+		SecondCannonClass = SelectCannonClass;
+		SetupCannon(SecondCannonClass);
+	}
+}
+
 void ATankPawn::Destroyed()
 {
 	
@@ -141,7 +131,7 @@ if (Cannon)
 	Cannon->Destroy();
 }
 
-void ATankPawn::Fire()
+void AParentTankTurret::Fire()
 {
 	if(Cannon)
 	{
@@ -163,7 +153,6 @@ void ATankPawn::FireSpecial()
 void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	
 	CurrentForwardAxisValue = FMath::Lerp(CurrentForwardAxisValue, TargetForwardAxisValue, SpeedInterpolationKey);
 
@@ -202,8 +191,3 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void ATankPawn::SetupCannon(TSubclassOf<ACannon> NewCannonClass)
-{
-	CannonClass = NewCannonClass;
-	SetupCannon();
-}

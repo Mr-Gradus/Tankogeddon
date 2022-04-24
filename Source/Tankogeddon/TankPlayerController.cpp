@@ -91,5 +91,6 @@ void ATankPlayerController::FireSpecial()
 
 void ATankPlayerController::ChangeCannon()
 {
+	if (TankPawn)
 	TankPawn->ChangeCannon();
 }

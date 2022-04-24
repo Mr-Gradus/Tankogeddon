@@ -23,7 +23,7 @@ protected:
 	TSubclassOf<ACannon> CannonClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-	int Ammo = 5;
+	int Ammo = 10;
 
 	//virtual void BeginPlay() override;
 	

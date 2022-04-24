@@ -2,7 +2,6 @@
 
 
 #include "Cannon.h"
-
 #include "DrawDebugHelpers.h"
 #include "Projectile.h"
 #include "Components/ArrowComponent.h"
@@ -39,7 +38,7 @@ void ACannon::Fire()
 	}
 	ReadyToFire = false;
 
-	if(Type == ECannonType::FireProjectile)
+	if (Type == ECannonType::FireProjectile)
 	{
 
 		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Black, "Fire - projectile");
@@ -54,40 +53,27 @@ void ACannon::Fire()
 			Projectile->Start();
 		}
 	}
-	/*
-	if(Type == ECannonType::FirePlasma)
-	{
-
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - plasma");
-
-		FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
-		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
-
-		FHitResult hitResult;
-		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FirePlasma")), true, this);
-
-		AProjectile* Plasma = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
-		
-		if(Plasma)
-		{
-			Plasma->Start();		
-		}
-	}
-	*/
+			
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
+
 		FHitResult hitResult;
 		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+
 		traceParams.bTraceComplex = true;
 		traceParams.bReturnPhysicalMaterial = false;
 		
 		FVector start = ProjectileSpawnPoint->GetComponentLocation();
 		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
-		if(GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
+
+		if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
 		{
 			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
-			if(hitResult.Actor.Get())
+
+			AActor* MyInstigator = GetInstigator();
+
+			if(hitResult.Actor.Get() != MyInstigator)
 			{
 				hitResult.Actor.Get()->Destroy();
 			}
@@ -97,8 +83,10 @@ void ACannon::Fire()
 			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
 		}
 	}
+
 	Ammo--;
 	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
+
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
 
@@ -116,10 +104,14 @@ void ACannon::FireSpecial()
 	}
 	ReadyToFire = false;
 
-	CurrentQueue = FireSpecialNumber;
-	GetWorldTimerManager().SetTimer(QueueTimerHandle, this, &ACannon::Special, 1.0f / FireSpecialRate, true);
+	CurrentQueue = FireSpecialAmount;
+
+	GetWorldTimerManager().SetTimer(QueueTimerHandle, this, &ACannon::Special, 1 / FireSpecialRate, true);
+
 	Ammo--;
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
+
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
 
 	void ACannon::Special()
@@ -143,18 +135,23 @@ void ACannon::FireSpecial()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Green, "Fire - trace");
+		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
+
 		FHitResult hitResult;
 		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+
 		traceParams.bTraceComplex = true;
 		traceParams.bReturnPhysicalMaterial = false;
 		
 		FVector start = ProjectileSpawnPoint->GetComponentLocation();
 		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+
 		if(GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
 		{
 			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
-			if(hitResult.Actor.Get())
+
+			AActor* MyInstigator = GetInstigator();
+			if(hitResult.Actor.Get() != MyInstigator)
 			{
 				hitResult.Actor.Get()->Destroy();
 			}

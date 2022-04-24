@@ -28,7 +28,7 @@ protected:
 	UArrowComponent * ProjectileSpawnPoint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
-	float FireRate = 1.0f;
+	float FireRate = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	float FireRange = 1000;
@@ -39,17 +39,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	ECannonType Type = ECannonType::FireProjectile;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Cannon")
 	TSubclassOf<AProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
-	float FireSpecialRate = 2;
+	float FireSpecialRate = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
-	float FireSpecialNumber = 3;
+	float FireSpecialAmount = 3;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammunition;")
-	int Ammo = 3;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
+	int Ammo = 6;
 
 	FTimerHandle ReloadTimerHandle;
 	FTimerHandle QueueTimerHandle;
@@ -61,20 +61,20 @@ protected:
 public:
 	ACannon();
 
+	bool IsReadyToFire();
+
 	void Fire();
 	
 	void FireSpecial();	
 
 	void Special();
 
-	bool IsReadyToFire();
+	void SetAmmo(int SaveAmmo);
 
 	int GetAmmo();
 
-	void SetAmmo(int SaveAmmo);
 protected:
 	virtual void BeginPlay() override;
-
 	
 	void Reload();
 

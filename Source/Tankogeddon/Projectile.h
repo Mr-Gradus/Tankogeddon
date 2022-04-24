@@ -20,6 +20,9 @@ protected:
 	float MoveSpeed = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+	float FlyRange = 2000;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float MoveRate = 0.005f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
@@ -30,7 +33,6 @@ protected:
 	
 
 public:	
-	// Sets default values for this actor's properties
 	AProjectile();
 	
 	virtual void Start();

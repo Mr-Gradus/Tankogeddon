@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
-#include "GameFramework/Pawn.h"
+#include "ParentTankTurret.h"
 #include "TankPawn.generated.h"
+
 
 class UStaticMeshComponent;
 class UCameraComponent;
@@ -15,26 +16,17 @@ class ATankPlayerController;
 class ACannon;
 
 UCLASS()
-class TANKOGEDDON_API ATankPawn : public APawn
+class TANKOGEDDON_API ATankPawn : public AParentTankTurret
 {
 	GENERATED_BODY()
 
 protected:
 		
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* BodyMesh;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* TurretMesh;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent * SpringArm;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UCameraComponent * Camera;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UArrowComponent * CannonSetupPoint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float MoveSpeed = 500;
@@ -51,12 +43,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 	float TurretRotationInterpolationKey = 0.02f;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Cannon")
-	TSubclassOf<ACannon> CannonClass;
-
-	UPROPERTY()
-	ACannon * Cannon;
-	
 	UPROPERTY()
 	ATankPlayerController* TankController;
 
@@ -65,7 +51,6 @@ protected:
 	float TargetRightAxisValue = 0;
 	float CurrentRightAxisValue = 0;
 	float TargetTurretRightAxisValue = 0;
-	TSubclassOf<ACannon> CannonClassSecond;
 
 public:
 
@@ -78,7 +63,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void SetupCannon(TSubclassOf<ACannon> NewCannonClass);
+	TSubclassOf<ACannon> CurrentCannon;
 
 
 	UFUNCTION()
@@ -91,28 +76,28 @@ public:
 	void TurretRotateRight(float AxisValue);
 
 	UFUNCTION()
-	void Fire();
-
-	UFUNCTION()
 	void FireSpecial();
 
 	UFUNCTION()
 	void ChangeCannon();
 
 	UFUNCTION()
+	void SetupCannon(TSubclassOf<ACannon> NewCannonClass);
+
+	UFUNCTION()
+	void SetNewCannon(TSubclassOf<ACannon> SelectCannonClass);
+
+
+	UFUNCTION()
 	void IncreaseAmmo(int Ammo);
 
 
 protected:
-	UFUNCTION()
-	void SetNewCannon(TSubclassOf<ACannon> InCannonClass);
+	
 	
 	virtual void BeginPlay() override;
-	void SetupCannon();
-	void SetupCannon(void SetNewCannon(TSubclassOf<ACannon> InCannonClass));
 
+	
 	virtual void Destroyed() override;
-
-	TSubclassOf<ACannon> CurrentCannon;
 
 };
