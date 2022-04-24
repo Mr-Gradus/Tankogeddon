@@ -98,6 +98,7 @@ void ACannon::Fire()
 		}
 	}
 	Ammo--;
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
 

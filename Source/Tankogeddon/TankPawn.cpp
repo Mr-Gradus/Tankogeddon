@@ -183,7 +183,7 @@ void ATankPawn::Tick(float DeltaTime)
 
 	SetActorRotation(newRotation);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
+	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
 
 	if(TankController)
 	{
