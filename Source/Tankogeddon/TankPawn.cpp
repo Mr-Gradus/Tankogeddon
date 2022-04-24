@@ -8,6 +8,7 @@
 #include "TankPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
+#include "Cannon.h"
 
 
 // Sets default values
@@ -76,14 +77,21 @@ void ATankPawn::BeginPlay()
 		SpawnDefaultController();
 	}
 }
-
+/*
+void ATankPawn::SetupCannon()
+}
+	CurrentCannon = CannonClass;
+}
+*/
 void ATankPawn::SetupCannon()
 {
 	if(Cannon)
 	{
 		Cannon->Destroy();
+		Cannon = nullptr;
+
 	}
-	
+
 	FActorSpawnParameters params;
 	params.Instigator = this;
 	params.Owner = this;
@@ -92,14 +100,46 @@ void ATankPawn::SetupCannon()
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-/*
+void ATankPawn::SetNewCannon(TSubclassOf<ACannon> InCannonClass)
+{
+	if (CurrentCannon == CannonClass)
+	{
+		CurrentCannon = InCannonClass;
+		CannonClass = InCannonClass;
+		SetupCannon(CannonClass);
+	}
+	else
+	{
+		CurrentCannon = InCannonClass;
+		CannonClassSecond = InCannonClass;
+		SetupCannon(CannonClassSecond);
+	}
+}
+
+void ATankPawn::ChangeCannon()
+{
+	if (CurrentCannon == CannonClass)
+	{
+		int32 current = Cannon->GetAmmo();
+		SetupCannon(CannonClassSecond);
+		CurrentCannon = CannonClassSecond;
+		Cannon->SetAmmo(current);
+	}
+	else
+	{
+		int32 current = Cannon->GetAmmo();
+		SetupCannon(CannonClass);
+		CurrentCannon = CannonClass;
+		Cannon->SetAmmo(current);
+	}
+}
+
 void ATankPawn::Destroyed()
 {
 	
 if (Cannon)
 	Cannon->Destroy();
 }
-*/
 
 void ATankPawn::Fire()
 {
@@ -156,7 +196,6 @@ void ATankPawn::Tick(float DeltaTime)
 	}
 }
 
-// Called to bind functionality to input
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

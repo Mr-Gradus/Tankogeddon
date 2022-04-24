@@ -65,6 +65,7 @@ protected:
 	float TargetRightAxisValue = 0;
 	float CurrentRightAxisValue = 0;
 	float TargetTurretRightAxisValue = 0;
+	TSubclassOf<ACannon> CannonClassSecond;
 
 public:
 
@@ -95,21 +96,23 @@ public:
 	UFUNCTION()
 	void FireSpecial();
 
-	//UFUNCTION()
-	//void ChangeCannon();
+	UFUNCTION()
+	void ChangeCannon();
 
 	UFUNCTION()
 	void IncreaseAmmo(int Ammo);
 
 
 protected:
-	// Called when the game starts or when spawned
+	UFUNCTION()
+	void SetNewCannon(TSubclassOf<ACannon> InCannonClass);
+	
 	virtual void BeginPlay() override;
 	void SetupCannon();
-	//virtual void Destroyed() override;
+	void SetupCannon(void SetNewCannon(TSubclassOf<ACannon> InCannonClass));
 
+	virtual void Destroyed() override;
 
-	
-	
+	TSubclassOf<ACannon> CurrentCannon;
 
 };

@@ -23,29 +23,27 @@ protected:
 
 	UPROPERTY()
 	FVector MousePos;
-	
-	virtual void BeginPlay() override;
-
-	void MoveForward(float AxisValue);
-
-	void RotateRight(float AxisValue);
-
-	//void TurretRotateRight(float AxisValue);
-
-	void Fire();
-
-	void FireSpecial();
-
-
 
 public:
 	ATankPlayerController();
-
 	
 	virtual void SetupInputComponent() override;
 
 	virtual void Tick(float DeltaTime) override;
 	
 	FVector GetMousePos() { return MousePos; };
-	
+
+	void Fire();
+
+	void FireSpecial();
+
+	void ChangeCannon();
+
+protected:
+	virtual void BeginPlay() override;
+
+	void MoveForward(float AxisValue);
+
+	void RotateRight(float AxisValue);
+
 };

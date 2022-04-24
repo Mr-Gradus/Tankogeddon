@@ -20,17 +20,24 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
 	InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
-	//InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
-	
+	InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
 	//InputComponent->BindAxis("TurretRotateRight", this, &ATankPlayerController::TurretRotateRight);
-
 }
 
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
-	//Super::Tick(DeltaTime);
+	/*
+	FVector mouseDirection;
+	DeprojectMousePositionToWorld(MousePos, mouseDirection);
+	FVector pawnPos = TankPawn->GetActorLocation();
+	MousePos.Z = pawnPos.Z;
+	FVector dir = MousePos - pawnPos;
+	dir.Normalize();
+	MousePos = pawnPos + dir * 1000;
 
+	DrawDebugLine(GetWorld(), pawnPos, MousePos, FColor::Green, false, 0.1f, 0, 5);
+	*/
 
 	FVector ScreenMousePosition;
 	FVector MouseDirection; 
@@ -52,11 +59,13 @@ void ATankPlayerController::BeginPlay()
 
 void ATankPlayerController::MoveForward(float AxisValue)
 {
+	if (TankPawn)
 	TankPawn->MoveForward(AxisValue);
 }
 
 void ATankPlayerController::RotateRight(float AxisValue)
 {
+	if (TankPawn)
 	TankPawn->RotateRight(AxisValue);
 }
 
@@ -80,3 +89,7 @@ void ATankPlayerController::FireSpecial()
 		TankPawn->FireSpecial();
 }
 
+void ATankPlayerController::ChangeCannon()
+{
+	TankPawn->ChangeCannon();
+}
