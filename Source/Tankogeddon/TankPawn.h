@@ -9,7 +9,6 @@
 #include "TankPawn.generated.h"
 
 
-class UStaticMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class ATankPlayerController;

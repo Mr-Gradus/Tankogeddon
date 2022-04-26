@@ -8,7 +8,6 @@
 #include "TankPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
-#include "Cannon.h"
 #include "Components/BoxComponent.h"
 
 
@@ -19,8 +18,11 @@ ATankPawn::ATankPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
+	RootComponent = Collision;
+
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank body"));
-	RootComponent = BodyMesh;
+	BodyMesh->SetupAttachment(RootComponent);
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
 	TurretMesh->SetupAttachment(BodyMesh);

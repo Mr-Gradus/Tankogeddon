@@ -9,6 +9,9 @@
 #include "AmmoBox.h"
 #include "ParentTankTurret.generated.h"
 
+class UBoxComponent;
+class UArrowComponent;
+class UStaticMeshComponent;
 
 
 UCLASS()
@@ -17,6 +20,9 @@ class TANKOGEDDON_API AParentTankTurret : public APawn
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Components")
+	UBoxComponent* Collision;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* BodyMesh;
 
