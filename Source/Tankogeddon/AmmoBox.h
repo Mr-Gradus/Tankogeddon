@@ -20,7 +20,7 @@ protected:
 	TSubclassOf<ACannon> CannonClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-	int Ammo = 10;
+	int32 Ammo;
 
 	
 public:	
