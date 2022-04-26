@@ -26,7 +26,7 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
-	if (Ammo == 0)
+	if (AmmoCount == 0)
 	{
 		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Need reload");
 		return;
@@ -84,8 +84,8 @@ void ACannon::Fire()
 		}
 	}
 
-	Ammo--;
-	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
+	AmmoCount--;
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(AmmoCount));
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
@@ -93,7 +93,7 @@ void ACannon::Fire()
 
 void ACannon::FireSpecial()
 {
-	if (Ammo == 0)
+	if (AmmoCount == 0)
 	{
 		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Need reload");
 		return;
@@ -108,8 +108,8 @@ void ACannon::FireSpecial()
 
 	GetWorldTimerManager().SetTimer(QueueTimerHandle, this, &ACannon::Special, 1 / FireSpecialRate, true);
 
-	Ammo--;
-	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(Ammo));
+	AmmoCount--;
+	GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Blue, "Ammo" + FString::FromInt(AmmoCount));
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 }
@@ -181,9 +181,9 @@ void ACannon::BeginPlay()
 
 int ACannon::GetAmmo()
 {
-	return Ammo;
+	return AmmoCount;
 }
 void ACannon::SetAmmo(int SaveAmmo)
 {
-	Ammo = SaveAmmo;
+	AmmoCount = SaveAmmo;
 }

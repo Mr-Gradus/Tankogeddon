@@ -2,30 +2,31 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Cannon.h"
+#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AmmoBox.generated.h"
+#include "CannonBox.generated.h"
 
 UCLASS()
-class TANKOGEDDON_API AAmmoBox : public AActor
+class TANKOGEDDON_API ACannonBox : public AActor
 {
 	GENERATED_BODY()
 	
+public:	
+	// Sets default values for this actor's properties
+	ACannonBox();
+
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
-	int32 Ammo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
+	TSubclassOf<ACannon> CannonClass;
 
-public:	
-	AAmmoBox();
-
-protected:
 	UFUNCTION()
 	void OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 
 };
+

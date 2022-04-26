@@ -49,7 +49,7 @@ protected:
 	float FireSpecialAmount = 3;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-	int Ammo = 6;
+	int AmmoCount = 10;
 
 	FTimerHandle ReloadTimerHandle;
 	FTimerHandle QueueTimerHandle;
