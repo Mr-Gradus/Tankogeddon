@@ -7,9 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "AmmoBox.generated.h"
 
-class UStaticMeshComponent;
-class ACannon;
-
 UCLASS()
 class TANKOGEDDON_API AAmmoBox : public AActor
 {
@@ -25,11 +22,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 	int Ammo = 10;
 
-	//virtual void BeginPlay() override;
 	
 public:	
 	AAmmoBox();
-
 
 protected:
 	UFUNCTION()

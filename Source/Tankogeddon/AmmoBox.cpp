@@ -21,42 +21,17 @@ AAmmoBox::AAmmoBox()
 
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &AAmmoBox::OnMeshOverlapBegin);
 	Mesh->SetCollisionProfileName(FName("OverlapAll"));
-
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetGenerateOverlapEvents(true);
 }
 
-void AAmmoBox::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AAmmoBox::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ATankPawn * PlayerPawn = Cast<ATankPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if(OtherActor == PlayerPawn)
 	{
-		if (Ammo > 0)
-		{
-		PlayerPawn->
-		Destroy();
-		}
-		else
-		{
-			PlayerPawn->IncreaseAmmo(Ammo);
+		PlayerPawn->SetupCannon(CannonClass);
 			Destroy();
-		}
 	}
 }
 
-/*
-// Called when the game starts or when spawned
-void AAmmoBox::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-*/
-/*
-void AAmmoBox::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-*/

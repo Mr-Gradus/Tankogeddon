@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include <Engine/World.h>
 #include "AITypes.h"
+#include "Tankogeddon.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -37,11 +38,12 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Projectile %s collided with %s. "), *GetName(), *OtherActor->GetName());
+	UE_LOG(LogTanks, Warning, TEXT("Projectile %s collided with %s. "), *GetName(), *OtherActor->GetName());
 
 	if (OtherComp && OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_Destructible)
 	{
 		OtherActor->Destroy();
+		Destroy();
 	}
 	
 	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
