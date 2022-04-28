@@ -2,7 +2,9 @@
 
 
 #include "Turret.h"
-#include "Chaos/CollisionResolution.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "TimerManager.h"
+
 
 // Sets default values
 ATurret::ATurret()
@@ -21,6 +23,22 @@ ATurret::ATurret()
 	
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+	HitCollider->SetupAttachment(TurretMesh);
+
+	UStaticMesh * turretMeshTemp = LoadObject<UStaticMesh>(this, *TurretMeshPath);
+	if(turretMeshTemp)
+		TurretMesh->SetStaticMesh(turretMeshTemp);
+	UStaticMesh * bodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
+	if(bodyMeshTemp)
+		BodyMesh->SetStaticMesh(bodyMeshTemp);
+	
+	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
+	TargetRange->SetupAttachment(RootComponent);
+	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
+	TargetRange->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnTargetEndOverlap);
+
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +46,61 @@ void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	if (CannonClass)
+	{
+		auto Transform = CannonSetupPoint->GetComponentTransform();
+		Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Transform);
+		Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+
+	FTimerHandle _targetingTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetRate, true, TargetRate);
+}
+
+void ATurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Other == this)
+		return;
+	Targets.Add(Other);
+	if (!BestTarget.IsValid())
+	{
+		FindBestTarget();
+	}
+}
+
+void ATurret::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, 	int32 OtherBodyIndex)
+{
+	if (Other == this)
+		return;
+	Targets.Remove(Other);
+	if (Other == BestTarget)
+	{
+		FindBestTarget();
+	}
+}
+
+void ATurret::FindBestTarget()
+{
+	float MinDistance = 5555555;
+	BestTarget = nullptr;
+	for(auto Target : Targets)
+	{
+		auto Distance = FVector::Dist2D(GetActorLocation(), Target->GetActorLocation());
+		if (MinDistance > Distance)
+		{
+			MinDistance = Distance;
+			BestTarget = Target;
+		}
+	}
+}
+
+void ATurret::Destroyed()
+{
+	Super::Destroyed();
+
+	if (Cannon)
+		Cannon->Destroy();
 }
 
 // Called every frame
@@ -35,5 +108,18 @@ void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (BestTarget.IsValid())
+	{
+		auto TurretRotation = TurretMesh->GetComponentRotation(); 
+		FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), BestTarget->GetActorLocation());
+		TargetRotation.Roll = TurretRotation.Roll; 
+		//TargetRotation.Pitch = TurretRotation.Pitch;  
+		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, TargetRotation, 0.1f));
+		if (TurretRotation.Equals(TargetRotation, 2))
+		{
+			if (Cannon)
+				Cannon->Fire();
+		}
+	}
 }
 
