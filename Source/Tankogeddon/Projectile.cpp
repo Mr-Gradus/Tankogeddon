@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include <Engine/World.h>
 #include "AITypes.h"
+#include "DamageTaker.h"
 #include "Tankogeddon.h"
 
 // Sets default values
@@ -49,7 +50,15 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
 	{
 		Destroy();
-		OtherActor->Destroy();
+		auto DamageTaker = Cast<IDamageTaker>(OtherActor);
+		if (DamageTaker)
+		{
+			FDamageInfo DamageInfo;
+			DamageInfo.Damage = Damage;
+			DamageInfo.DamageMaker = this;
+			DamageInfo.Instigator = GetInstigator();
+			DamageTaker->TakeDamage(DamageInfo);
+		}
 	}
 
 }

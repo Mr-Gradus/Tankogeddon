@@ -7,18 +7,24 @@
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
 #include "AmmoBox.h"
+#include "DamageTaker.h"
+#include "HealthComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "ParentTankTurret.generated.h"
 
 class UBoxComponent;
 class UArrowComponent;
 class UStaticMeshComponent;
+class UHealthComponent;
 
 
 UCLASS()
-class TANKOGEDDON_API AParentTankTurret : public APawn
+class TANKOGEDDON_API AParentTankTurret : public APawn, public IDamageTaker
 {
 	GENERATED_BODY()
 
+	
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Components")
 	UBoxComponent* Collision;
@@ -41,8 +47,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	TSubclassOf<AAmmoBox> AmmoboxClass;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UHealthComponent* HealthComponent;
+
 	UPROPERTY()
 	ACannon* Cannon;
+
+	
 	
 public:	
 
@@ -51,8 +62,14 @@ public:
 	UFUNCTION()
 	void Fire();
 
+	virtual void TakeDamage(const FDamageInfo& DamageInfo) override;
+
 	
+
 protected:
+
+
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -1,10 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
+#include "DamageTaker.h"
 #include "ParentTankTurret.h"
 #include "TankPawn.generated.h"
 
@@ -13,6 +12,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class ATankPlayerController;
 class ACannon;
+class UHealthComponent;
 
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public AParentTankTurret
@@ -44,7 +44,7 @@ protected:
 	
 	UPROPERTY()
 	ATankPlayerController* TankController;
-
+	
 	float TargetForwardAxisValue = 0;
 	float CurrentForwardAxisValue = 0;
 	float TargetRightAxisValue = 0;
@@ -92,10 +92,12 @@ public:
 
 
 protected:
-	
+
+	void OnDeath();
+
+	void OnHealthChanged(float Health);
 	
 	virtual void BeginPlay() override;
-
 	
 	virtual void Destroyed() override;
 

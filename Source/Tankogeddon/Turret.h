@@ -12,6 +12,7 @@
 
 class ATankPawn;
 class USphereComponent;
+class UHealthComponent;
 
 UCLASS()
 class TANKOGEDDON_API ATurret : public AParentTankTurret
@@ -57,6 +58,11 @@ protected:
 	void FindBestTarget();
 	
 	TWeakObjectPtr<AActor> BestTarget;
+
+	void OnDeath();
+
+	void OnHealthChanged(float Health);
+
 
 	UPROPERTY()
 	TArray<AActor*> Targets;

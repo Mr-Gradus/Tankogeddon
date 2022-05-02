@@ -2,6 +2,8 @@
 
 
 #include "Cannon.h"
+
+#include "DamageTaker.h"
 #include "DrawDebugHelpers.h"
 #include "Projectile.h"
 #include "Components/ArrowComponent.h"
@@ -75,7 +77,15 @@ void ACannon::Fire()
 
 			if(hitResult.Actor.Get() != MyInstigator)
 			{
-				hitResult.Actor.Get()->Destroy();
+				auto DamageTaker = Cast<IDamageTaker>(hitResult.Actor);
+				if (DamageTaker)
+				{
+					FDamageInfo DamageInfo;
+					DamageInfo.Damage = Damage;
+					DamageInfo.DamageMaker = this;
+					DamageInfo.Instigator = GetInstigator();
+					DamageTaker->TakeDamage(DamageInfo);
+				}
 			}
 		}
 		else
@@ -151,9 +161,14 @@ void ACannon::FireSpecial()
 			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
 
 			AActor* MyInstigator = GetInstigator();
-			if(hitResult.Actor.Get() != MyInstigator)
+			auto DamageTaker = Cast<IDamageTaker>(hitResult.Actor);
+			if (DamageTaker)
 			{
-				hitResult.Actor.Get()->Destroy();
+				FDamageInfo DamageInfo;
+				DamageInfo.Damage = Damage;
+				DamageInfo.DamageMaker = this;
+				DamageInfo.Instigator = GetInstigator();
+				DamageTaker->TakeDamage(DamageInfo);
 			}
 		}
 		else

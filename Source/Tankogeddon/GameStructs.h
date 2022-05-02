@@ -12,3 +12,16 @@ enum class ECannonType : uint8 {
 	
 };
 
+USTRUCT(BlueprintType)
+struct FDamageInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	APawn* Instigator = nullptr;
+	UPROPERTY()
+	AActor* DamageMaker;
+	UPROPERTY()
+	float Damage;
+};

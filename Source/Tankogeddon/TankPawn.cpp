@@ -6,10 +6,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "TankPlayerController.h"
+#include "HealthComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
@@ -29,10 +30,7 @@ ATankPawn::ATankPawn()
 	
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
-
-	//BodyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//BodyMesh->SetGenerateOverlapEvents(true);
-
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
 	SpringArm->SetupAttachment(BodyMesh);
 	SpringArm->bDoCollisionTest = false;
@@ -42,6 +40,12 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
+	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::OnDeath);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
+		
+	
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -62,6 +66,18 @@ void ATankPawn::TurretRotateRight(float AxisValue)
 void ATankPawn::IncreaseAmmo(int Ammo)
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
+}
+
+void ATankPawn::OnDeath()
+{
+	Destroy();
+
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+}
+
+void ATankPawn::OnHealthChanged(float Health)
+{
+	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
 }
 
 // Called when the game starts or when spawned
@@ -149,7 +165,10 @@ void ATankPawn::FireSpecial()
 	}
 }
 
-
+//void AParentTankTurret::TakeDamage(const FDamageInfo& DamageInfo)
+//{
+//	HealthComponent->TakeDamage(DamageInfo);
+//}
 
 // Called every frame
 void ATankPawn::Tick(float DeltaTime)

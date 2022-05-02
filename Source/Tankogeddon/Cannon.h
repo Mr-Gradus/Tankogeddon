@@ -51,6 +51,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 	int AmmoCount = 10;
 
+	float Damage = 1.0f;
+
 	FTimerHandle ReloadTimerHandle;
 	FTimerHandle QueueTimerHandle;
 	
