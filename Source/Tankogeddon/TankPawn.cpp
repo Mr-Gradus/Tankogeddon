@@ -85,12 +85,7 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
-	//SetupCannon(CurrentCannon);
-
-	if(!GetController())
-	{
-		SpawnDefaultController();
-	}
+	CurrentCannon = CannonClass;
 }
 
 void ATankPawn::ChangeCannon()
@@ -165,12 +160,6 @@ void ATankPawn::FireSpecial()
 	}
 }
 
-//void AParentTankTurret::TakeDamage(const FDamageInfo& DamageInfo)
-//{
-//	HealthComponent->TakeDamage(DamageInfo);
-//}
-
-// Called every frame
 void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -179,7 +168,7 @@ void ATankPawn::Tick(float DeltaTime)
 
 	auto Location = GetActorLocation();
 	auto ForwardVector = GetActorForwardVector();
-	SetActorLocation(Location + ForwardVector * CurrentForwardAxisValue * MoveSpeed * DeltaTime, false);
+	SetActorLocation(Location + ForwardVector * CurrentForwardAxisValue * MoveSpeed * DeltaTime, true);
 
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 
