@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -41,9 +42,7 @@ ATankPawn::ATankPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
-	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::OnDeath);
-	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
+	
 		
 	
 }
@@ -139,12 +138,11 @@ void ATankPawn::SetNewCannon(TSubclassOf<ACannon> SelectCannonClass)
 
 void ATankPawn::Destroyed()
 {
-	
-if (Cannon)
+	if (Cannon)
 	Cannon->Destroy();
 }
 
-void AParentTankTurret::Fire()
+void ATankPawn::Fire()
 {
 	if(Cannon)
 	{

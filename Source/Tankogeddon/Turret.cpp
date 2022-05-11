@@ -4,6 +4,7 @@
 #include "Turret.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -34,6 +35,7 @@ ATurret::ATurret()
 	if(bodyMeshTemp)
 		BodyMesh->SetStaticMesh(bodyMeshTemp);
 	
+/*
 	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
 	TargetRange->SetupAttachment(RootComponent);
 	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
@@ -42,6 +44,7 @@ ATurret::ATurret()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATurret::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
+*/
 }
 
 // Called when the game starts or when spawned
@@ -60,7 +63,7 @@ void ATurret::BeginPlay()
 	FTimerHandle _targetingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetRate, true, TargetRate);
 }
-
+/*
 void ATurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (Other == this)
@@ -82,21 +85,8 @@ void ATurret::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		FindBestTarget();
 	}
 }
+*/
 
-void ATurret::FindBestTarget()
-{
-	float MinDistance = 5555555;
-	BestTarget = nullptr;
-	for(auto Target : Targets)
-	{
-		auto Distance = FVector::Dist2D(GetActorLocation(), Target->GetActorLocation());
-		if (MinDistance > Distance)
-		{
-			MinDistance = Distance;
-			BestTarget = Target;
-		}
-	}
-}
 
 void ATurret::OnDeath()
 {
