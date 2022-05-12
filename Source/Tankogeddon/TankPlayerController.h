@@ -49,4 +49,6 @@ protected:
 
 	void RotateRight(float AxisValue);
 
+	//void GRotateLeft(float AxisValue);
+	void GRotateRight(float AxisValue);
 };

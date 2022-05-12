@@ -21,7 +21,9 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
 	InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
 	InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
-	//InputComponent->BindAxis("TurretRotateRight", this, &ATankPlayerController::TurretRotateRight);
+	InputComponent->BindAxis("GamepadRotateRight", this, &ATankPlayerController::GRotateRight);
+	//InputComponent->BindAxis("GamepadRotateLeft", this, &ATankPlayerController::GRotateLeft);
+
 }
 
 
@@ -74,11 +76,20 @@ FVector ATankPlayerController::GetTargetLocation() const
 	return MousePos; 
 }
 
-/*
-void ATankPlayerController::TurretRotateRight(float AxisValue)
+void ATankPlayerController::GRotateRight(float AxisValue)
 {
-	TankPawn->TurretRotateRight(AxisValue);
-	GEngine->AddOnScreenDebugMessage(5,1,FColor::Blue, FString::SanitizeFloat(AxisValue));
+	if (TankPawn)
+	{
+		TankPawn->TurretRotateRight(AxisValue);
+	}
+}
+/*
+void ATankPlayerController::GRotateLeft(float AxisValue)
+{
+	if (TankPawn)
+	{
+		TankPawn->RotateRight(AxisValue);
+	}
 }
 */
 void ATankPlayerController::Fire()

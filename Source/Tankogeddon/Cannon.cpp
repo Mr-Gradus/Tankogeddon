@@ -61,18 +61,21 @@ void ACannon::Fire()
 			Projectile->SetInstigator(GetInstigator());
 			Projectile->Start();
 
-			AudioComponent->Activate(true);
-			VisualEffect->Activate(true);
-			if (CameraShakeEffect)
+			AudioComponent->Play();
+			VisualEffect->ActivateSystem(true);
+			if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
 			{
-				GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeEffect);
-			}
+				if (CameraShakeEffect)
+				{
+					GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeEffect);
+				}
 
-			if (ForceFeedbackEffect)
-			{
-				FForceFeedbackParameters Params;
-				Params.bLooping = false;
-				GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ForceFeedbackEffect, Params);
+				if (ForceFeedbackEffect)
+				{
+					FForceFeedbackParameters Params;
+					Params.bLooping = false;
+					GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ForceFeedbackEffect, Params);
+				}
 			}
 		}
 	}
