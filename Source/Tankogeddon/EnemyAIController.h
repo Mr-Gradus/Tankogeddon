@@ -8,13 +8,13 @@
 #include "TargetController.h"
 #include "EnemyAIController.generated.h"
 
-
+class AParentTankTurret;
 class ATankPawn;
 /**
  * 
  */
 UCLASS()
-class TANKOGEDDON_API AEnemyAIController : public AAIController, public ITargetController
+class TANKOGEDDON_API AEnemyAIController : public AAIController, public ITargetController 
 {
 	GENERATED_BODY()
 	
@@ -35,4 +35,6 @@ private:
 	
 	UPROPERTY()
 	ATankPawn* TankPawn;
+	
+	
 };

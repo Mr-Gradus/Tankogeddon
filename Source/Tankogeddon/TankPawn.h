@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Cannon.h"
-#include "Components/BoxComponent.h"
-#include "DamageTaker.h"
 #include "ParentTankTurret.h"
 #include "TankPawn.generated.h"
 
@@ -73,10 +71,10 @@ public:
 	void TurretRotateRight(float AxisValue);
 
 	UFUNCTION()
-	void Fire();
+	void Fire() const;
 	
 	UFUNCTION()
-	void FireSpecial();
+	void FireSpecial() const;
 
 	UFUNCTION()
 	void ChangeCannon();
@@ -93,6 +91,14 @@ public:
 	const AActor* GetBestTarget() const
 	{
 		return BestTarget.Get();
+	}
+
+	UPROPERTY()
+	AParentTankTurret* ParentTankTurret;
+	
+	FRotator GetTurretRotation() const
+	{
+		return TurretMesh->GetComponentRotation();
 	}
 
 protected:

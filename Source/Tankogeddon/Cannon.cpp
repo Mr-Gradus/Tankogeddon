@@ -8,7 +8,9 @@
 #include "Components/ArrowComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
+#include "Components/AudioComponent.h"
 #include "Engine/Engine.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ACannon::ACannon()
 {
@@ -22,6 +24,12 @@ ACannon::ACannon()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
 	ProjectileSpawnPoint->SetupAttachment(Mesh);
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
+	AudioComponent->SetupAttachment(RootComponent);
+
+	VisualEffect = CreateDefaultSubobject<UParticleSystemComponent>("VisualEffect");
+	VisualEffect->SetupAttachment(RootComponent);
 }
 
 
@@ -52,6 +60,9 @@ void ACannon::Fire()
 		{
 			Projectile->SetInstigator(GetInstigator());
 			Projectile->Start();
+
+			AudioComponent->Activate(true);
+			VisualEffect->Activate(true);
 		}
 	}
 			

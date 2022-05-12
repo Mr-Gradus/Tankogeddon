@@ -148,7 +148,7 @@ void ATankPawn::Destroyed()
 	Cannon->Destroy();
 }
 
-void ATankPawn::Fire()
+void ATankPawn::Fire() const
 {
 	if(Cannon)
 	{
@@ -156,7 +156,7 @@ void ATankPawn::Fire()
 	}
 }
 
-void ATankPawn::FireSpecial()
+void ATankPawn::FireSpecial() const
 {
 	if(Cannon)
 	{

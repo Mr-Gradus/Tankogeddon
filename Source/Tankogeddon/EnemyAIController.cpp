@@ -2,6 +2,7 @@
 
 
 #include "EnemyAIController.h"
+#include "ParentTankTurret.h"
 #include "DrawDebugHelpers.h"
 #include "TankPawn.h"
 #include "Waypoint.h"
@@ -90,6 +91,20 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	{
 		TankPawn->RotateRight(0);
 	}
+
+	auto BestTarget = TankPawn->GetBestTarget();
+ 
+	if (BestTarget)
+	{
+		auto TurretRotation = TankPawn->TurretMesh->GetComponentRotation(); 
+		FRotator TargetRotationAI = UKismetMathLibrary::FindLookAtRotation(TankPawn->TurretMesh->GetComponentLocation(), BestTarget->GetActorLocation());
+		TargetRotation.Roll = 0; 
+		TargetRotation.Pitch = 0;
+		if (FMath::Abs(FRotator::NormalizeAxis(TargetRotationAI.Yaw - Rotation.Yaw)))
+		{
+			TankPawn->Fire();
+		}
+	}
 }
 
 FVector AEnemyAIController::GetTargetLocation() const
@@ -105,3 +120,4 @@ FVector AEnemyAIController::GetTargetLocation() const
 	}
 	return FVector::ZeroVector;
 }
+
