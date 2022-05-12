@@ -34,8 +34,8 @@ ATurret::ATurret()
 	UStaticMesh * bodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
 	if(bodyMeshTemp)
 		BodyMesh->SetStaticMesh(bodyMeshTemp);
-	
-/*
+
+
 	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
 	TargetRange->SetupAttachment(RootComponent);
 	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
@@ -44,7 +44,7 @@ ATurret::ATurret()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATurret::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
-*/
+
 }
 
 // Called when the game starts or when spawned
@@ -63,7 +63,7 @@ void ATurret::BeginPlay()
 	FTimerHandle _targetingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetRate, true, TargetRate);
 }
-/*
+
 void ATurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (Other == this)
@@ -85,15 +85,13 @@ void ATurret::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		FindBestTarget();
 	}
 }
-*/
 
-
+/*
 void ATurret::OnDeath()
 {
 	Destroy();
-
 }
-
+*/
 void ATurret::OnHealthChanged(float Health)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
@@ -124,9 +122,11 @@ void ATurret::Tick(float DeltaTime)
 		auto TurretRotation = TurretMesh->GetComponentRotation(); 
 		FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), BestTarget->GetActorLocation());
 		TargetRotation.Roll = TurretRotation.Roll; 
-		//TargetRotation.Pitch = TurretRotation.Pitch;  
+		//TargetRotation.Pitch = TurretRotation.Pitch;
+		//TargetRotation.Yaw = TurretRotation.Yaw;
+		
 		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, TargetRotation, 0.1f));
-		if (TurretRotation.Equals(TargetRotation, 2))
+		if (TurretRotation.Equals(TargetRotation, 5))
 		{
 			if (Cannon)
 				Cannon->Fire();

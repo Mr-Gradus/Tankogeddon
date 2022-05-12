@@ -68,11 +68,11 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	}
 
 	auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), Waypoint);
-	TargetRotation.Pitch = 0;
-	TargetRotation.Roll = 0;
+	//TargetRotation.Pitch = 0;
+	//TargetRotation.Roll = 0;
 	auto Rotation = TankPawn->GetActorRotation();
-	Rotation.Pitch = 0;
-	Rotation.Roll = 0;
+	//Rotation.Pitch = 0;
+	//Rotation.Roll = 0;
 
 	auto Direction = FRotator::NormalizeAxis(TargetRotation.Yaw - Rotation.Yaw);
 		
@@ -90,4 +90,18 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	{
 		TankPawn->RotateRight(0);
 	}
+}
+
+FVector AEnemyAIController::GetTargetLocation() const
+{
+	if (TankPawn)
+	{
+		auto BestTarget = TankPawn->GetBestTarget();
+		if (BestTarget)
+		{
+			return BestTarget->GetActorLocation();
+		}
+		return TankPawn->GetActorLocation() + TankPawn->GetActorForwardVector() * 500;
+	}
+	return FVector::ZeroVector;
 }

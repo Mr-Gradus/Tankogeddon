@@ -9,6 +9,7 @@
 #include "AmmoBox.h"
 #include "DamageTaker.h"
 #include "HealthComponent.h"
+#include "TargetController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ParentTankTurret.generated.h"
 
@@ -45,9 +46,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Cannon")
 	TSubclassOf<ACannon> SecondCannonClass;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	USphereComponent* TargetRange;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	TSubclassOf<AAmmoBox> AmmoboxClass;
 
@@ -56,10 +54,7 @@ protected:
 
 	UPROPERTY()
 	ACannon* Cannon;
-
-	UPROPERTY()
-	ATankPlayerController* TankController;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float TargetSpeed = 0.1f;
 
@@ -79,12 +74,14 @@ public:
 	UFUNCTION()
 	void FindBestTarget();
 
-	virtual void OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	                                  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	virtual void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	                                int32 OtherBodyIndex);
+	//virtual void OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
+	  //                                int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//virtual void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
+	  //                              int32 OtherBodyIndex);
 
 protected:
+
+	class ITargetController* TargetController;
 
 	TWeakObjectPtr<AActor> BestTarget;
 

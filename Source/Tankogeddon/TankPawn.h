@@ -13,6 +13,7 @@ class USpringArmComponent;
 class ATankPlayerController;
 class ACannon;
 class UHealthComponent;
+class USphereComponent;
 
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public AParentTankTurret
@@ -42,7 +43,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 	float TurretRotationInterpolationKey = 0.02f;
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	USphereComponent* TargetRange;
 	
 	float TargetForwardAxisValue = 0;
 	float CurrentForwardAxisValue = 0;
@@ -86,25 +88,32 @@ public:
 	void SetNewCannon(TSubclassOf<ACannon> SelectCannonClass);
 
 	UFUNCTION()
-	virtual void BeginPlay() override;
+	void IncreaseAmmo(int Ammo);
 
+	const AActor* GetBestTarget() const
+	{
+		return BestTarget.Get();
+	}
+
+protected:
+	UFUNCTION()
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	virtual void Destroyed() override;
 
-	UFUNCTION()
-	void IncreaseAmmo(int Ammo);
+	
 
 	UFUNCTION()
 	virtual void OnDeath() override;
 
 	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
-/*
+
 	UFUNCTION()
-	void OnTargetBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnTargetBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-*/
+
 };

@@ -42,7 +42,14 @@ ATankPawn::ATankPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
+	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::OnDeath);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
+
+	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
+	TargetRange->SetupAttachment(RootComponent);
+	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATankPawn::OnTargetBeginOverlap);
+	TargetRange->OnComponentEndOverlap.AddDynamic(this, &ATankPawn::OnTargetEndOverlap);
 		
 	
 }
@@ -79,11 +86,10 @@ void ATankPawn::OnHealthChanged(float Health)
 	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
 }
 
-// Called when the game starts or when spawned
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	TankController = Cast<ATankPlayerController>(GetController());
+	TargetController = Cast<ITargetController>(GetController());
 	CurrentCannon = CannonClass;
 }
 
@@ -182,9 +188,9 @@ void ATankPawn::Tick(float DeltaTime)
 
 	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
 
-	if(TankController)
+	if(TargetController)
 	{
-		auto MousePos = TankController->GetMousePos(); 
+		auto MousePos = TargetController->GetTargetLocation(); 
 		auto TurretRotation = TurretMesh->GetComponentRotation(); 
 		FRotator MouseRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), MousePos);
 		MouseRotation.Roll = TurretRotation.Roll; 
@@ -199,3 +205,24 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ATankPawn::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Other == this)
+		return;
+	Targets.Add(Other);
+	if (!BestTarget.IsValid())
+	{
+		FindBestTarget();
+	}
+}
+
+void ATankPawn::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, 	int32 OtherBodyIndex)
+{
+	if (Other == this)
+		return;
+	Targets.Remove(Other);
+	if (Other == BestTarget)
+	{
+		FindBestTarget();
+	}
+}

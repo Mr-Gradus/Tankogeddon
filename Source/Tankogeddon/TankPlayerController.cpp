@@ -69,6 +69,11 @@ void ATankPlayerController::RotateRight(float AxisValue)
 	TankPawn->RotateRight(AxisValue);
 }
 
+FVector ATankPlayerController::GetTargetLocation() const
+{
+	return MousePos; 
+}
+
 /*
 void ATankPlayerController::TurretRotateRight(float AxisValue)
 {

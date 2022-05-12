@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TargetController.h"
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h"
 
@@ -12,7 +13,7 @@ class ATankPawn;
  * 
  */
 UCLASS()
-class TANKOGEDDON_API ATankPlayerController : public APlayerController
+class TANKOGEDDON_API ATankPlayerController : public APlayerController, public ITargetController
 {
 	GENERATED_BODY()
 
@@ -31,7 +32,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	
-	FVector GetMousePos() { return MousePos; };
+	//FVector GetMousePos() { return MousePos; };
+
+	virtual FVector GetTargetLocation() const override;
 
 	void Fire();
 

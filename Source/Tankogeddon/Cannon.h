@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	float FireSpecialAmount = 3;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int AmmoCount = 10;
 
 	float Damage = 1.0f;

@@ -26,16 +26,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float Accurency = 10;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	USphereComponent* TargetRange;
 
 	const FString BodyMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
 	const FString TurretMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
-/*
+
 	UFUNCTION()
 	void OnTargetBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-*/	
+	
 public:	
 	ATurret();
 
@@ -45,18 +47,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual void OnDeath() override;
-
-	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
-
-	
 
 	UFUNCTION()
 	virtual void Destroyed() override;
 	
-	
-
 	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 };
