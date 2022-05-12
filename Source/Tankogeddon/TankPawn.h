@@ -43,8 +43,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 	float TurretRotationInterpolationKey = 0.02f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	USphereComponent* TargetRange;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	//USphereComponent* TargetRange;
 	
 	float TargetForwardAxisValue = 0;
 	float CurrentForwardAxisValue = 0;

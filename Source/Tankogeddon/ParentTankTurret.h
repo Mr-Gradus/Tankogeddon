@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	USphereComponent* TargetRange;
+	
 	UPROPERTY()
 	ACannon* Cannon;
 	
@@ -73,11 +76,6 @@ public:
 
 	UFUNCTION()
 	void FindBestTarget();
-
-	//virtual void OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	  //                                int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//virtual void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	  //                              int32 OtherBodyIndex);
 
 protected:
 

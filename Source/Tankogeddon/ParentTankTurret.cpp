@@ -21,7 +21,6 @@ AParentTankTurret::AParentTankTurret()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	
 }
 
 
@@ -51,26 +50,5 @@ void AParentTankTurret::FindBestTarget()
 		}
 	}
 }
-/*
-void AParentTankTurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Other == this)
-		return;
-	Targets.Add(Other);
-	if (!BestTarget.IsValid())
-	{
-		FindBestTarget();
-	}
-}
 
-void AParentTankTurret::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, 	int32 OtherBodyIndex)
-{
-	if (Other == this)
-		return;
-	Targets.Remove(Other);
-	if (Other == BestTarget)
-	{
-		FindBestTarget();
-	}
-}
-*/
+
