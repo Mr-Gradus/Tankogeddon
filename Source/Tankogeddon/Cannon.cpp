@@ -63,6 +63,17 @@ void ACannon::Fire()
 
 			AudioComponent->Activate(true);
 			VisualEffect->Activate(true);
+			if (CameraShakeEffect)
+			{
+				GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeEffect);
+			}
+
+			if (ForceFeedbackEffect)
+			{
+				FForceFeedbackParameters Params;
+				Params.bLooping = false;
+				GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ForceFeedbackEffect, Params);
+			}
 		}
 	}
 			

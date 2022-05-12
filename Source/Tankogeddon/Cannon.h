@@ -32,6 +32,12 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Components")
 	UParticleSystemComponent* VisualEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Effect")
+	TSubclassOf<UCameraShakeBase> CameraShakeEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Effect")
+	UForceFeedbackEffect* ForceFeedbackEffect;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 	float FireRate = 1;
