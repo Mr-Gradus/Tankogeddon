@@ -71,9 +71,6 @@ public:
 	void TurretRotateRight(float AxisValue);
 
 	UFUNCTION()
-	void Fire() const;
-	
-	UFUNCTION()
 	void FireSpecial() const;
 
 	UFUNCTION()
@@ -101,16 +98,16 @@ public:
 		return TurretMesh->GetComponentRotation();
 	}
 
+	virtual void Fire() override;
+
 protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	virtual void Destroyed() override;
-
 	
 
-	UFUNCTION()
 	virtual void OnDeath() override;
 
 	UFUNCTION()

@@ -9,6 +9,8 @@
 #include "Turret.generated.h"
 
 class ATankPawn;
+class UStaticMeshComponent;
+class UHealthComponent;
 
 UCLASS()
 class TANKOGEDDON_API ATurret : public AParentTankTurret
@@ -19,13 +21,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UBoxComponent * HitCollider;
-
-	UPROPERTY()
-	APawn* PlayerPawn;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	float Accurency = 10;
-
 	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	//USphereComponent* TargetRange;
 
@@ -49,9 +45,20 @@ protected:
 	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
 
-	UFUNCTION()
-	virtual void Destroyed() override;
+	//void Targeting();
+
+	//void RotateToPlayer();
+
+	//bool IsPlayerInRange();
+
+	//bool CanFire();
+
 	
-	UFUNCTION()
-	virtual void Tick(float DeltaTime) override;
+
+
+	//UFUNCTION()
+	//virtual void Destroyed() override;
+	
+//	UFUNCTION()
+//	virtual void Tick(float DeltaTime) override;
 };

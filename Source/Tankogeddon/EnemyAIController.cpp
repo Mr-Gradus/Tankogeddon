@@ -91,7 +91,8 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	{
 		TankPawn->RotateRight(0);
 	}
-
+}
+	/*
 	auto BestTarget = TankPawn->GetBestTarget();
  
 	if (BestTarget)
@@ -106,7 +107,8 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 		}
 	}
 }
-
+*/
+/*
 FVector AEnemyAIController::GetTargetLocation() const
 {
 	if (TankPawn)
@@ -120,4 +122,4 @@ FVector AEnemyAIController::GetTargetLocation() const
 	}
 	return FVector::ZeroVector;
 }
-
+*/

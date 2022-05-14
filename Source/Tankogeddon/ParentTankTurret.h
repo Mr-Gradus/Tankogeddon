@@ -10,6 +10,7 @@
 #include "DamageTaker.h"
 #include "HealthComponent.h"
 #include "TargetController.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ParentTankTurret.generated.h"
 
@@ -19,7 +20,8 @@ class UStaticMeshComponent;
 class UHealthComponent;
 class USphereComponent;
 class ATankPlayerController;
-
+class UParticleSystem;
+class USoundBase;
 
 UCLASS()
 class TANKOGEDDON_API AParentTankTurret : public APawn, public IDamageTaker
@@ -34,7 +36,14 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* BodyMesh;
 
-	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* TurretMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UParticleSystem* DestructObject;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* DestructSound;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UArrowComponent* CannonSetupPoint;
@@ -52,32 +61,48 @@ protected:
 	UHealthComponent* HealthComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	USphereComponent* TargetRange;
+	USphereComponent* TargetingRange;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float TargetingSpeed = 0.1f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float TargetingRate = 0.005f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float Accurency = 10;
+
+	UPROPERTY()
+	APawn* PlayerPawn;
+
 	UPROPERTY()
 	ACannon* Cannon;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	float TargetSpeed = 0.1f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	float TargetRate = 0.005f;
-
-	
 public:
-	virtual void OnDeath();
-	virtual void OnHealthChanged(float Health);
+
+
 	AParentTankTurret();
+
+	UFUNCTION()
+	virtual void Fire();
+
+	UFUNCTION()
+	void FindBestTarget();
+
+	UFUNCTION()
+	virtual void OnDeath();
+
+	virtual void OnHealthChanged(float Health);
 
 	virtual void BeginPlay() override;
 
 	virtual void TakeDamage(const FDamageInfo& DamageInfo) override;
 
-	UFUNCTION()
-	void FindBestTarget();
+	virtual void Destroyed() override;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* TurretMesh;
+	bool DetectPlayerVisibility();
+
+	FVector GetEyesPosition();
 	
 protected:
 

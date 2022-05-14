@@ -46,10 +46,10 @@ ATankPawn::ATankPawn()
 	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
 
-	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
-	TargetRange->SetupAttachment(RootComponent);
-	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATankPawn::OnTargetBeginOverlap);
-	TargetRange->OnComponentEndOverlap.AddDynamic(this, &ATankPawn::OnTargetEndOverlap);
+//	TargetingRange = CreateDefaultSubobject<USphereComponent>("Target Range");
+//	TargetingRange->SetupAttachment(RootComponent);
+//	TargetingRange->OnComponentBeginOverlap.AddDynamic(this, &ATankPawn::OnTargetBeginOverlap);
+//	TargetingRange->OnComponentEndOverlap.AddDynamic(this, &ATankPawn::OnTargetEndOverlap);
 		
 	
 }
@@ -148,12 +148,9 @@ void ATankPawn::Destroyed()
 	Cannon->Destroy();
 }
 
-void ATankPawn::Fire() const
+void ATankPawn::Fire() 
 {
-	if(Cannon)
-	{
-		Cannon->Fire();
-	}
+	AParentTankTurret::Fire();
 }
 
 void ATankPawn::FireSpecial() const

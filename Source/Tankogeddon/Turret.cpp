@@ -2,6 +2,8 @@
 
 
 #include "Turret.h"
+
+#include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
 #include "Components/SphereComponent.h"
@@ -36,10 +38,10 @@ ATurret::ATurret()
 		BodyMesh->SetStaticMesh(bodyMeshTemp);
 
 
-	TargetRange = CreateDefaultSubobject<USphereComponent>("Target Range");
-	TargetRange->SetupAttachment(RootComponent);
-	TargetRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
-	TargetRange->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnTargetEndOverlap);
+	TargetingRange = CreateDefaultSubobject<USphereComponent>("Target Range");
+	TargetingRange->SetupAttachment(RootComponent);
+	TargetingRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
+	TargetingRange->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnTargetEndOverlap);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATurret::OnDeath);
@@ -50,18 +52,20 @@ ATurret::ATurret()
 // Called when the game starts or when spawned
 void ATurret::BeginPlay()
 {
-	Super::BeginPlay();
-	
-
+	AParentTankTurret::BeginPlay();
+/*
 	if (CannonClass)
 	{
 		auto Transform = CannonSetupPoint->GetComponentTransform();
 		Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Transform);
 		Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
+*/
+	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	FTimerHandle _targetingTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetRate, true, TargetRate);
+
+	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetingRate, true, TargetingRate);
 }
 
 void ATurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -104,7 +108,7 @@ void AParentTankTurret::TakeDamage(const FDamageInfo& DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
 }
-
+/*
 void ATurret::Destroyed()
 {
 	Super::Destroyed();
@@ -112,8 +116,8 @@ void ATurret::Destroyed()
 	if (Cannon)
 		Cannon->Destroy();
 }
-
-// Called every frame
+*/
+/*
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -134,4 +138,46 @@ void ATurret::Tick(float DeltaTime)
 		}
 	}
 }
+*/
+/*
+void ATurret::Targeting()
+{
+	if (IsPlayerInRange())
+	{
+		RotateToPlayer();
+	}
 
+	if (CanFire() && Cannon && Cannon->IsReadyToFire())
+	{
+		Fire();
+	}
+}
+
+void ATurret::RotateToPlayer()
+{
+	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
+	FRotator CurrRotation = TurretMesh->GetComponentRotation();
+	TargetRotation.Pitch = CurrRotation.Pitch;
+	TargetRotation.Roll = CurrRotation.Roll;
+	TurretMesh->SetWorldRotation(FMath::RInterpConstantTo(CurrRotation, TargetRotation,GetWorld()->GetDeltaSeconds(), TargetingSpeed));
+}
+
+bool ATurret::IsPlayerInRange()
+{
+	return FVector::Distance(PlayerPawn->GetActorLocation(), GetActorLocation()) <= TargetingRange;
+}
+
+bool ATurret::CanFire()
+{
+	if (!DetectPlayerVisibility())
+	{
+		return false;
+	}
+	FVector TargetingDir = TurretMesh->GetForwardVector();
+	FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
+	DirToPlayer.Normalize();
+	float AimAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDir, DirToPlayer)));
+	return AimAngle <= Accurency;
+}		
+
+*/

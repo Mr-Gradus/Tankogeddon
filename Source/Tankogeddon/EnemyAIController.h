@@ -14,7 +14,7 @@ class ATankPawn;
  * 
  */
 UCLASS()
-class TANKOGEDDON_API AEnemyAIController : public AAIController, public ITargetController 
+class TANKOGEDDON_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 	
@@ -24,7 +24,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	virtual FVector GetTargetLocation() const override;
+	//virtual FVector GetTargetLocation() const override;
 
 
 private:
