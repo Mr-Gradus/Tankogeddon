@@ -98,7 +98,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	virtual void TakeDamage(const FDamageInfo& DamageInfo) override;
+	virtual void TakeDamage(const FDamageInfo DamageInfo) override;
 
 	FVector GetEyesPosition();
 

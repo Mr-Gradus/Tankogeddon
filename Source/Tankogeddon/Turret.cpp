@@ -67,7 +67,7 @@ void ATurret::OnHealthChanged(float Health)
 
 
 
-void AParentTankTurret::TakeDamage(const FDamageInfo& DamageInfo)
+void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
 }
