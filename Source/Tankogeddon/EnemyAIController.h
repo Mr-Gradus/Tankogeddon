@@ -31,6 +31,7 @@ protected:
 	float Accurency = 10;
 
 	bool IsPlayerSeen();
+	void Initilize();
 public:
 	virtual void BeginPlay() override;
 

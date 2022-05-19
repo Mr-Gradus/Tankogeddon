@@ -2,6 +2,9 @@
 
 
 #include "TankFactory.h"
+
+#include <ThirdParty/PhysX3/NvCloth/include/NvCloth/Allocator.h>
+
 #include "TimerManager.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
@@ -34,8 +37,11 @@ void ATankFactory::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FTimerHandle _targetingTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATankFactory::SpawnNewTank, SpawnTankRate, true, SpawnTankRate);
+	FTimerHandle TargetingTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TargetingTimerHandle, this, &ATankFactory::SpawnNewTank, SpawnTankRate, true, 3);
+
+	
+	
 }
 
 void ATankFactory::TakeDamage(FDamageInfo DamageInfo)
@@ -53,6 +59,18 @@ void ATankFactory::DamageTaked(float DamageValue)
 	*GetName(), DamageValue, HealthComponent->GetHealth());
 }
 
+
+
+
 void ATankFactory::SpawnNewTank()
 {
+	if(SpawnTankClass)
+	{
+		FTransform SpawnTransform(TankSpawnPoint->GetComponentRotation(), TankSpawnPoint->GetComponentLocation(), FVector(1));
+		ATankPawn * NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		//
+		NewTank->WaypointTag;                           // SetPatrollingPoints(TankWayPoints);
+		//
+		UGameplayStatics::FinishSpawningActor(NewTank, SpawnTransform);
+	}
 }

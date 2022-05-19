@@ -9,6 +9,10 @@
 #include "GameFramework/Actor.h"
 #include "TankFactory.generated.h"
 
+class UBoxComponent;
+class UArrowComponent;
+
+
 UCLASS()
 class TANKOGEDDON_API ATankFactory : public AActor, public IDamageTaker
 {
@@ -31,10 +35,13 @@ protected:
 	TSubclassOf<ATankPawn> SpawnTankClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn tanks params")
-	float SpawnTankRate = 1;
+	float SpawnTankRate = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
-	TArray<ATargetPoint*> TankWayPoints;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
+	//TArray<ATargetPoint*> TankWayPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	FName WaypointTag;
 
 
 public:	

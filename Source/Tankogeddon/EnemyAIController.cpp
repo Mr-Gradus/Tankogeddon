@@ -12,9 +12,10 @@
 void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Initilize();
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
+	
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -59,6 +60,8 @@ void AEnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(!TankPawn)
+		Initilize();
 	if(!TankPawn)
 		return;
 	if (Waypoints.Num() <= 0)
@@ -139,6 +142,9 @@ void AEnemyAIController::Fire()
 
 bool AEnemyAIController::IsPlayerSeen()
 {
+	if(!PlayerPawn)
+		Initilize();
+
 	FVector playerPos = PlayerPawn->GetActorLocation();
 	FVector eyesPos = TankPawn->GetEyesPosition();
 	FHitResult hitResult;
@@ -159,3 +165,38 @@ bool AEnemyAIController::IsPlayerSeen()
 	return false;
 }
 
+void AEnemyAIController::Initilize()
+{
+	Waypoints.Empty();
+
+	TankPawn = Cast<ATankPawn>(GetPawn());
+	if (!TankPawn)
+	{
+		return;
+	}
+	TArray<AActor*> WaypointActors;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AWaypoint::StaticClass(), TankPawn->WaypointTag, WaypointActors);
+
+	WaypointActors.Sort([](const AActor& a, const AActor& b)
+	{
+		auto WPA = CastChecked<AWaypoint>(&a);
+		auto WPB = CastChecked<AWaypoint>(&b);
+		return WPA->Order > WPB->Order;
+	});
+
+	for(auto Waypoint : WaypointActors)
+	{
+		Waypoints.Add(Waypoint->GetActorLocation());
+	}
+
+	for(auto i = 1; i < Waypoints.Num(); i++)
+	{
+		DrawDebugLine(GetWorld(), Waypoints[i - 1], Waypoints[i], FColor::Green, true);
+	}
+	if (Waypoints.Num() > 1)
+	{
+		DrawDebugLine(GetWorld(), Waypoints[Waypoints.Num() - 1], Waypoints[0], FColor::Green, true);
+	}
+	
+	NextWaypoint = 0;
+}
