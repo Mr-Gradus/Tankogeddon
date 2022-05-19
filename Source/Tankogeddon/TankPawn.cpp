@@ -10,7 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
-#include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -43,15 +43,9 @@ ATankPawn::ATankPawn()
 	Camera->SetupAttachment(SpringArm);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
-	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::OnDeath);
+	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
 
-//	TargetingRange = CreateDefaultSubobject<USphereComponent>("Target Range");
-//	TargetingRange->SetupAttachment(RootComponent);
-//	TargetingRange->OnComponentBeginOverlap.AddDynamic(this, &ATankPawn::OnTargetBeginOverlap);
-//	TargetingRange->OnComponentEndOverlap.AddDynamic(this, &ATankPawn::OnTargetEndOverlap);
-		
-	
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -69,12 +63,26 @@ void ATankPawn::TurretRotateRight(float AxisValue)
 	TargetTurretRightAxisValue = AxisValue;
 }
 
+FVector ATankPawn::GetTurretForwardVector()
+{
+return TurretMesh->GetForwardVector();
+}
+
+void ATankPawn::RotateTurretTo(FVector TargetPosition)
+{
+FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetPosition);
+FRotator CurrRotation = TurretMesh->GetComponentRotation();
+TargetRotation.Pitch = CurrRotation.Pitch;
+TargetRotation.Roll = CurrRotation.Roll;
+TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
+}
+
 void ATankPawn::IncreaseAmmo(int Ammo)
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
 }
 
-void ATankPawn::OnDeath()
+void ATankPawn::Death()
 {
 	Destroy();
 
@@ -83,6 +91,9 @@ void ATankPawn::OnDeath()
 
 void ATankPawn::OnHealthChanged(float Health)
 {
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitPlayerSound, GetActorLocation());
+
+	
 	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
 }
 
@@ -165,25 +176,20 @@ void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+// Tank move
 	CurrentForwardAxisValue = FMath::Lerp(CurrentForwardAxisValue, TargetForwardAxisValue, SpeedInterpolationKey);
-
 	auto Location = GetActorLocation();
 	auto ForwardVector = GetActorForwardVector();
 	SetActorLocation(Location + ForwardVector * CurrentForwardAxisValue * MoveSpeed * DeltaTime, true);
 
-	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 
-	//UE_LOG(LogTanks, Warning, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue 	= %f"), CurrentRightAxisValue, TargetRightAxisValue);
-	
+//Tank Rotation	
+	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 	auto yawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
 	FRotator currentRotation = GetActorRotation();
-
 	yawRotation = currentRotation.Yaw + yawRotation;
 	FRotator newRotation = FRotator(0, yawRotation, 0);
-
 	SetActorRotation(newRotation);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Blue, FString::Printf(TEXT("TargetForwardAxisValue = %f"), CurrentForwardAxisValue), false);
 
 	if(TargetController)
 	{
@@ -200,26 +206,4 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
-
-void ATankPawn::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Other == this)
-		return;
-	Targets.Add(Other);
-	if (!BestTarget.IsValid())
-	{
-		FindBestTarget();
-	}
-}
-
-void ATankPawn::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, 	int32 OtherBodyIndex)
-{
-	if (Other == this)
-		return;
-	Targets.Remove(Other);
-	if (Other == BestTarget)
-	{
-		FindBestTarget();
-	}
 }

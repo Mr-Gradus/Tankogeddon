@@ -5,60 +5,55 @@
 #include "CoreMinimal.h"
 #include "ParentTankTurret.h"
 #include "Chaos/CollisionResolution.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/Actor.h"
 #include "Cannon.h"
 #include "Turret.generated.h"
 
 class ATankPawn;
 class UStaticMeshComponent;
 class UHealthComponent;
+class USphereComponent;
 
 UCLASS()
 class TANKOGEDDON_API ATurret : public AParentTankTurret
 {
 	GENERATED_BODY()
 	
-protected:	
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UBoxComponent * HitCollider;
+protected:
 	
-	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	//USphereComponent* TargetRange;
-
 	const FString BodyMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
 	const FString TurretMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
 
-	UFUNCTION()
-	void OnTargetBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UPROPERTY()
+	ATankPawn* TankPawn;
 
-	UFUNCTION()
-	void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
 public:	
+
 	ATurret();
 
+	
+	
 protected:
 
-	UFUNCTION()
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
 
-	//void Targeting();
+	virtual void Destroyed() override;
 
-	//void RotateToPlayer();
+	void Targeting();
 
-	//bool IsPlayerInRange();
+	void RotateToPlayer();
 
-	//bool CanFire();
+	bool IsPlayerInRange();
+
+	bool DetectPlayerVisibility();
 
 	
 
+	bool IsPlayerSeen();
 
-	//UFUNCTION()
-	//virtual void Destroyed() override;
-	
-//	UFUNCTION()
-//	virtual void Tick(float DeltaTime) override;
+	bool CanFire();
+
 };

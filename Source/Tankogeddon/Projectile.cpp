@@ -44,12 +44,10 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	if (OtherComp && OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_Destructible)
 	{
 		OtherActor->Destroy();
-		Destroy();
 	}
 	
 	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
 	{
-		Destroy();
 		auto DamageTaker = Cast<IDamageTaker>(OtherActor);
 		if (DamageTaker)
 		{
@@ -59,14 +57,15 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 			DamageInfo.Instigator = GetInstigator();
 			DamageTaker->TakeDamage(DamageInfo);
 		}
+		Destroy();
 	}
 
 }
 
 void AProjectile::Move()
 {
-	FVector nextPosition = GetActorLocation() + GetActorForwardVector() * MoveRate * MoveSpeed;
-	SetActorLocation(nextPosition);
+	FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveRate * MoveSpeed;
+	SetActorLocation(NextPosition);
 }
 
 

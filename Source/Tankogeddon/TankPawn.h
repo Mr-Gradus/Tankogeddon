@@ -41,9 +41,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 	float TurretRotationInterpolationKey = 0.02f;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	//USphereComponent* TargetRange;
-	
 	float TargetForwardAxisValue = 0;
 	float CurrentForwardAxisValue = 0;
 	float TargetRightAxisValue = 0;
@@ -85,11 +82,6 @@ public:
 	UFUNCTION()
 	void IncreaseAmmo(int Ammo);
 
-	const AActor* GetBestTarget() const
-	{
-		return BestTarget.Get();
-	}
-
 	UPROPERTY()
 	AParentTankTurret* ParentTankTurret;
 	
@@ -100,6 +92,13 @@ public:
 
 	virtual void Fire() override;
 
+	UFUNCTION()
+	FVector GetTurretForwardVector() ;
+
+	UFUNCTION()
+	void RotateTurretTo(FVector TargetPosition);
+
+
 protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;
@@ -108,15 +107,10 @@ protected:
 	virtual void Destroyed() override;
 	
 
-	virtual void OnDeath() override;
+	virtual void Death() override;
 
 	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
 
-	UFUNCTION()
-	void OnTargetBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 };

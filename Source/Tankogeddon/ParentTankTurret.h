@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	USoundBase* DestructSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* HitPlayerSound;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UArrowComponent* CannonSetupPoint;
 
@@ -60,8 +63,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UHealthComponent* HealthComponent;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* HitCollider;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	USphereComponent* TargetingRange;
+	float TargetingRange = 1000;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float TargetingSpeed = 0.1f;
@@ -77,20 +83,16 @@ protected:
 
 	UPROPERTY()
 	ACannon* Cannon;
-	
+
+
 public:
 
 
 	AParentTankTurret();
 
-	UFUNCTION()
 	virtual void Fire();
-
-	UFUNCTION()
-	void FindBestTarget();
-
-	UFUNCTION()
-	virtual void OnDeath();
+	
+	virtual void Death();
 
 	virtual void OnHealthChanged(float Health);
 
@@ -98,17 +100,10 @@ public:
 
 	virtual void TakeDamage(const FDamageInfo& DamageInfo) override;
 
-	virtual void Destroyed() override;
-
-	bool DetectPlayerVisibility();
-
 	FVector GetEyesPosition();
-	
-protected:
+
 
 	class ITargetController* TargetController;
-
-	TWeakObjectPtr<AActor> BestTarget;
 
 	TSubclassOf<ACannon> CurrentCannon;
 

@@ -22,6 +22,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Health")
 	float MaxHealth = 10;
 
+	
+
 	// Sets default values for this component's properties
 	UHealthComponent();
 

@@ -17,7 +17,7 @@ void AParentTankTurret::Fire()
 	}
 }
 
-void AParentTankTurret::OnDeath()
+void AParentTankTurret::Death()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
@@ -29,16 +29,12 @@ void AParentTankTurret::OnDeath()
 	}
 	Destroy();
 }
-
+/*
 void AParentTankTurret::Destroyed()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
-	if (Cannon)
-	{
-		Cannon->Destroy();
-	}
+	Destroy();
 }
+*/
 void AParentTankTurret::OnHealthChanged(float Health)
 {
 }
@@ -62,45 +58,6 @@ void AParentTankTurret::BeginPlay()
 
 }
 
-void AParentTankTurret::FindBestTarget()
-{
-	if (DetectPlayerVisibility())
-	{
-		float MinDistance = 5555555;
-		BestTarget = nullptr;
-		for(auto Target : Targets)
-		{
-			auto Distance = FVector::Dist2D(GetActorLocation(), Target->GetActorLocation());
-			if (MinDistance > Distance)
-			{
-				MinDistance = Distance;
-				BestTarget = Target;
-			}
-		}
-	}
-}
-
-bool AParentTankTurret::DetectPlayerVisibility()
-{
-	FVector PlayerPos = PlayerPawn->GetActorLocation();
-	FVector EyesPos = this->GetEyesPosition();
-
-	FHitResult HitResult;
-	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
-	TraceParams.bTraceComplex = true;
-	TraceParams.bReturnPhysicalMaterial = false;
-
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, EyesPos, PlayerPos, ECollisionChannel::ECC_Visibility, TraceParams))
-	{
-		if (HitResult.Actor.Get())
-		{
-			DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Cyan, false, 0.5f, 0, 10);
-			return HitResult.Actor.Get() == PlayerPawn;
-		}
-	}
-	DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Cyan, false, 0.5f, 0, 10);
-	return false;
-}
 FVector AParentTankTurret::GetEyesPosition()
 {
 	return CannonSetupPoint->GetComponentLocation();

@@ -164,8 +164,8 @@ void ACannon::FireSpecial()
 			Projectile->Start();
 		}
 
-		//FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
-		//		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
+		FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
+		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
 	}
 	else
 	{

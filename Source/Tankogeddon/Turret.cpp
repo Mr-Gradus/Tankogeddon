@@ -1,28 +1,28 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "Turret.h"
-
+#include "TankPlayerController.h"
+#include "Cannon.h"
 #include "DrawDebugHelpers.h"
+#include "TankPawn.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
-#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 
 
-// Sets default values
 ATurret::ATurret()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
 	RootComponent = Collision;
 
-	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank body"));
+	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret body"));
 	BodyMesh->SetupAttachment(RootComponent);
 
-	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
-	TurretMesh->SetupAttachment(BodyMesh);
+	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret turret"));
+	TurretMesh->AttachToComponent(BodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
 	
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
@@ -33,70 +33,33 @@ ATurret::ATurret()
 	UStaticMesh * turretMeshTemp = LoadObject<UStaticMesh>(this, *TurretMeshPath);
 	if(turretMeshTemp)
 		TurretMesh->SetStaticMesh(turretMeshTemp);
+
 	UStaticMesh * bodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
 	if(bodyMeshTemp)
 		BodyMesh->SetStaticMesh(bodyMeshTemp);
 
 
-	TargetingRange = CreateDefaultSubobject<USphereComponent>("Target Range");
-	TargetingRange->SetupAttachment(RootComponent);
-	TargetingRange->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTargetBeginOverlap);
-	TargetingRange->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnTargetEndOverlap);
-
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
-	HealthComponent->OnDeath.AddUObject(this, &ATurret::OnDeath);
+	HealthComponent->OnDeath.AddUObject(this, &ATurret::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
 
 }
 
-// Called when the game starts or when spawned
 void ATurret::BeginPlay()
 {
 	AParentTankTurret::BeginPlay();
-/*
-	if (CannonClass)
-	{
-		auto Transform = CannonSetupPoint->GetComponentTransform();
-		Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Transform);
-		Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
-*/
-	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
-	FTimerHandle _targetingTimerHandle;
+	//FActorSpawnParameters params;
+    //params.Owner = this;
+    //Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
+    //Cannon->AttachToComponent(CannonSetupPoint,
+   // FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+    PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+    FTimerHandle _targetingTimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
 
-	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::FindBestTarget, TargetingRate, true, TargetingRate);
 }
 
-void ATurret::OnTargetBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Other == this)
-		return;
-	Targets.Add(Other);
-	if (!BestTarget.IsValid())
-	{
-		FindBestTarget();
-	}
-}
-
-void ATurret::OnTargetEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, 	int32 OtherBodyIndex)
-{
-	if (Other == this)
-		return;
-	Targets.Remove(Other);
-	if (Other == BestTarget)
-	{
-		FindBestTarget();
-	}
-}
-
-
-/*
-void ATurret::OnDeath()
-{
-	Destroy();
-}
-*/
 void ATurret::OnHealthChanged(float Health)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
@@ -108,7 +71,7 @@ void AParentTankTurret::TakeDamage(const FDamageInfo& DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
 }
-/*
+
 void ATurret::Destroyed()
 {
 	Super::Destroyed();
@@ -116,30 +79,8 @@ void ATurret::Destroyed()
 	if (Cannon)
 		Cannon->Destroy();
 }
-*/
-/*
-void ATurret::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
-	if (BestTarget.IsValid())
-	{
-		auto TurretRotation = TurretMesh->GetComponentRotation(); 
-		FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), BestTarget->GetActorLocation());
-		TargetRotation.Roll = TurretRotation.Roll; 
-		//TargetRotation.Pitch = TurretRotation.Pitch;
-		//TargetRotation.Yaw = TurretRotation.Yaw;
-		
-		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, TargetRotation, 0.1f));
-		if (TurretRotation.Equals(TargetRotation, 5))
-		{
-			if (Cannon)
-				Cannon->Fire();
-		}
-	}
-}
-*/
-/*
+
 void ATurret::Targeting()
 {
 	if (IsPlayerInRange())
@@ -153,13 +94,15 @@ void ATurret::Targeting()
 	}
 }
 
+
 void ATurret::RotateToPlayer()
 {
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
 	FRotator CurrRotation = TurretMesh->GetComponentRotation();
-	TargetRotation.Pitch = CurrRotation.Pitch;
-	TargetRotation.Roll = CurrRotation.Roll;
-	TurretMesh->SetWorldRotation(FMath::RInterpConstantTo(CurrRotation, TargetRotation,GetWorld()->GetDeltaSeconds(), TargetingSpeed));
+	CurrRotation.Pitch = TargetRotation.Pitch;
+	//CurrRotation.Roll = TargetRotation.Roll;
+	//CurrRotation.Yaw = TargetRotation.Yaw; 
+	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TargetingSpeed));
 }
 
 bool ATurret::IsPlayerInRange()
@@ -167,17 +110,58 @@ bool ATurret::IsPlayerInRange()
 	return FVector::Distance(PlayerPawn->GetActorLocation(), GetActorLocation()) <= TargetingRange;
 }
 
+
 bool ATurret::CanFire()
 {
-	if (!DetectPlayerVisibility())
-	{
+	if(!IsPlayerSeen())
 		return false;
-	}
+	
 	FVector TargetingDir = TurretMesh->GetForwardVector();
-	FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
-	DirToPlayer.Normalize();
-	float AimAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDir, DirToPlayer)));
-	return AimAngle <= Accurency;
+    FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
+    DirToPlayer.Normalize();
+    float AimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(TargetingDir, DirToPlayer)));
+    return AimAngle <= Accurency;
 }		
+bool ATurret::DetectPlayerVisibility()
+{
+	FVector PlayerPos = PlayerPawn->GetActorLocation();
+	FVector EyesPos = this->GetEyesPosition();
 
-*/
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	TraceParams.bTraceComplex = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, EyesPos, PlayerPos, ECollisionChannel::ECC_Visibility, TraceParams))
+	{
+		if (HitResult.Actor.Get())
+		{
+			DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Orange, false, 0.5f, 0, 5);
+			return HitResult.Actor.Get() == PlayerPawn;
+		}
+	}
+	DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Orange, false, 0.5f, 0, 5);
+	return false;
+}
+
+bool ATurret::IsPlayerSeen()
+{
+	FVector playerPos = PlayerPawn->GetActorLocation();
+	FVector eyesPos = this->GetEyesPosition();
+	FHitResult hitResult;
+	FCollisionQueryParams traceParams =
+	FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	traceParams.bTraceComplex = true;
+	traceParams.AddIgnoredActor(this);
+	traceParams.bReturnPhysicalMaterial = false;
+	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos, ECollisionChannel::ECC_Visibility, traceParams))
+	{
+		if(hitResult.Actor.Get())
+		{
+			DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Orange, false, 0.5f, 0, 10);
+			return hitResult.Actor.Get() == PlayerPawn;
+		}
+	}
+	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Orange, false, 0.5f, 0, 10);
+	return false;
+}

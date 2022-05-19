@@ -2,11 +2,20 @@
 
 
 #include "EnemyAIController.h"
-#include "ParentTankTurret.h"
 #include "DrawDebugHelpers.h"
 #include "TankPawn.h"
 #include "Waypoint.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+
+
+void AEnemyAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+}
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -19,7 +28,6 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		return;
 	}
-
 	TArray<AActor*> WaypointActors;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AWaypoint::StaticClass(), TankPawn->WaypointTag, WaypointActors);
 
@@ -47,9 +55,9 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	NextWaypoint = 0;
 }
 
-void AEnemyAIController::Tick(float DeltaSeconds)
+void AEnemyAIController::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaTime);
 
 	if(!TankPawn)
 		return;
@@ -91,35 +99,63 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	{
 		TankPawn->RotateRight(0);
 	}
+
+	Targeting();
 }
-	/*
-	auto BestTarget = TankPawn->GetBestTarget();
- 
-	if (BestTarget)
-	{
-		auto TurretRotation = TankPawn->TurretMesh->GetComponentRotation(); 
-		FRotator TargetRotationAI = UKismetMathLibrary::FindLookAtRotation(TankPawn->TurretMesh->GetComponentLocation(), BestTarget->GetActorLocation());
-		TargetRotation.Roll = 0; 
-		TargetRotation.Pitch = 0;
-		if (FMath::Abs(FRotator::NormalizeAxis(TargetRotationAI.Yaw - Rotation.Yaw)))
-		{
-			TankPawn->Fire();
-		}
-	}
-}
-*/
-/*
-FVector AEnemyAIController::GetTargetLocation() const
+
+void AEnemyAIController::Targeting()
 {
-	if (TankPawn)
-	{
-		auto BestTarget = TankPawn->GetBestTarget();
-		if (BestTarget)
-		{
-			return BestTarget->GetActorLocation();
-		}
-		return TankPawn->GetActorLocation() + TankPawn->GetActorForwardVector() * 500;
-	}
-	return FVector::ZeroVector;
+	if(CanFire())
+	Fire();
+	else
+	RotateToPlayer();
 }
-*/
+
+void AEnemyAIController::RotateToPlayer()
+{
+	if(IsPlayerInRange())
+	TankPawn->RotateTurretTo(PlayerPawn->GetActorLocation());
+}
+bool AEnemyAIController::IsPlayerInRange()
+{
+	return FVector::Distance(TankPawn->GetActorLocation(), PlayerPawn->GetActorLocation()) <= TargetingRange;
+}
+bool AEnemyAIController::CanFire()
+{
+	if(!IsPlayerSeen())
+		return false;
+
+	FVector targetingDir = TankPawn->GetTurretForwardVector();
+	auto dirToPlayer = PlayerPawn->GetActorLocation() - TankPawn->GetActorLocation();
+	dirToPlayer.Normalize();
+	float aimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(targetingDir,
+	dirToPlayer)));
+	return aimAngle <= Accurency;
+}
+void AEnemyAIController::Fire()
+{
+	TankPawn->Fire();
+}
+
+bool AEnemyAIController::IsPlayerSeen()
+{
+	FVector playerPos = PlayerPawn->GetActorLocation();
+	FVector eyesPos = TankPawn->GetEyesPosition();
+	FHitResult hitResult;
+	FCollisionQueryParams traceParams =
+	FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	traceParams.bTraceComplex = true;
+	traceParams.AddIgnoredActor(TankPawn);
+	traceParams.bReturnPhysicalMaterial = false;
+	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos, ECollisionChannel::ECC_Visibility, traceParams))
+	{
+		if(hitResult.Actor.Get())
+		{
+		DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Blue, false, 0.5f, 0, 10);
+		return hitResult.Actor.Get() == PlayerPawn;
+		}
+	}
+	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Blue, false, 0.5f, 0, 10);
+	return false;
+}
+

@@ -5,36 +5,57 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "TankPawn.h"
-#include "TargetController.h"
 #include "EnemyAIController.generated.h"
 
-class AParentTankTurret;
 class ATankPawn;
 /**
  * 
  */
 UCLASS()
-class TANKOGEDDON_API AEnemyAIController : public AAIController
+class TANKOGEDDON_API AEnemyAIController : public AAIController  
 {
 	GENERATED_BODY()
 	
 
+protected:
+	UPROPERTY()
+	ATankPawn* TankPawn;
+
+	UPROPERTY()
+	APawn* PlayerPawn;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float TargetingRange = 1000;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float Accurency = 10;
+
+	bool IsPlayerSeen();
 public:
+	virtual void BeginPlay() override;
+
 	virtual void OnPossess(APawn* InPawn) override;
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaTime) override;
 
-	//virtual FVector GetTargetLocation() const override;
+	//float GetRotationgValue();
 
+	void Targeting();
 
-private:
+	void RotateToPlayer();
+
+	bool IsPlayerInRange();
+
+	bool CanFire();
+
+	void Fire();
+
 	TArray<FVector> Waypoints;
 
 	int NextWaypoint = 0;
 
 	
-	UPROPERTY()
-	ATankPawn* TankPawn;
+	
 	
 	
 };
