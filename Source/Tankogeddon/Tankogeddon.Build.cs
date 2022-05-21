@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class Tankogeddon : ModuleRules
 {
-	public Tankogeddon(ReadOnlyTargetRules Target) : base(Target)
+	public Tankogeddon(ReadOnlyTargetRules target) : base(target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	

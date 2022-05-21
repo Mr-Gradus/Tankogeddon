@@ -14,10 +14,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 
-// Sets default values
 ATankPawn::ATankPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
@@ -28,10 +26,13 @@ ATankPawn::ATankPawn()
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank turret"));
 	TurretMesh->SetupAttachment(BodyMesh);
-	
+
+	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+	HitCollider->SetupAttachment(TurretMesh);
+
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
 	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
-	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring arm"));
 	SpringArm->SetupAttachment(BodyMesh);
 	SpringArm->bDoCollisionTest = false;
@@ -45,7 +46,6 @@ ATankPawn::ATankPawn()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
-
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -63,37 +63,39 @@ void ATankPawn::TurretRotateRight(float AxisValue)
 	TargetTurretRightAxisValue = AxisValue;
 }
 
-FVector ATankPawn::GetTurretForwardVector()
+FVector ATankPawn::GetTurretForwardVector() const
 {
-return TurretMesh->GetForwardVector();
+	return TurretMesh->GetForwardVector();
 }
 
-void ATankPawn::RotateTurretTo(FVector TargetPosition)
+void ATankPawn::RotateTurretTo(FVector TargetPosition) const
 {
-FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetPosition);
-FRotator CurrRotation = TurretMesh->GetComponentRotation();
-TargetRotation.Pitch = CurrRotation.Pitch;
-TargetRotation.Roll = CurrRotation.Roll;
-TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
+	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetPosition);
+	const FRotator CurrRotation = TurretMesh->GetComponentRotation();
+	TargetRotation.Pitch = CurrRotation.Pitch;
+	TargetRotation.Roll = CurrRotation.Roll;
+	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
 }
 
-void ATankPawn::IncreaseAmmo(int Ammo)
+void ATankPawn::IncreaseAmmo(const int Ammo) const
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
 }
 
 void ATankPawn::Death()
 {
-	Destroy();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
 
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+	Destroy();
+	if (PlayerPawn)
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
 }
 
-void ATankPawn::OnHealthChanged(float Health)
+void ATankPawn::OnHealthChanged(const float Health)
 {
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitPlayerSound, GetActorLocation());
 
-	
 	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
 }
 
@@ -108,21 +110,21 @@ void ATankPawn::ChangeCannon()
 {
 	if (CurrentCannon == CannonClass)
 	{
-		int32 current = Cannon->GetAmmo();
+		const int32 Current = Cannon->GetAmmo();
 		SetupCannon(SecondCannonClass);
 		CurrentCannon = SecondCannonClass;
-		Cannon->SetAmmo(current);
+		Cannon->SetAmmo(Current);
 	}
 	else
 	{
-		int32 current = Cannon->GetAmmo();
+		const int32 Current = Cannon->GetAmmo();
 		SetupCannon(CannonClass);
 		CurrentCannon = CannonClass;
-		Cannon->SetAmmo(current);
+		Cannon->SetAmmo(Current);
 	}
 }
 
-void ATankPawn::SetupCannon(TSubclassOf<ACannon> SelectCannonClass)
+void ATankPawn::SetupCannon(const TSubclassOf<ACannon> SelectCannonClass)
 {
 	if (Cannon)
 	{
@@ -137,18 +139,18 @@ void ATankPawn::SetupCannon(TSubclassOf<ACannon> SelectCannonClass)
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void ATankPawn::SetNewCannon(TSubclassOf<ACannon> SelectCannonClass)
+void ATankPawn::SetNewCannon(const TSubclassOf<ACannon> NewCannonClass)
 {
 	if (CurrentCannon == CannonClass)
 	{
-		CurrentCannon = SelectCannonClass;
-		CannonClass = SelectCannonClass;
+		CurrentCannon = NewCannonClass;
+		CannonClass = NewCannonClass;
 		SetupCannon(CannonClass);
 	}
 	else
 	{
-		CurrentCannon = SelectCannonClass;
-		SecondCannonClass = SelectCannonClass;
+		CurrentCannon = NewCannonClass;
+		SecondCannonClass = NewCannonClass;
 		SetupCannon(SecondCannonClass);
 	}
 }
@@ -156,48 +158,48 @@ void ATankPawn::SetNewCannon(TSubclassOf<ACannon> SelectCannonClass)
 void ATankPawn::Destroyed()
 {
 	if (Cannon)
-	Cannon->Destroy();
+		Cannon->Destroy();
 }
 
-void ATankPawn::Fire() 
+void ATankPawn::Fire()
 {
 	AParentTankTurret::Fire();
 }
 
 void ATankPawn::FireSpecial() const
 {
-	if(Cannon)
+	if (Cannon)
 	{
 		Cannon->FireSpecial();
 	}
 }
 
-void ATankPawn::Tick(float DeltaTime)
+void ATankPawn::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-// Tank move
+
+	// Tank move
 	CurrentForwardAxisValue = FMath::Lerp(CurrentForwardAxisValue, TargetForwardAxisValue, SpeedInterpolationKey);
-	auto Location = GetActorLocation();
-	auto ForwardVector = GetActorForwardVector();
+	const auto Location = GetActorLocation();
+	const auto ForwardVector = GetActorForwardVector();
 	SetActorLocation(Location + ForwardVector * CurrentForwardAxisValue * MoveSpeed * DeltaTime, true);
 
 
-//Tank Rotation	
+	//Tank Rotation	
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
-	auto yawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
-	FRotator currentRotation = GetActorRotation();
-	yawRotation = currentRotation.Yaw + yawRotation;
-	FRotator newRotation = FRotator(0, yawRotation, 0);
-	SetActorRotation(newRotation);
+	auto YawRotation = RotationSpeed * CurrentRightAxisValue * DeltaTime;
+	const FRotator CurrentRotation = GetActorRotation();
+	YawRotation = CurrentRotation.Yaw + YawRotation;
+	const FRotator NewRotation = FRotator(0, YawRotation, 0);
+	SetActorRotation(NewRotation);
 
-	if(TargetController)
+	if (TargetController)
 	{
-		auto MousePos = TargetController->GetTargetLocation(); 
-		auto TurretRotation = TurretMesh->GetComponentRotation(); 
+		const auto MousePos = TargetController->GetTargetLocation();
+		const auto TurretRotation = TurretMesh->GetComponentRotation();
 		FRotator MouseRotation = UKismetMathLibrary::FindLookAtRotation(TurretMesh->GetComponentLocation(), MousePos);
-		MouseRotation.Roll = TurretRotation.Roll; 
-		MouseRotation.Pitch = TurretRotation.Pitch;  
+		MouseRotation.Roll = TurretRotation.Roll;
+		MouseRotation.Pitch = TurretRotation.Pitch;
 		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, MouseRotation, TurretRotationInterpolationKey));
 	}
 }
@@ -205,5 +207,4 @@ void ATankPawn::Tick(float DeltaTime)
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }

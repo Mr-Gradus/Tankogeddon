@@ -5,13 +5,12 @@
 #include "CoreMinimal.h"
 #include "DamageTaker.h"
 #include "TankPawn.h"
-#include "Engine/TargetPoint.h"
 #include "GameFramework/Actor.h"
 #include "TankFactory.generated.h"
 
 class UBoxComponent;
 class UArrowComponent;
-
+class AMapLoader;
 
 UCLASS()
 class TANKOGEDDON_API ATankFactory : public AActor, public IDamageTaker
@@ -37,18 +36,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn tanks params")
 	float SpawnTankRate = 10;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
-	//TArray<ATargetPoint*> TankWayPoints;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	FName WaypointTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
+	AMapLoader* LinkedMapLoader;
 
 
 public:	
 	ATankFactory();
 
 	UFUNCTION()
-	void TakeDamage(FDamageInfo DamageInfo);
+	virtual void TakeDamage(FDamageInfo DamageInfo) override;
+
+	FTimerHandle TargetingTimerHandle;
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,7 +60,5 @@ protected:
 	void Death();
 
 	UFUNCTION()
-	void DamageTaked(float DamageValue);
-
-
+	void DamageTaked(float DamageValue) const;
 };

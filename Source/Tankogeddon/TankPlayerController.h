@@ -32,8 +32,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	
-	//FVector GetMousePos() { return MousePos; };
-
 	virtual FVector GetTargetLocation() const override;
 
 	void Fire();
@@ -49,6 +47,5 @@ protected:
 
 	void RotateRight(float AxisValue);
 
-	//void GRotateLeft(float AxisValue);
 	void GRotateRight(float AxisValue);
 };

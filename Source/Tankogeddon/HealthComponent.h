@@ -22,28 +22,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Health")
 	float MaxHealth = 10;
 
-	
-
-	// Sets default values for this component's properties
 	UHealthComponent();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const;
 
 	void TakeDamage(const FDamageInfo& DamageInfo);
-
 	
 	FDeathEvent OnDeath;
+
 	FHealthChangedEvent OnHealthChanged;
 	
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	
-
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:

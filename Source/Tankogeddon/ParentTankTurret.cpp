@@ -5,9 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Components/ArrowComponent.h"
-#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void AParentTankTurret::Fire()
 {
@@ -29,12 +27,7 @@ void AParentTankTurret::Death()
 	}
 	Destroy();
 }
-/*
-void AParentTankTurret::Destroyed()
-{
-	Destroy();
-}
-*/
+
 void AParentTankTurret::OnHealthChanged(float Health)
 {
 }
@@ -58,7 +51,7 @@ void AParentTankTurret::BeginPlay()
 
 }
 
-FVector AParentTankTurret::GetEyesPosition()
+FVector AParentTankTurret::GetEyesPosition() const
 {
 	return CannonSetupPoint->GetComponentLocation();
 }

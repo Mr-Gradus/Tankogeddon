@@ -16,8 +16,8 @@ ACannon::ACannon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	USceneComponent * sceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = sceeneCpm;
+	USceneComponent * SceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = SceeneCpm;
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cannon mesh"));
 	Mesh->SetupAttachment(RootComponent);
@@ -50,8 +50,7 @@ void ACannon::Fire()
 	if (Type == ECannonType::FireProjectile)
 	{
 
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Black, "Fire - projectile");
-
+		//GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Black, "Fire - projectile");
 		//FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
 		//ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
 
@@ -82,26 +81,26 @@ void ACannon::Fire()
 			
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
+		//GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
 
-		FHitResult hitResult;
-		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+		FHitResult HitResult;
+		FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
 
-		traceParams.bTraceComplex = true;
-		traceParams.bReturnPhysicalMaterial = false;
+		TraceParams.bTraceComplex = true;
+		TraceParams.bReturnPhysicalMaterial = false;
 		
 		FVector start = ProjectileSpawnPoint->GetComponentLocation();
 		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
 
-		if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECollisionChannel::ECC_Visibility, TraceParams))
 		{
-			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), start, HitResult.Location, FColor::Red, false, 0.5f, 0, 5);
 
 			AActor* MyInstigator = GetInstigator();
 
-			if(hitResult.Actor.Get() != MyInstigator)
+			if(HitResult.Actor.Get() != MyInstigator)
 			{
-				auto DamageTaker = Cast<IDamageTaker>(hitResult.Actor);
+				auto DamageTaker = Cast<IDamageTaker>(HitResult.Actor);
 				if (DamageTaker)
 				{
 					FDamageInfo DamageInfo;
@@ -202,7 +201,7 @@ void ACannon::FireSpecial()
 	}
 }
 
-bool ACannon::IsReadyToFire()
+bool ACannon::IsReadyToFire() const
 {
 	return ReadyToFire;
 }
@@ -218,7 +217,7 @@ void ACannon::BeginPlay()
 	Reload();
 }
 
-int ACannon::GetAmmo()
+int ACannon::GetAmmo() const
 {
 	return AmmoCount;
 }

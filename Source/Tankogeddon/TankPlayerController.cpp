@@ -4,7 +4,6 @@
 #include "TankPlayerController.h"
 #include "DrawDebugHelpers.h"
 #include "TankPawn.h"
-#include "Engine/Engine.h"
 
 
 ATankPlayerController::ATankPlayerController()
@@ -29,28 +28,14 @@ void ATankPlayerController::SetupInputComponent()
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
-	/*
-	FVector mouseDirection;
-	DeprojectMousePositionToWorld(MousePos, mouseDirection);
-	FVector pawnPos = TankPawn->GetActorLocation();
-	MousePos.Z = pawnPos.Z;
-	FVector dir = MousePos - pawnPos;
-	dir.Normalize();
-	MousePos = pawnPos + dir * 1000;
-
-	DrawDebugLine(GetWorld(), pawnPos, MousePos, FColor::Green, false, 0.1f, 0, 5);
-	*/
-
 	FVector ScreenMousePosition;
 	FVector MouseDirection; 
 
-	DeprojectMousePositionToWorld(ScreenMousePosition, MouseDirection); 
-	auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
+	DeprojectMousePositionToWorld(ScreenMousePosition, MouseDirection);
+	const auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
 	
 	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
 	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Green, false, 0.1f, 0.5);
-
-
 }
 
 void ATankPlayerController::BeginPlay()
@@ -83,20 +68,11 @@ void ATankPlayerController::GRotateRight(float AxisValue)
 		TankPawn->TurretRotateRight(AxisValue);
 	}
 }
-/*
-void ATankPlayerController::GRotateLeft(float AxisValue)
-{
-	if (TankPawn)
-	{
-		TankPawn->RotateRight(AxisValue);
-	}
-}
-*/
+
 void ATankPlayerController::Fire()
 {
 	if (TankPawn)
 		TankPawn->Fire();
-
 }
 
 void ATankPlayerController::FireSpecial()

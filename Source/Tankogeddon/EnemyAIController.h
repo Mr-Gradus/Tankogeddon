@@ -39,17 +39,15 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	//float GetRotationgValue();
-
 	void Targeting();
 
-	void RotateToPlayer();
+	void RotateToPlayer() const;
 
-	bool IsPlayerInRange();
+	bool IsPlayerInRange() const;
 
 	bool CanFire();
 
-	void Fire();
+	void Fire() const;
 
 	TArray<FVector> Waypoints;
 

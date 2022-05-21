@@ -30,42 +30,35 @@ ATurret::ATurret()
 	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
 	HitCollider->SetupAttachment(TurretMesh);
 
-	UStaticMesh * turretMeshTemp = LoadObject<UStaticMesh>(this, *TurretMeshPath);
-	if(turretMeshTemp)
-		TurretMesh->SetStaticMesh(turretMeshTemp);
+	UStaticMesh * TurretMeshTemp = LoadObject<UStaticMesh>(this, *TurretMeshPath);
+	if(TurretMeshTemp)
+		TurretMesh->SetStaticMesh(TurretMeshTemp);
 
-	UStaticMesh * bodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
-	if(bodyMeshTemp)
-		BodyMesh->SetStaticMesh(bodyMeshTemp);
-
+	UStaticMesh * BodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
+	if(BodyMeshTemp)
+		BodyMesh->SetStaticMesh(BodyMeshTemp);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATurret::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
-
 }
 
 void ATurret::BeginPlay()
 {
 	AParentTankTurret::BeginPlay();
 
-	//FActorSpawnParameters params;
-    //params.Owner = this;
-    //Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
-    //Cannon->AttachToComponent(CannonSetupPoint,
-   // FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-    PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-    FTimerHandle _targetingTimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
+	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	FTimerHandle TargetingTimerHandle;
+
+	GetWorld()->GetTimerManager().SetTimer(TargetingTimerHandle, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
 
 }
 
-void ATurret::OnHealthChanged(float Health)
+void ATurret::OnHealthChanged(const float Health)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
 }
-
-
 
 void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
 {
@@ -80,7 +73,6 @@ void ATurret::Destroyed()
 		Cannon->Destroy();
 }
 
-
 void ATurret::Targeting()
 {
 	if (IsPlayerInRange())
@@ -94,40 +86,37 @@ void ATurret::Targeting()
 	}
 }
 
-
-void ATurret::RotateToPlayer()
+void ATurret::RotateToPlayer() const
 {
-	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
+	const FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
 	FRotator CurrRotation = TurretMesh->GetComponentRotation();
 	CurrRotation.Pitch = TargetRotation.Pitch;
-	//CurrRotation.Roll = TargetRotation.Roll;
-	//CurrRotation.Yaw = TargetRotation.Yaw; 
 	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TargetingSpeed));
 }
 
-bool ATurret::IsPlayerInRange()
+bool ATurret::IsPlayerInRange() const
 {
 	return FVector::Distance(PlayerPawn->GetActorLocation(), GetActorLocation()) <= TargetingRange;
 }
 
-
-bool ATurret::CanFire()
+bool ATurret::CanFire() const
 {
 	if(!IsPlayerSeen())
 		return false;
-	
-	FVector TargetingDir = TurretMesh->GetForwardVector();
+
+	const FVector TargetingDir = TurretMesh->GetForwardVector();
     FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
     DirToPlayer.Normalize();
-    float AimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(TargetingDir, DirToPlayer)));
+	const float AimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(TargetingDir, DirToPlayer)));
     return AimAngle <= Accurency;
 }		
-bool ATurret::DetectPlayerVisibility()
+bool ATurret::DetectPlayerVisibility() const
 {
 	FVector PlayerPos = PlayerPawn->GetActorLocation();
 	FVector EyesPos = this->GetEyesPosition();
 
 	FHitResult HitResult;
+
 	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
 	TraceParams.bTraceComplex = true;
 	TraceParams.bReturnPhysicalMaterial = false;
@@ -136,32 +125,34 @@ bool ATurret::DetectPlayerVisibility()
 	{
 		if (HitResult.Actor.Get())
 		{
-			DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Orange, false, 0.5f, 0, 5);
+			//DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Orange, false, 0.5f, 0, -1);
 			return HitResult.Actor.Get() == PlayerPawn;
 		}
 	}
-	DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Orange, false, 0.5f, 0, 5);
+	//DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Orange, false, 0.5f, 0, -1);
 	return false;
 }
 
-bool ATurret::IsPlayerSeen()
+bool ATurret::IsPlayerSeen() const
 {
-	FVector playerPos = PlayerPawn->GetActorLocation();
-	FVector eyesPos = this->GetEyesPosition();
-	FHitResult hitResult;
-	FCollisionQueryParams traceParams =
-	FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
-	traceParams.bTraceComplex = true;
-	traceParams.AddIgnoredActor(this);
-	traceParams.bReturnPhysicalMaterial = false;
-	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos, ECollisionChannel::ECC_Visibility, traceParams))
+	FVector PlayerPos = PlayerPawn->GetActorLocation();
+	FVector EyesPos = this->GetEyesPosition();
+
+	FHitResult HitResult;
+
+	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	TraceParams.bTraceComplex = true;
+	TraceParams.AddIgnoredActor(this);
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	if(GetWorld()->LineTraceSingleByChannel(HitResult, EyesPos, PlayerPos, ECollisionChannel::ECC_Visibility, TraceParams))
 	{
-		if(hitResult.Actor.Get())
+		if(HitResult.Actor.Get())
 		{
-			DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Orange, false, 0.5f, 0, 10);
-			return hitResult.Actor.Get() == PlayerPawn;
+			//DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Orange, false, 0.5f, 0, -1);
+			return HitResult.Actor.Get() == PlayerPawn;
 		}
 	}
-	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Orange, false, 0.5f, 0, 10);
+	//DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Orange, false, 0.5f, 0, -1);
 	return false;
 }

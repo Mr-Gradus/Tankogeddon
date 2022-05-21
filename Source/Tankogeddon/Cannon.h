@@ -75,7 +75,7 @@ protected:
 public:
 	ACannon();
 
-	bool IsReadyToFire();
+	bool IsReadyToFire() const;
 
 	void Fire();
 	
@@ -85,7 +85,7 @@ public:
 
 	void SetAmmo(int SaveAmmo);
 
-	int GetAmmo();
+	int GetAmmo() const;
 
 protected:
 	virtual void BeginPlay() override;

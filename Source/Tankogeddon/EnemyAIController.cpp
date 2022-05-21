@@ -32,14 +32,14 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	TArray<AActor*> WaypointActors;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AWaypoint::StaticClass(), TankPawn->WaypointTag, WaypointActors);
 
-	WaypointActors.Sort([](const AActor& a, const AActor& b)
+	WaypointActors.Sort([](const AActor& A, const AActor& B)
 	{
-		auto WPA = CastChecked<AWaypoint>(&a);
-		auto WPB = CastChecked<AWaypoint>(&b);
+		const auto WPA = CastChecked<AWaypoint>(&A);
+		const auto WPB = CastChecked<AWaypoint>(&B);
 		return WPA->Order > WPB->Order;
 	});
 
-	for(auto Waypoint : WaypointActors)
+	for(const auto Waypoint : WaypointActors)
 	{
 		Waypoints.Add(Waypoint->GetActorLocation());
 	}
@@ -68,7 +68,7 @@ void AEnemyAIController::Tick(float DeltaTime)
 		return;
 	if (NextWaypoint >= Waypoints.Num())
 		NextWaypoint = 0;
-	auto Waypoint = Waypoints[NextWaypoint];
+	const auto Waypoint = Waypoints[NextWaypoint];
 
 	if (2500 < FVector::DistSquared2D(Waypoint, TankPawn->GetActorLocation()))
 	{
@@ -79,16 +79,16 @@ void AEnemyAIController::Tick(float DeltaTime)
 		NextWaypoint++;
 	}
 
-	auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), Waypoint);
+	const auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), Waypoint);
 	//TargetRotation.Pitch = 0;
 	//TargetRotation.Roll = 0;
-	auto Rotation = TankPawn->GetActorRotation();
+	const auto Rotation = TankPawn->GetActorRotation();
 	//Rotation.Pitch = 0;
 	//Rotation.Roll = 0;
 
-	auto Direction = FRotator::NormalizeAxis(TargetRotation.Yaw - Rotation.Yaw);
-		
-	auto Diff = FMath::Abs(Direction);
+	const auto Direction = FRotator::NormalizeAxis(TargetRotation.Yaw - Rotation.Yaw);
+
+	const auto Diff = FMath::Abs(Direction);
 	 
 	if ( Diff >= 5)
 	{
@@ -114,12 +114,12 @@ void AEnemyAIController::Targeting()
 	RotateToPlayer();
 }
 
-void AEnemyAIController::RotateToPlayer()
+void AEnemyAIController::RotateToPlayer() const
 {
 	if(IsPlayerInRange())
 	TankPawn->RotateTurretTo(PlayerPawn->GetActorLocation());
 }
-bool AEnemyAIController::IsPlayerInRange()
+bool AEnemyAIController::IsPlayerInRange() const
 {
 	return FVector::Distance(TankPawn->GetActorLocation(), PlayerPawn->GetActorLocation()) <= TargetingRange;
 }
@@ -128,14 +128,13 @@ bool AEnemyAIController::CanFire()
 	if(!IsPlayerSeen())
 		return false;
 
-	FVector targetingDir = TankPawn->GetTurretForwardVector();
-	auto dirToPlayer = PlayerPawn->GetActorLocation() - TankPawn->GetActorLocation();
-	dirToPlayer.Normalize();
-	float aimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(targetingDir,
-	dirToPlayer)));
-	return aimAngle <= Accurency;
+	const FVector TargetingDir = TankPawn->GetTurretForwardVector();
+	auto DirToPlayer = PlayerPawn->GetActorLocation() - TankPawn->GetActorLocation();
+	DirToPlayer.Normalize();
+	const float AimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(TargetingDir,DirToPlayer)));
+	return AimAngle <= Accurency;
 }
-void AEnemyAIController::Fire()
+void AEnemyAIController::Fire() const
 {
 	TankPawn->Fire();
 }
@@ -145,23 +144,22 @@ bool AEnemyAIController::IsPlayerSeen()
 	if(!PlayerPawn)
 		Initilize();
 
-	FVector playerPos = PlayerPawn->GetActorLocation();
-	FVector eyesPos = TankPawn->GetEyesPosition();
-	FHitResult hitResult;
-	FCollisionQueryParams traceParams =
-	FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
-	traceParams.bTraceComplex = true;
-	traceParams.AddIgnoredActor(TankPawn);
-	traceParams.bReturnPhysicalMaterial = false;
-	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos, ECollisionChannel::ECC_Visibility, traceParams))
+	FVector PlayerPos = PlayerPawn->GetActorLocation();
+	FVector EyesPos = TankPawn->GetEyesPosition();
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	TraceParams.bTraceComplex = true;
+	TraceParams.AddIgnoredActor(TankPawn);
+	TraceParams.bReturnPhysicalMaterial = false;
+	if(GetWorld()->LineTraceSingleByChannel(HitResult, EyesPos, PlayerPos, ECollisionChannel::ECC_Visibility, TraceParams))
 	{
-		if(hitResult.Actor.Get())
+		if(HitResult.Actor.Get())
 		{
-		DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Blue, false, 0.5f, 0, 10);
-		return hitResult.Actor.Get() == PlayerPawn;
+		//DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Blue, false, 0.5f, 0, -1);
+		return HitResult.Actor.Get() == PlayerPawn;
 		}
 	}
-	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Blue, false, 0.5f, 0, 10);
+	//DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Blue, false, 0.5f, 0, -1);
 	return false;
 }
 
@@ -179,12 +177,12 @@ void AEnemyAIController::Initilize()
 
 	WaypointActors.Sort([](const AActor& a, const AActor& b)
 	{
-		auto WPA = CastChecked<AWaypoint>(&a);
-		auto WPB = CastChecked<AWaypoint>(&b);
+		const auto WPA = CastChecked<AWaypoint>(&a);
+		const auto WPB = CastChecked<AWaypoint>(&b);
 		return WPA->Order > WPB->Order;
 	});
 
-	for(auto Waypoint : WaypointActors)
+	for(const auto Waypoint : WaypointActors)
 	{
 		Waypoints.Add(Waypoint->GetActorLocation());
 	}

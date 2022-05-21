@@ -80,7 +80,7 @@ public:
 	void SetNewCannon(TSubclassOf<ACannon> SelectCannonClass);
 
 	UFUNCTION()
-	void IncreaseAmmo(int Ammo);
+	void IncreaseAmmo(int Ammo) const;
 
 	UPROPERTY()
 	AParentTankTurret* ParentTankTurret;
@@ -93,10 +93,10 @@ public:
 	virtual void Fire() override;
 
 	UFUNCTION()
-	FVector GetTurretForwardVector() ;
+	FVector GetTurretForwardVector() const;
 
 	UFUNCTION()
-	void RotateTurretTo(FVector TargetPosition);
+	void RotateTurretTo(FVector TargetPosition) const;
 
 
 protected:

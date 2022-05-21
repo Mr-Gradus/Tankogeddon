@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "ParentTankTurret.h"
 #include "Chaos/CollisionResolution.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/Actor.h"
-#include "Cannon.h"
 #include "Turret.generated.h"
 
 class ATankPawn;
@@ -31,8 +28,6 @@ protected:
 public:	
 
 	ATurret();
-
-	
 	
 protected:
 
@@ -44,16 +39,13 @@ protected:
 
 	void Targeting();
 
-	void RotateToPlayer();
+	void RotateToPlayer() const;
 
-	bool IsPlayerInRange();
+	bool IsPlayerInRange() const;
 
-	bool DetectPlayerVisibility();
+	bool DetectPlayerVisibility() const;
 
-	
+	bool IsPlayerSeen() const;
 
-	bool IsPlayerSeen();
-
-	bool CanFire();
-
+	bool CanFire() const;
 };

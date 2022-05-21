@@ -8,7 +8,7 @@
 #include "AmmoBox.generated.h"
 
 UCLASS()
-class TANKOGEDDON_API AAmmoBox : public AActor
+class TANKOGEDDON_API AAmmoBox final : public AActor
 {
 	GENERATED_BODY()
 	

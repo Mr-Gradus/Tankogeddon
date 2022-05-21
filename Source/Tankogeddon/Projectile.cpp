@@ -16,8 +16,8 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	USceneComponent * sceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = sceeneCpm;
+	USceneComponent * SceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = SceeneCpm;
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
@@ -48,7 +48,7 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	
 	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
 	{
-		auto DamageTaker = Cast<IDamageTaker>(OtherActor);
+		const auto DamageTaker = Cast<IDamageTaker>(OtherActor);
 		if (DamageTaker)
 		{
 			FDamageInfo DamageInfo;
@@ -64,7 +64,7 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 
 void AProjectile::Move()
 {
-	FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveRate * MoveSpeed;
+	const FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveRate * MoveSpeed;
 	SetActorLocation(NextPosition);
 }
 

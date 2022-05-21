@@ -10,7 +10,6 @@
 #include "DamageTaker.h"
 #include "HealthComponent.h"
 #include "TargetController.h"
-#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ParentTankTurret.generated.h"
 
@@ -100,7 +99,7 @@ public:
 
 	virtual void TakeDamage(const FDamageInfo DamageInfo) override;
 
-	FVector GetEyesPosition();
+	FVector GetEyesPosition() const;
 
 
 	class ITargetController* TargetController;
