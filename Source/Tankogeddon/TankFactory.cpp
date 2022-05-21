@@ -54,6 +54,8 @@ void ATankFactory::Death()
 		LinkedMapLoader->SetIsActivated(true);
 	Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(TargetingTimerHandle);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestuctFactory, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
 }
 
 void ATankFactory::DamageTaked(const float DamageValue) const
@@ -72,5 +74,8 @@ void ATankFactory::SpawnNewTank()
 		NewTank->WaypointTag = WaypointTag;
 		
 		UGameplayStatics::FinishSpawningActor(NewTank, SpawnTransform);
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnParticleSystem, SpawnTransform);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, GetActorLocation());
 	}
 }

@@ -30,6 +30,18 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UHealthComponent * HealthComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UParticleSystem* DestuctFactory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* DestructSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UParticleSystem* SpawnParticleSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* SpawnSound;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
 	TSubclassOf<ATankPawn> SpawnTankClass;
 

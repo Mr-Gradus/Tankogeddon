@@ -47,61 +47,55 @@ void ACannon::Fire()
 	}
 	ReadyToFire = false;
 
+	AudioComponent->Play();
+	VisualEffect->ActivateSystem(true);
+
+	if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
+	{
+		if (CameraShakeEffect)
+		{
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeEffect);
+		}
+
+		if (ForceFeedbackEffect)
+		{
+			FForceFeedbackParameters Params;
+			Params.bLooping = false;
+			GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ForceFeedbackEffect, Params);
+		}
+	}
+
 	if (Type == ECannonType::FireProjectile)
 	{
-
-		//GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Black, "Fire - projectile");
-		//FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
-		//ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
-
 		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 		if (Projectile)
 		{
 			Projectile->SetInstigator(GetInstigator());
 			Projectile->Start();
-
-			AudioComponent->Play();
-			VisualEffect->ActivateSystem(true);
-			if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
-			{
-				if (CameraShakeEffect)
-				{
-					GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeEffect);
-				}
-
-				if (ForceFeedbackEffect)
-				{
-					FForceFeedbackParameters Params;
-					Params.bLooping = false;
-					GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ForceFeedbackEffect, Params);
-				}
-			}
 		}
 	}
 			
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
-
 		FHitResult HitResult;
 		FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
 
 		TraceParams.bTraceComplex = true;
 		TraceParams.bReturnPhysicalMaterial = false;
 		
-		FVector start = ProjectileSpawnPoint->GetComponentLocation();
-		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+		FVector Start = ProjectileSpawnPoint->GetComponentLocation();
+		FVector End = ProjectileSpawnPoint->GetForwardVector() * FireRange + Start;
 
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECollisionChannel::ECC_Visibility, TraceParams))
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, TraceParams))
 		{
-			DrawDebugLine(GetWorld(), start, HitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, false, 0.5f, 0, 5);
 
 			AActor* MyInstigator = GetInstigator();
 
 			if(HitResult.Actor.Get() != MyInstigator)
 			{
 				auto DamageTaker = Cast<IDamageTaker>(HitResult.Actor);
-				if (DamageTaker)
+				if (HitResult.Actor.Get() != MyInstigator)
 				{
 					FDamageInfo DamageInfo;
 					DamageInfo.Damage = Damage;
@@ -113,7 +107,7 @@ void ACannon::Fire()
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.5f, 0, 5);
 		}
 	}
 
@@ -163,29 +157,28 @@ void ACannon::FireSpecial()
 			Projectile->Start();
 		}
 
-		FTransform projectileTransform(ProjectileSpawnPoint->GetComponentRotation(),
-		ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
+		//FTransform ProjectileTransform(ProjectileSpawnPoint->GetComponentRotation(), ProjectileSpawnPoint->GetComponentLocation(), FVector(1));
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1,FColor::Red, "Fire - trace");
 
-		FHitResult hitResult;
-		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+		FHitResult HitResult;
+		FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
 
-		traceParams.bTraceComplex = true;
-		traceParams.bReturnPhysicalMaterial = false;
+		TraceParams.bTraceComplex = true;
+		TraceParams.bReturnPhysicalMaterial = false;
 		
-		FVector start = ProjectileSpawnPoint->GetComponentLocation();
-		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+		FVector Start = ProjectileSpawnPoint->GetComponentLocation();
+		FVector End = ProjectileSpawnPoint->GetForwardVector() * FireRange + Start;
 
-		if(GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
+		if(GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, TraceParams))
 		{
-			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, false, 0.5f, 0, 5);
 
 			AActor* MyInstigator = GetInstigator();
-			auto DamageTaker = Cast<IDamageTaker>(hitResult.Actor);
-			if (DamageTaker)
+			auto DamageTaker = Cast<IDamageTaker>(HitResult.Actor);
+			if (HitResult.Actor.Get() != MyInstigator)
 			{
 				FDamageInfo DamageInfo;
 				DamageInfo.Damage = Damage;
@@ -196,7 +189,7 @@ void ACannon::FireSpecial()
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.5f, 0, 5);
 		}
 	}
 }
@@ -221,7 +214,7 @@ int ACannon::GetAmmo() const
 {
 	return AmmoCount;
 }
-void ACannon::SetAmmo(int SaveAmmo)
+void ACannon::SetAmmo(const int SaveAmmo)
 {
 	AmmoCount = SaveAmmo;
 }

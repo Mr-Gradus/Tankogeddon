@@ -12,6 +12,10 @@
 class UArrowComponent;
 class UStaticMeshComponent;
 class AProjectile;
+class UParticleSystemComponent;
+class UAudioComponent;
+class UForceFeedbackEffect;
+class UMatineeCameraShake;
 
 
 UCLASS()
