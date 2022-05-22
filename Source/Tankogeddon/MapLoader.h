@@ -8,6 +8,10 @@
 #include "GameFramework/Actor.h"
 #include "MapLoader.generated.h"
 
+class UBoxComponent;
+class UStaticMeshComponent;
+class UPointLightComponent;
+
 UCLASS()
 class TANKOGEDDON_API AMapLoader : public AActor
 {

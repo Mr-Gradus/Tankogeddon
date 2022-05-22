@@ -2,7 +2,6 @@
 
 
 #include "MapLoader.h"
-
 #include "Kismet/GameplayStatics.h"
 
 AMapLoader::AMapLoader()
@@ -24,6 +23,7 @@ AMapLoader::AMapLoader()
     TriggerCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger collider"));
     TriggerCollider->SetupAttachment(SceneComp);
     TriggerCollider->OnComponentBeginOverlap.AddDynamic(this, &AMapLoader::OnTriggerOverlapBegin);
+
 }
 
 void AMapLoader::BeginPlay()
@@ -45,13 +45,25 @@ void AMapLoader::SetActiveLights() const
 }
 void AMapLoader::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	auto Pawn = Cast<APawn>(OtherActor);
+	if (Pawn && !LoadLevelName.IsNone())
+	{
+		if(Pawn->GetController() == GetWorld()->GetFirstPlayerController())
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
+		}
+	}
+	
+/*
 	if(!IsActivated)
 		return;
-	const APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if(OtherActor == PlayerPawn)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
 	}
+	*/
 }
 
 

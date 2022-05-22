@@ -57,7 +57,7 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 				{
 					FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
 					ForceVector.Normalize();
-					ProjectileMesh->AddImpulse(ForceVector * PushForce, NAME_None, true);
+					ProjectileMesh->AddImpulse(ForceVector * PushForce, NAME_None, false);
 				}
 			}
 		}
