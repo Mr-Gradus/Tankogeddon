@@ -34,6 +34,37 @@ void AProjectile::Start()
 
 void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	AActor* OtherOwner = GetOwner();
+	const AActor* OwnerByOwner = OtherOwner != nullptr? OtherOwner->GetOwner(): nullptr;
+	if(OtherActor != OtherOwner && OtherActor != OwnerByOwner)
+	{
+		IDamageTaker* DamageTakerActor = Cast<IDamageTaker>(OtherActor);
+
+		if(DamageTakerActor)
+		{
+			FDamageInfo DamageInfo;
+			DamageInfo.Damage = Damage;
+			DamageInfo.Instigator = OtherOwner;
+			DamageInfo.DamageMaker = this;
+			DamageTakerActor->TakeDamage(DamageInfo);
+		}
+		else
+		{
+			UPrimitiveComponent* ProjectileMesh = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
+			if(ProjectileMesh)
+			{
+				if(ProjectileMesh->IsSimulatingPhysics())
+				{
+					FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
+					ForceVector.Normalize();
+					ProjectileMesh->AddImpulse(ForceVector * PushForce, NAME_None, true);
+				}
+			}
+		}
+	}
+	Destroy();
+	
+/*
 	if (OtherActor == GetInstigator())
 	{
 		return;
@@ -59,7 +90,7 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		}
 		Destroy();
 	}
-
+	*/
 }
 
 void AProjectile::Move()

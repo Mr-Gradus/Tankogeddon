@@ -19,7 +19,7 @@ struct FDamageInfo
 
 public:
 	UPROPERTY()
-	APawn* Instigator = nullptr;
+	AActor* Instigator = nullptr;
 	UPROPERTY()
 	AActor* DamageMaker;
 	UPROPERTY()
