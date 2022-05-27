@@ -82,14 +82,16 @@ void ATankPawn::IncreaseAmmo(const int Ammo) const
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
 }
 
-void ATankPawn::Death()
+void ATankPawn::Death_Implementation()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
 
 	Destroy();
 	if (PlayerPawn)
+	{
 		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+	}
 }
 
 void ATankPawn::OnHealthChanged(const float Health)

@@ -98,7 +98,6 @@ public:
 	UFUNCTION()
 	void RotateTurretTo(FVector TargetPosition) const;
 
-
 protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;
@@ -106,8 +105,8 @@ protected:
 	UFUNCTION()
 	virtual void Destroyed() override;
 	
-
-	virtual void Death() override;
+	UFUNCTION(BlueprintNativeEvent, Category = "Health")
+	void Death();
 
 	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
