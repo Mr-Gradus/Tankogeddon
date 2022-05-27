@@ -90,7 +90,8 @@ void ATankPawn::Death_Implementation()
 	Destroy();
 	if (PlayerPawn)
 	{
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+		Destroy();
+		//UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
 	}
 }
 
