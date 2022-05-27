@@ -70,6 +70,7 @@ protected:
 	float Damage = 1.0f;
 
 	FTimerHandle ReloadTimerHandle;
+
 	FTimerHandle QueueTimerHandle;
 	
 	bool ReadyToFire = false;
@@ -91,6 +92,11 @@ public:
 
 	int GetAmmo() const;
 
+	bool PhysicsAmmo() const;
+
+	FVector GetCurrentPhysicsAmmoTarget(float FloorAbsoluteHeight) const;
+
+	bool SetDesiredPhysicsAmmoTarget(const FVector& InTarget);
 protected:
 	virtual void BeginPlay() override;
 	

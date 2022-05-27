@@ -6,15 +6,15 @@
 #include <Components/SceneComponent.h>
 #include "TimerManager.h"
 #include <Engine/World.h>
+#include <Components/PrimitiveComponent.h>
 #include "AITypes.h"
 #include "DamageTaker.h"
-#include "Tankogeddon.h"
 
-// Sets default values
 AProjectile::AProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.TickInterval = 0.005f;
 
 	USceneComponent * SceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = SceeneCpm;
@@ -26,43 +26,67 @@ AProjectile::AProjectile()
 	Mesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
 }
 
-void AProjectile::Start()
+void AProjectile::BeginPlay()
 {
-	GetWorld()->GetTimerManager().SetTimer(MovementTimerHandle, this, &AProjectile::Move, MoveRate, true, MoveRate);
+	Super::BeginPlay();
 }
 
+void AProjectile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
+	SetActorLocation(NextPosition, true);
+
+	if (FVector::Dist(GetActorLocation(), StartPosition) > MaxDistance)
+	{
+		Stop();
+	}
+}
+
+void AProjectile::Start()
+{
+	PrimaryActorTick.SetTickFunctionEnable(true);
+	
+	StartPosition = GetActorLocation();
+	
+	Mesh->SetVisibility(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	SetLifeSpan(FlyRange / MoveSpeed);
+}
+
+void AProjectile::Stop()
+{
+	PrimaryActorTick.SetTickFunctionEnable(false);
+	
+	Mesh->SetVisibility(false);
+	
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	Destroy();
+	
+}
 
 void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AActor* OtherOwner = GetOwner();
-	const AActor* OwnerByOwner = OtherOwner != nullptr? OtherOwner->GetOwner(): nullptr;
-	if(OtherActor != OtherOwner && OtherActor != OwnerByOwner)
+	if (OtherActor == GetInstigator())
 	{
-		IDamageTaker* DamageTakerActor = Cast<IDamageTaker>(OtherActor);
-
-		if(DamageTakerActor)
-		{
-			FDamageInfo DamageInfo;
-			DamageInfo.Damage = Damage;
-			DamageInfo.Instigator = OtherOwner;
-			DamageInfo.DamageMaker = this;
-			DamageTakerActor->TakeDamage(DamageInfo);
-		}
-		else
-		{
-			UPrimitiveComponent* ProjectileMesh = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-			if(ProjectileMesh)
-			{
-				if(ProjectileMesh->IsSimulatingPhysics())
-				{
-					FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
-					ForceVector.Normalize();
-					ProjectileMesh->AddImpulse(ForceVector * PushForce, NAME_None, false);
-				}
-			}
-		}
+		Stop();
+		return;
 	}
-	Destroy();
+
+	if (bExplode)
+	{
+		Explode();		
+	}
+	else
+	{
+		ExplodeDamage(SweepResult);
+	}
+	
+	Stop();
+}
 	
 /*
 	if (OtherActor == GetInstigator())
@@ -91,13 +115,66 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		Destroy();
 	}
 	*/
-}
 
-void AProjectile::Move()
+void AProjectile::Explode()
 {
-	const FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveRate * MoveSpeed;
-	SetActorLocation(NextPosition);
+	FVector StartPos = GetActorLocation();
+	FVector EndPos = StartPos + FVector(0.1f);
+
+	FCollisionShape Shape = FCollisionShape::MakeSphere(ExplodeRadius);
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+	Params.AddIgnoredActor(this);
+	Params.bTraceComplex = true;
+	Params.TraceTag = "Explode Trace";
+	TArray<FHitResult> AttackHit;
+
+	FQuat Rotation = FQuat::Identity;
+
+	bool bSweepResult = GetWorld()->SweepMultiByChannel (AttackHit, StartPos, EndPos, Rotation, ECollisionChannel::ECC_Visibility, Shape, Params);
+
+	if (bSweepResult)
+	{
+		for (FHitResult ExplosionHitResult : AttackHit)
+		{
+			AActor* HitActor = ExplosionHitResult.GetActor();
+			if (!HitActor)
+				continue;					
+			
+			ExplodeDamage(ExplosionHitResult);			
+		}
+	}
+}
+	
+void AProjectile::ExplodeDamage(const FHitResult& HitResult)
+{
+	AActor* OtherActor = HitResult.GetActor();
+	UPrimitiveComponent* OtherComp = Cast<UPrimitiveComponent>(HitResult.GetComponent());
+	
+	if (OtherActor && OtherComp && OtherComp->GetCollisionObjectType() == ECC_Destructible)
+	{
+		OtherActor->Destroy();
+	}
+	else if (IDamageTaker* Damageable = Cast<IDamageTaker>(OtherActor))
+	{
+		FDamageInfo DamageInfo;
+		DamageInfo.Damage = Damage;
+		DamageInfo.Instigator = GetInstigator();
+		DamageInfo.DamageMaker = this;
+		Damageable->TakeDamage(DamageInfo);
+	}
+	
+	if (OtherComp && OtherComp->IsSimulatingPhysics())
+	{
+		FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
+		ForceVector.Normalize();
+		
+		OtherComp->AddImpulseAtLocation(ForceVector * MoveSpeed, HitResult.ImpactPoint);		
+	}	
 }
 
+void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
 
-
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+}

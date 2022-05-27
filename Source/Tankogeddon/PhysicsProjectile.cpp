@@ -2,47 +2,64 @@
 
 
 #include "PhysicsProjectile.h"
-#include "DrawDebugHelpers.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APhysicsProjectile::APhysicsProjectile()
 {
-	PhysicsComponent = CreateDefaultSubobject<UPhysicsComponent>(TEXT("PhysicsComponent"));
-	TrailEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Traileffect"));
-	TrailEffect->SetupAttachment(RootComponent);
-}
-void APhysicsProjectile::Start()
-{
-	MoveVector = GetActorForwardVector() * TrajectorySimulationSpeed;
-	CurrentTrajectory = PhysicsComponent->GenerateTrajectory(GetActorLocation(), MoveVector, TrajectorySimulationMaxTime, TrajectorySimulationTimeStep, 0);
-	if(ShowTrajectory)
-	{
-		for(FVector Position: CurrentTrajectory)
-		{
-		DrawDebugSphere(GetWorld(), Position, 5, 8, FColor::Purple, true, 1, 0, 2);
-		}
-	}
-	TrajectoryPointIndex = 0;
-	Super::Start();
+	MovementComponent = CreateDefaultSubobject<UPhysicsComponent>(TEXT("Movement Component"));	
 }
 
-void APhysicsProjectile::Move()
+void APhysicsProjectile::Start()
 {
-	FVector CurrentMoveVector = CurrentTrajectory[TrajectoryPointIndex] - GetActorLocation();
-	CurrentMoveVector.Normalize();
-	FVector NewLocation = GetActorLocation() + CurrentMoveVector * MoveSpeed * MoveRate;
-	SetActorLocation(NewLocation);
-	if(FVector::Distance(NewLocation, CurrentTrajectory[TrajectoryPointIndex]) <= MoveAccurency)
+	Super::Start();
+
+	MovementComponent->Velocity = GetActorForwardVector() * MoveSpeed;
+	MovementComponent->SetComponentTickEnabled(true);
+}
+
+void APhysicsProjectile::Stop()
+{
+	MovementComponent->Velocity = FVector::ZeroVector;
+	MovementComponent->SetComponentTickEnabled(false);
+
+	Super::Stop();
+}
+
+void APhysicsProjectile::Tick(float DeltaSeconds)
+{
+	if (GetActorLocation().Z < 0)
 	{
-		TrajectoryPointIndex++;
-		if(TrajectoryPointIndex >= CurrentTrajectory.Num())
-		Destroy();
-		else
-		{
-			FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CurrentTrajectory[TrajectoryPointIndex]);
-			SetActorRotation(NewRotation);
-		}
+		Stop();
 	}
 }
+
+void APhysicsProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other,	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Other == GetInstigator())
+	{
+		Stop();
+		return;
+	}
+	
+	if (bExplode)
+	{
+		Explode();
+
+		FTransform Transform;
+		Transform.SetLocation(GetActorLocation());
+		Transform.SetScale3D(FVector(3,3,3));		
+		
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Transform);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitAudioEffect, GetActorLocation());
+	}
+	
+	ExplodeDamage(SweepResult);
+	
+	Stop();
+}
+
+
+
+
 
