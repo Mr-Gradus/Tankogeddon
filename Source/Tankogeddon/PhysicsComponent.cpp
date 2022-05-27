@@ -1,29 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PhysicsComponent.h"
-#include "Math/UnrealMathUtility.h"
 
-UPhysicsComponent::UPhysicsComponent()
-{
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = false;
-}
 
-void UPhysicsComponent::BeginPlay()
+TArray<FVector> UPhysicsComponent::GenerateTrajectory(FVector StartPos, FVector Velocity, float MaxTime, float TimeStep, float MinZValue /*= 0*/)
 {
-	Super::BeginPlay();
-}
-
-void UPhysicsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	AActor* Owner = GetOwner();
-	if (!Owner)
+	TArray<FVector> Trajectory;
+	FVector GravityVector(0, 0, Gravity);
+	for (float Time = 0; Time < MaxTime; Time = Time + TimeStep)
 	{
-		return;
+		FVector Position = StartPos + Velocity * Time + GravityVector * Time * Time / 2;
+		if (Position.Z <= MinZValue)
+			break;
+
+		Trajectory.Add(Position);
 	}
 
-	FVector NewActorLocation = Owner->GetActorLocation() + Velocity * DeltaTime - FVector::UpVector * Gravity * FMath::Square(DeltaTime) / 2.f;
-	Velocity += -FVector::UpVector * Gravity * DeltaTime;
-	Owner->SetActorLocation(NewActorLocation, true);
+	return Trajectory;
+
 }

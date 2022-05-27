@@ -12,169 +12,133 @@
 
 AProjectile::AProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-	PrimaryActorTick.TickInterval = 0.005f;
+	PrimaryActorTick.bCanEverTick = false;
+	USceneComponent* sceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = sceeneCpm;
 
-	USceneComponent * SceeneCpm = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = SceeneCpm;
-	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
-
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnMeshOverlapBegin);
 	Mesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
 }
 
-void AProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
-	SetActorLocation(NextPosition, true);
-
-	if (FVector::Dist(GetActorLocation(), StartPosition) > MaxDistance)
-	{
-		Stop();
-	}
-}
-
 void AProjectile::Start()
 {
-	PrimaryActorTick.SetTickFunctionEnable(true);
-	
-	StartPosition = GetActorLocation();
-	
-	Mesh->SetVisibility(true);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-	SetLifeSpan(FlyRange / MoveSpeed);
+	GetWorld()->GetTimerManager().SetTimer(MovementTimerHandle, this, &AProjectile::Move, MoveRate, true, MoveRate);
+	//SetLifeSpan(FlyRange / MoveSpeed);
 }
 
-void AProjectile::Stop()
+void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	PrimaryActorTick.SetTickFunctionEnable(false);
-	
-	Mesh->SetVisibility(false);
-	
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	Destroy();
-	
-}
-
-void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor == GetInstigator())
-	{
-		Stop();
-		return;
-	}
-
-	if (bExplode)
-	{
-		Explode();		
-	}
-	else
-	{
-		ExplodeDamage(SweepResult);
-	}
-	
-	Stop();
-}
-	
-/*
 	if (OtherActor == GetInstigator())
 	{
 		return;
 	}
 
-	UE_LOG(LogTanks, Warning, TEXT("Projectile %s collided with %s. "), *GetName(), *OtherActor->GetName());
-
+	UE_LOG(LogTemp, Warning, TEXT("Projectile %s collided with %s. "), *GetName(), *OtherActor->GetName());
 	if (OtherComp && OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_Destructible)
 	{
 		OtherActor->Destroy();
 	}
-	
-	if (OtherActor != GetInstigator() && OtherActor->GetInstigator() != GetInstigator())
+	else if (IDamageTaker* DamageTaker = Cast<IDamageTaker>(OtherActor))
 	{
-		const auto DamageTaker = Cast<IDamageTaker>(OtherActor);
-		if (DamageTaker)
-		{
-			FDamageInfo DamageInfo;
-			DamageInfo.Damage = Damage;
-			DamageInfo.DamageMaker = this;
-			DamageInfo.Instigator = GetInstigator();
-			DamageTaker->TakeDamage(DamageInfo);
-		}
-		Destroy();
+        FDamageInfo DamageInfo;
+        DamageInfo.Damage = Damage;
+        DamageInfo.DamageMaker = this;
+        DamageInfo.Instigator = GetInstigator();
+		DamageTaker->TakeDamage(DamageInfo);
 	}
-	*/
+	else
+	{
+		UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(OtherComp);
+		if (PrimComp && PrimComp->IsSimulatingPhysics())
+		{
+			FVector ForceVector = GetActorForwardVector();
+			PrimComp->AddImpulseAtLocation(ForceVector * PushForce, SweepResult.ImpactPoint);
+		}
+        if (bExplode)
+        {
+            Explode();
+        }
+
+	}
+	Destroy();
+}
+
+void AProjectile::Move()
+{
+	FVector NextPosition = GetActorLocation() + GetActorForwardVector() * MoveSpeed * MoveRate;
+	SetActorLocation(NextPosition);
+}
+
 
 void AProjectile::Explode()
 {
-	FVector StartPos = GetActorLocation();
-	FVector EndPos = StartPos + FVector(0.1f);
+    FVector StartPos = GetActorLocation();
+    FVector EndPos = StartPos + FVector(0.1f);
 
-	FCollisionShape Shape = FCollisionShape::MakeSphere(ExplodeRadius);
-	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
-	Params.AddIgnoredActor(this);
-	Params.bTraceComplex = true;
-	Params.TraceTag = "Explode Trace";
-	TArray<FHitResult> AttackHit;
+    FCollisionShape Shape = FCollisionShape::MakeSphere(ExplodeRadius);
+    FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+    Params.AddIgnoredActor(this);
+    Params.bTraceComplex = true;
+    Params.TraceTag = "Explode Trace";
+    TArray<FHitResult> AttackHit;
 
-	FQuat Rotation = FQuat::Identity;
+    FQuat Rotation = FQuat::Identity;
 
-	bool bSweepResult = GetWorld()->SweepMultiByChannel (AttackHit, StartPos, EndPos, Rotation, ECollisionChannel::ECC_Visibility, Shape, Params);
+    bool SweepResult = GetWorld()->SweepMultiByChannel
+    (
+        AttackHit,
+        StartPos,
+        EndPos,
+        Rotation,
+        ECollisionChannel::ECC_Visibility,
+        Shape,
+        Params
+    );
 
-	if (bSweepResult)
-	{
-		for (FHitResult ExplosionHitResult : AttackHit)
-		{
-			AActor* HitActor = ExplosionHitResult.GetActor();
-			if (!HitActor)
-				continue;					
-			
-			ExplodeDamage(ExplosionHitResult);			
-		}
-	}
+    GetWorld()->DebugDrawTraceTag = "Explode Trace";
+
+    if (SweepResult)
+    {
+        for (FHitResult HitResult : AttackHit)
+        {
+            AActor* OtherActor = HitResult.GetActor();
+            if (!OtherActor)
+            {
+                continue;
+            }
+
+            ExplodeDamage(OtherActor);
+
+        }
+    }
+
 }
-	
-void AProjectile::ExplodeDamage(const FHitResult& HitResult)
+void AProjectile::ExplodeDamage(AActor* OtherActor)
 {
-	AActor* OtherActor = HitResult.GetActor();
-	UPrimitiveComponent* OtherComp = Cast<UPrimitiveComponent>(HitResult.GetComponent());
-	
-	if (OtherActor && OtherComp && OtherComp->GetCollisionObjectType() == ECC_Destructible)
-	{
-		OtherActor->Destroy();
-	}
-	else if (IDamageTaker* Damageable = Cast<IDamageTaker>(OtherActor))
-	{
-		FDamageInfo DamageInfo;
-		DamageInfo.Damage = Damage;
-		DamageInfo.Instigator = GetInstigator();
-		DamageInfo.DamageMaker = this;
-		Damageable->TakeDamage(DamageInfo);
-	}
-	
-	if (OtherComp && OtherComp->IsSimulatingPhysics())
-	{
-		FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
-		ForceVector.Normalize();
-		
-		OtherComp->AddImpulseAtLocation(ForceVector * MoveSpeed, HitResult.ImpactPoint);		
-	}	
-}
+    IDamageTaker* DamageTakerActor = Cast<IDamageTaker>(OtherActor);
+    if (DamageTakerActor)
+    {
+        FDamageInfo DamageInfo;
+        DamageInfo.Damage = Damage;
+        DamageInfo.Instigator = GetOwner();
+        DamageInfo.DamageMaker = this;
 
-void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+        DamageTakerActor->TakeDamage(DamageInfo);
+    }
+    else
+    {
+        UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
+        if (PrimComp)
+        {
+            if (PrimComp->IsSimulatingPhysics())
+            {
+                FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
+                ForceVector.Normalize();
+                PrimComp->AddImpulse(ForceVector * PushForce, NAME_None, true);
+            }
+        }
+    }
 }

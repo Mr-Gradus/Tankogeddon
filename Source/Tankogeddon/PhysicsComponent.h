@@ -14,16 +14,11 @@ class TANKOGEDDON_API UPhysicsComponent : public UActorComponent
 
 public:
 
-	UPhysicsComponent();
-
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gravity params")
-	float Gravity = 980.f;
+	float Gravity = -9.8f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gravity params")
-	FVector Velocity = FVector::ZeroVector;
-
-	virtual void BeginPlay() override;
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+	TArray<FVector> GenerateTrajectory(FVector StartPos, FVector Velocity, float MaxTime, float TimeStep, float MinZValue = 0);
 		
 };

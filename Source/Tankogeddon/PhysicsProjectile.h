@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PhysicsComponent.h"
 #include "Projectile.h"
 #include "PhysicsProjectile.generated.h"
 
@@ -18,28 +17,44 @@ class TANKOGEDDON_API APhysicsProjectile : public AProjectile
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UPhysicsComponent* PhysicsComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UParticleSystemComponent* TrailEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	float MoveAccurency = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Trajectory")
+	float TrajectorySimulationMaxTime = 50.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Trajectory")
+	float TrajectorySimulationTimeStep = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Trajectory")
+	float TrajectorySimulationSpeed = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Trajectory")
+	bool bShowTrajectory = false;
+
+
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement params")
+	FVector MoveVector;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement params")
+	TArray<FVector> CurrentTrajectory;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement params")
+	int32 TrajectoryPointIndex;
+
 public:
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UPhysicsComponent* MovementComponent;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UParticleSystemComponent * TrailEffect;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hit")
-	UParticleSystem* HitEffect;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hit")
-	USoundBase* HitAudioEffect;
-
-		
 	APhysicsProjectile();
-
 	virtual void Start() override;
 
-	virtual void Stop() override;
-	
-	virtual void Tick(float DeltaSeconds) override;
 
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+protected:
+	virtual void Move() override;
 };

@@ -24,7 +24,7 @@ protected:
 
 	UPROPERTY()
 	ATankPawn* TankPawn;
-
+	
 public:	
 
 	ATurret();

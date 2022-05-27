@@ -92,11 +92,6 @@ public:
 
 	int GetAmmo() const;
 
-	bool PhysicsAmmo() const;
-
-	FVector GetCurrentPhysicsAmmoTarget(float FloorAbsoluteHeight) const;
-
-	bool SetDesiredPhysicsAmmoTarget(const FVector& InTarget);
 protected:
 	virtual void BeginPlay() override;
 	

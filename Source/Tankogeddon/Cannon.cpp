@@ -4,8 +4,6 @@
 #include "Cannon.h"
 #include "DamageTaker.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsComponent.h"
-#include "PhysicsProjectile.h"
 #include "Projectile.h"
 #include "Components/ArrowComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -222,75 +220,3 @@ void ACannon::SetAmmo(const int SaveAmmo)
 	AmmoCount = SaveAmmo;
 }
 
-bool ACannon::PhysicsAmmo() const
-{
-	return Type == ECannonType::FireProjectile && ProjectileClass && ProjectileClass->IsChildOf<APhysicsProjectile>();
-}
-
-FVector ACannon::GetCurrentPhysicsAmmoTarget(float FloorAbsoluteHeight) const
-{
-	if (!PhysicsAmmo())
-	{
-		return GetActorLocation();
-	}
-
-	APhysicsProjectile* DefaultProjectile = ProjectileClass->GetDefaultObject<APhysicsProjectile>();
-	check(DefaultProjectile);
-
-	float Angle = FMath::DegreesToRadians(ProjectileSpawnPoint->GetForwardVector().Rotation().Pitch);
-	float Speed = DefaultProjectile->MoveSpeed;
-	float Gravity = DefaultProjectile->MovementComponent->Gravity;
-	if (FMath::IsNearlyZero(Gravity))
-	{
-		return GetActorLocation();
-	}
-
-	float Z = ProjectileSpawnPoint->GetComponentLocation().Z - FloorAbsoluteHeight;
-
-	float SqrtComp = FMath::Sqrt(FMath::Square(Speed * FMath::Sin(Angle)) + 2 * Gravity * Z);
-	float Range = Speed * FMath::Cos(Angle) * (Speed * FMath::Sin(Angle) + SqrtComp) / Gravity;
-	FVector FlatDirection = ProjectileSpawnPoint->GetForwardVector();
-	FlatDirection.Z = 0.f;
-	FlatDirection.Normalize();
-	FVector Result = ProjectileSpawnPoint->GetComponentLocation() + FlatDirection * Range;
-	Result.Z = FloorAbsoluteHeight;
-	return Result;
-}
-
-bool ACannon::SetDesiredPhysicsAmmoTarget(const FVector& InTarget)
-{
-	if (!PhysicsAmmo())
-	{
-		return false;
-	}
-
-	APhysicsProjectile* DefaultProjectile = ProjectileClass->GetDefaultObject<APhysicsProjectile>();
-	check(DefaultProjectile);
-
-	float Speed = DefaultProjectile->MoveSpeed;
-	float Gravity = DefaultProjectile->MovementComponent->Gravity;
-	if (FMath::IsNearlyZero(Gravity))
-	{
-		return false;
-	}
-	float Z = ProjectileSpawnPoint->GetComponentLocation().Z - InTarget.Z;
-	float X = FVector::Dist2D(ProjectileSpawnPoint->GetComponentLocation(), InTarget);
-	float Angle = 90.f; 
-	if (!FMath::IsNearlyZero(X))
-	{
-		float FirstSqrtComp = FMath::Pow(Speed, 4);
-		float SecondSqrtComp = Gravity * (Gravity * FMath::Square(X) - 2 * (FMath::Square(Speed) * Z));
-		float SqrtComp = 0.f;
-		if (FirstSqrtComp > SecondSqrtComp)
-		{
-			SqrtComp = FMath::Sqrt(FirstSqrtComp - SecondSqrtComp);
-		}
-		Angle = FMath::Atan((FMath::Square(Speed) + SqrtComp) / (Gravity * X));
-		Angle = FMath::RadiansToDegrees(Angle);
-	}
-   
-	FRotator DesiredRotation = GetActorRotation();
-	DesiredRotation.Pitch = Angle;
-	SetActorRotation(DesiredRotation);
-	return true;
-}

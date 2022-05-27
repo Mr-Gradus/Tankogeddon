@@ -17,6 +17,9 @@ protected:
 	UStaticMeshComponent* Mesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float FlyRange = 2000.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
@@ -39,33 +42,18 @@ protected:
 
 	FTimerHandle MovementTimerHandle;
 
-	FVector StartPosition;
-
 public:	
 	AProjectile();
+	void Explode();
+    
+	void ExplodeDamage(AActor* OtherActor);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-	float MoveSpeed = 100.0f;
-	
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	UFUNCTION()
 	virtual void Start();
 
-	UFUNCTION()
-	virtual void Stop();
-	
-	UFUNCTION()
-	void Explode();
-
-	UFUNCTION()
-	void ExplodeDamage(const FHitResult& HitResult);	
-
+protected:
 	UFUNCTION()
 	void OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
+
+	UFUNCTION()
+	virtual void Move();
 };
