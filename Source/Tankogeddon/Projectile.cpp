@@ -141,7 +141,7 @@ void AProjectile::ExplodeDamage(AActor* OtherActor)
             {
                 FVector ForceVector = OtherActor->GetActorLocation() - GetActorLocation();
                 ForceVector.Normalize();
-                PrimComp->AddImpulse(ForceVector * PushForce, NAME_None, true);
+                PrimComp->AddForce(ForceVector * PushForce, NAME_None, false);
             }
         }
     }
