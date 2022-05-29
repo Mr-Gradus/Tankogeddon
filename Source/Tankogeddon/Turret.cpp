@@ -29,6 +29,15 @@ ATurret::ATurret()
 
 	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
 	HitCollider->SetupAttachment(TurretMesh);
+	
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
+	HealthComponent->OnDeath.AddUObject(this, &ATurret::Death);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
+}
+
+void ATurret::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 
 	UStaticMesh * TurretMeshTemp = LoadObject<UStaticMesh>(this, *TurretMeshPath);
 	if(TurretMeshTemp)
@@ -37,10 +46,6 @@ ATurret::ATurret()
 	UStaticMesh * BodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshPath);
 	if(BodyMeshTemp)
 		BodyMesh->SetStaticMesh(BodyMeshTemp);
-
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
-	HealthComponent->OnDeath.AddUObject(this, &ATurret::Death);
-	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
 }
 
 void ATurret::BeginPlay()

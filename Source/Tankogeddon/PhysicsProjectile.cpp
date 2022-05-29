@@ -7,6 +7,8 @@
 #include <DrawDebugHelpers.h>
 #include <Kismet/KismetMathLibrary.h>
 
+#include "Kismet/GameplayStatics.h"
+
 APhysicsProjectile::APhysicsProjectile()
 {
 	PhysicsComponent = CreateDefaultSubobject<UPhysicsComponent>(TEXT("PhysicsComponent"));
@@ -43,6 +45,7 @@ void APhysicsProjectile::Move()
 		TrajectoryPointIndex++;
 		if (TrajectoryPointIndex >= CurrentTrajectory.Num())
 		{
+			
 			Explode();
 			Destroy();
 		}

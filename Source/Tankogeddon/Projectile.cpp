@@ -7,8 +7,8 @@
 #include "TimerManager.h"
 #include <Engine/World.h>
 #include <Components/PrimitiveComponent.h>
-#include "AITypes.h"
 #include "DamageTaker.h"
+#include "Kismet/GameplayStatics.h"
 
 AProjectile::AProjectile()
 {
@@ -25,7 +25,7 @@ AProjectile::AProjectile()
 void AProjectile::Start()
 {
 	GetWorld()->GetTimerManager().SetTimer(MovementTimerHandle, this, &AProjectile::Move, MoveRate, true, MoveRate);
-	//SetLifeSpan(FlyRange / MoveSpeed);
+	SetLifeSpan(FlyRange / MoveSpeed);
 }
 
 void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -59,7 +59,8 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		}
         if (bExplode)
         {
-            Explode();
+        	
+        	Explode();
         }
 
 	}
@@ -84,9 +85,11 @@ void AProjectile::Explode()
     Params.bTraceComplex = true;
     Params.TraceTag = "Explode Trace";
     TArray<FHitResult> AttackHit;
+	FQuat Rotation = FQuat::Identity;
 
-    FQuat Rotation = FQuat::Identity;
-
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, EndPos);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitAudioEffect, GetActorLocation());
+	
     bool SweepResult = GetWorld()->SweepMultiByChannel
     (
         AttackHit,
@@ -110,6 +113,7 @@ void AProjectile::Explode()
                 continue;
             }
 
+        	
             ExplodeDamage(OtherActor);
 
         }

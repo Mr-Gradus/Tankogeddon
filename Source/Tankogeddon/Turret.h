@@ -28,6 +28,8 @@ protected:
 public:	
 
 	ATurret();
+
+	virtual void PostInitializeComponents() override;
 	
 protected:
 

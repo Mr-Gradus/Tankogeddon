@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Projectile.h"
+#include "Components/AudioComponent.h"
+
 #include "PhysicsProjectile.generated.h"
 
 class UPhysicsComponent;
@@ -23,6 +25,8 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UParticleSystemComponent* TrailEffect;
+
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float MoveAccurency = 10.f;
@@ -58,3 +62,4 @@ public:
 protected:
 	virtual void Move() override;
 };
+

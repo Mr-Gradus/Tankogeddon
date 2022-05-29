@@ -15,7 +15,7 @@ class TANKOGEDDON_API AProjectile : public AActor
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 	float MoveSpeed = 100.0f;
 
@@ -40,10 +40,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "bExplode == true", EditConditionHides), Category = "Damage")
 	float ExplodeRadius = 50.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hit")
+	UParticleSystem* HitEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hit")
+	USoundBase* HitAudioEffect;
+
 	FTimerHandle MovementTimerHandle;
 
 public:	
 	AProjectile();
+
 	void Explode();
     
 	void ExplodeDamage(AActor* OtherActor);
