@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Animation/WidgetAnimation.h"
 #include "MainMenuWidget.generated.h"
 
 /**
@@ -16,7 +17,7 @@ class TANKOGEDDON_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(EditAnywhere, meta = (BindWidgetOptional))
 	UButton* NewGameBtn;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -27,5 +28,29 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* QuitBtn;
-		
+
+	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
+	//UWidgetAnimation* MainMenuAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName LoadLevelName;
+	
+public:
+	virtual void NativeConstruct() override;
+
+	
+protected:
+	UFUNCTION()
+	void OnNewGameClicked();
+
+	UFUNCTION()
+	void OnLoadClicked();
+
+	UFUNCTION()
+	void OnOptionClicked();
+
+	UFUNCTION()
+	void OnQuitClicked();
+
+	
 };

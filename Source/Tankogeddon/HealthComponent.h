@@ -13,16 +13,16 @@ class TANKOGEDDON_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_EVENT(UHealthComponent, FDeathEvent);
+
+	DECLARE_EVENT_OneParam(UHealthComponent, FHealthChangedEvent, float);
+	
 public:
 	
-	//DECLARE_DELEGATE();
-	DECLARE_EVENT(UHealthComponent, FDeathEvent);
-	DECLARE_EVENT_OneParam(UHealthComponent, FHealthChangedEvent, float);
-		
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Health")
-	float MaxHealth = 10;
-
 	UHealthComponent();
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health")
+	float MaxHealth = 10;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const;

@@ -3,6 +3,7 @@
 
 #include "TankPlayerController.h"
 #include "DrawDebugHelpers.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "TankPawn.h"
 
 
@@ -22,9 +23,24 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
 	InputComponent->BindAxis("GamepadRotateRight", this, &ATankPlayerController::GRotateRight);
 	//InputComponent->BindAxis("GamepadRotateLeft", this, &ATankPlayerController::GRotateLeft);
-
+	/*
+		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this,
+	&ATankPlayerController::OnLeftMouseButtonDown);
+		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released, this,
+		&ATankPlayerController::OnLeftMouseButtonUp);
+	*/
 }
 
+	/*
+	void ATankPlayerController::OnLeftMouseButtonDown()
+	{
+		WidgetInteractComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+	void AMyPlayerController::OnLeftMouseButtonUp()
+	{
+		WidgetInteractComp->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
+	*/
 
 void ATankPlayerController::Tick(float DeltaTime)
 {

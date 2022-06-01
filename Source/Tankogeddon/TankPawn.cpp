@@ -7,9 +7,11 @@
 #include "Camera/CameraComponent.h"
 #include "TankPlayerController.h"
 #include "HealthComponent.h"
+#include "HealthWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -46,6 +48,9 @@ ATankPawn::ATankPawn()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
+
+	TankPawnProgressBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("BarHP"));
+	TankPawnProgressBar->SetupAttachment(BodyMesh);
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -211,3 +216,4 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
+

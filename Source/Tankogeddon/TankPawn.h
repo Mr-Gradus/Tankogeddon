@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Cannon.h"
 #include "ParentTankTurret.h"
+#include "Components/ProgressBar.h"
+#include "Components/WidgetComponent.h"
 #include "TankPawn.generated.h"
 
 
@@ -97,6 +99,9 @@ public:
 
 	UFUNCTION()
 	void RotateTurretTo(FVector TargetPosition) const;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Health Component|Health Bar", meta = (BindWidgetOptional))
+	UWidgetComponent* TankPawnProgressBar;
 
 protected:
 	UFUNCTION()
