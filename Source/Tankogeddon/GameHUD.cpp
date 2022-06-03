@@ -1,8 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "GameHUD.h"
-
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
 void AGameHUD::BeginPlay()
@@ -10,9 +7,9 @@ void AGameHUD::BeginPlay()
 	Super::BeginPlay();
 
 	const UWorld* World = GetWorld();
-	if (World())
+	if (World)
 	{
-		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		APlayerController* PC = World->GetFirstPlayerController();
 
 		if (PC)
         {
@@ -21,7 +18,14 @@ void AGameHUD::BeginPlay()
         }
     }
 
-	UseWidget(EWidgetID::MainMenu, true, 0);
+	if (GetWorld()->GetFirstPlayerController()->GetPawn())
+	{
+		UseWidget(EWidgetID::PlayerStats);
+	}
+	else
+	{
+		UseWidget(EWidgetID::MainMenu);
+	}
 }
 
 UUserWidget* AGameHUD::GetCurrentWidget()
@@ -39,8 +43,10 @@ void AGameHUD::RemoveCurrentWidgetFromViewport()
 	}
 }
 
-UUserWidget* AGameHUD::AddWidgetToViewportByClass(TSubclassOf<UUserWidget> WidgetClass, int32 ZOrder /*= 0*/)
+UUserWidget* AGameHUD::AddWidgetToViewportByClass(TSubclassOf<UUserWidget> WidgetClass, int32 ZOrder)
 {
+	RemoveCurrentWidgetFromViewport();
+	
 	CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
 	if (CurrentWidget)
 	{
@@ -49,8 +55,7 @@ UUserWidget* AGameHUD::AddWidgetToViewportByClass(TSubclassOf<UUserWidget> Widge
 	return CurrentWidget;
 }
 
-UUserWidget* AGameHUD::UseWidget(EWidgetID widgetID, bool RemovePrevious,
-int32 ZOrder)
+UUserWidget* AGameHUD::UseWidget(EWidgetID widgetID, bool RemovePrevious, int32 ZOrder)
 {
 	if (CurrentWidgetID == widgetID)
 		return CurrentWidget;
@@ -60,12 +65,13 @@ int32 ZOrder)
 		RemoveCurrentWidgetFromViewport();
 	}
 
-	TSubclassOf<UUserWidget> WidgetClassToUse = WidgetClases.FindRef(widgetID);
+	TSubclassOf<UUserWidget> WidgetClassToUse = WidgetClasses.FindRef(widgetID);
 
 	if (WidgetClassToUse.Get())
 	{
+		auto ResultWidget{ AddWidgetToViewportByClass(WidgetClassToUse, ZOrder) };
 		CurrentWidgetID = widgetID;
-		return AddWidgetToViewportByClass(WidgetClassToUse, ZOrder);
+		return ResultWidget;
 	};
 
 	return nullptr;

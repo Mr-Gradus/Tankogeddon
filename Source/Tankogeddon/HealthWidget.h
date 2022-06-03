@@ -17,7 +17,7 @@ class TANKOGEDDON_API UHealthWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Health Component|Health Bar", meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional), BlueprintReadOnly)
 	UProgressBar* TankPawnProgressBar;
 
 public:

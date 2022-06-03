@@ -50,7 +50,7 @@ void ATurret::PostInitializeComponents()
 
 void ATurret::BeginPlay()
 {
-	AParentTankTurret::BeginPlay();
+	Super::BeginPlay();
 
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
@@ -65,10 +65,7 @@ void ATurret::OnHealthChanged(const float Health)
 	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
 }
 
-void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
-{
-	HealthComponent->TakeDamage(DamageInfo);
-}
+
 
 void ATurret::Destroyed()
 {
@@ -101,6 +98,9 @@ void ATurret::RotateToPlayer() const
 
 bool ATurret::IsPlayerInRange() const
 {
+	if(!PlayerPawn)
+		return false;
+
 	return FVector::Distance(PlayerPawn->GetActorLocation(), GetActorLocation()) <= TargetingRange;
 }
 
@@ -140,6 +140,10 @@ bool ATurret::DetectPlayerVisibility() const
 
 bool ATurret::IsPlayerSeen() const
 {
+	if(!PlayerPawn)
+		return false;
+
+
 	FVector PlayerPos = PlayerPawn->GetActorLocation();
 	FVector EyesPos = this->GetEyesPosition();
 
@@ -158,6 +162,5 @@ bool ATurret::IsPlayerSeen() const
 			return HitResult.Actor.Get() == PlayerPawn;
 		}
 	}
-	//DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Orange, false, 0.5f, 0, -1);
 	return false;
 }

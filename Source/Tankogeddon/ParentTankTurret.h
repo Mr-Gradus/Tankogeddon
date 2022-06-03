@@ -27,6 +27,8 @@ class TANKOGEDDON_API AParentTankTurret : public APawn, public IDamageTaker
 {
 	GENERATED_BODY()
 
+	DECLARE_EVENT(AParentTankTurret, PlayerDeathEvent);
+
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Components")
@@ -83,6 +85,8 @@ protected:
 	UPROPERTY()
 	ACannon* Cannon;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Health Component|Health Bar", meta = (BindWidgetOptional))
+	class UWidgetComponent* TankPawnProgressBar;
 
 public:
 
@@ -101,7 +105,8 @@ public:
 
 	FVector GetEyesPosition() const;
 
-
+	void SetHealthBar();
+	
 	class ITargetController* TargetController;
 
 	TSubclassOf<ACannon> CurrentCannon;
@@ -109,5 +114,6 @@ public:
 	UPROPERTY()
 	TArray<AActor*> Targets;
 
+	PlayerDeathEvent PlayerDeath;
 
 };

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "HealthWidget.h"
 #include "Components/WidgetComponent.h"
 
@@ -17,5 +14,5 @@ void UHealthWidget::NativeConstruct()
 
 void UHealthWidget::SetHealthValue(float Health)
 {
-	 TankPawnProgressBar->SetPercent(Health);
+	TankPawnProgressBar->SetPercent(Health);
 }

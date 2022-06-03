@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,7 +11,7 @@ None,
 MainMenu,
 Options,
 GameOver,
-PlayerHud	
+PlayerStats	
 };
 
 UCLASS()
@@ -23,19 +21,21 @@ class TANKOGEDDON_API AGameHUD : public AHUD
 	
 protected:
 	UPROPERTY(EditAnywhere)
-	TMap<EWidgetID, TSubclassOf<UUserWidget>> WidgetClases;
+	TMap<EWidgetID, TSubclassOf<UUserWidget>> WidgetClasses;
 
 	UPROPERTY()
 	UUserWidget * CurrentWidget;
+	
 	EWidgetID CurrentWidgetID;
 
-	public:
+public:
 	virtual void BeginPlay() override;
 	
-    UUserWidget * UseWidget(EWidgetID widgetID, bool RemovePrevious = true, int32 ZOrder = 0);
-    UUserWidget* GetCurrentWidget();
+	UUserWidget * UseWidget(EWidgetID widgetID, bool RemovePrevious = true, int32 ZOrder = 0);
+
+	UUserWidget* GetCurrentWidget();
 
 	void RemoveCurrentWidgetFromViewport();
-	UUserWidget * AddWidgetToViewportByClass(
-	TSubclassOf<UUserWidget> WidgetClass, int32 ZOrder = 0);
+
+	UUserWidget * AddWidgetToViewportByClass(TSubclassOf<UUserWidget> WidgetClass, int32 ZOrder = 0);
 };

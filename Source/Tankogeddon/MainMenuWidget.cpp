@@ -1,7 +1,5 @@
 
 #include "MainMenuWidget.h"
-
-#include "HealthComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -37,7 +35,7 @@ void UMainMenuWidget::NativeConstruct()
 
 void UMainMenuWidget::OnNewGameClicked()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
+	UGameplayStatics::OpenLevel(GetWorld(), "Level1");
 }
 
 void UMainMenuWidget::OnLoadClicked()

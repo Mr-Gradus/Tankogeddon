@@ -36,6 +36,7 @@ void UHealthComponent::TakeDamage(const FDamageInfo& DamageInfo)
 		if (OnDeath.IsBound())
 			OnDeath.Broadcast();
 	}
+	
 }
 void UHealthComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

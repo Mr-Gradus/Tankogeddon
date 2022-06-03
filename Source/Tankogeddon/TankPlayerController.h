@@ -40,8 +40,12 @@ public:
 
 	void ChangeCannon();
 
+
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void OnPossess(APawn* InPawn) override;
+
 
 	void MoveForward(float AxisValue);
 

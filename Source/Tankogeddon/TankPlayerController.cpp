@@ -3,6 +3,7 @@
 
 #include "TankPlayerController.h"
 #include "DrawDebugHelpers.h"
+#include "GameHUD.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "TankPawn.h"
 
@@ -10,6 +11,8 @@
 ATankPlayerController::ATankPlayerController()
 {
 	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+
 }
 
 void ATankPlayerController::SetupInputComponent()
@@ -44,20 +47,30 @@ void ATankPlayerController::SetupInputComponent()
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+	
+if (!GetPawn())
+{
+	return;
+}
+	
 	FVector ScreenMousePosition;
 	FVector MouseDirection; 
 
 	DeprojectMousePositionToWorld(ScreenMousePosition, MouseDirection);
-	const auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
+	auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
 	
 	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
-	DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Green, false, 0.1f, 0.5);
+	//DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Green, false, 0.1f, 0.5);
+	
 }
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	TankPawn = Cast<ATankPawn>(GetPawn());
+	if(TankPawn)
+		TankPawn = Cast<ATankPawn>(GetPawn());
+
 }
 
 void ATankPlayerController::MoveForward(float AxisValue)
@@ -80,9 +93,8 @@ FVector ATankPlayerController::GetTargetLocation() const
 void ATankPlayerController::GRotateRight(float AxisValue)
 {
 	if (TankPawn)
-	{
 		TankPawn->TurretRotateRight(AxisValue);
-	}
+	
 }
 
 void ATankPlayerController::Fire()
@@ -100,5 +112,14 @@ void ATankPlayerController::FireSpecial()
 void ATankPlayerController::ChangeCannon()
 {
 	if (TankPawn)
-	TankPawn->ChangeCannon();
+		TankPawn->ChangeCannon();
+}
+
+		
+
+void ATankPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	TankPawn = Cast<ATankPawn>(GetPawn());
 }

@@ -100,8 +100,7 @@ public:
 	UFUNCTION()
 	void RotateTurretTo(FVector TargetPosition) const;
 	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Health Component|Health Bar", meta = (BindWidgetOptional))
-	UWidgetComponent* TankPawnProgressBar;
+	
 
 protected:
 	UFUNCTION()
@@ -110,11 +109,13 @@ protected:
 	UFUNCTION()
 	virtual void Destroyed() override;
 	
-	UFUNCTION(BlueprintNativeEvent, Category = "Health")
-	void Death();
+	//UFUNCTION(BlueprintNativeEvent, Category = "Health")
+	virtual void Death() override;
 
 	UFUNCTION()
 	virtual void OnHealthChanged(float Health) override;
+
+	
 
 
 };

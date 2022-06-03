@@ -4,8 +4,12 @@
 #include "ParentTankTurret.h"
 
 #include "DrawDebugHelpers.h"
+#include "GameHUD.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "HealthWidget.h"
+#include "Components/WidgetComponent.h"
+
 
 void AParentTankTurret::Fire()
 {
@@ -15,10 +19,20 @@ void AParentTankTurret::Fire()
 	}
 }
 
+void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
+{
+	HealthComponent->TakeDamage(DamageInfo);
+	//SetHealthBar();
+}
+
 void AParentTankTurret::Death()
 {
+
+	
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
+	
 	if (AmmoboxClass)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -38,6 +52,14 @@ AParentTankTurret::AParentTankTurret()
 
 }
 
+void AParentTankTurret::SetHealthBar()
+{
+	if (Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject()))
+	{
+		UHealthWidget* HPbar = Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject());
+		HPbar->SetHealthValue(HealthComponent->GetHealth());
+	}
+}
 
 void AParentTankTurret::BeginPlay()
 {
@@ -49,7 +71,8 @@ void AParentTankTurret::BeginPlay()
 	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-}
+	//SetHealthBar();
+	}
 
 FVector AParentTankTurret::GetEyesPosition() const
 {
