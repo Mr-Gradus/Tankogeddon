@@ -22,14 +22,11 @@ void AParentTankTurret::Fire()
 void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
-	//SetHealthBar();
+
 }
 
 void AParentTankTurret::Death()
 {
-
-	
-
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
 	
@@ -44,20 +41,34 @@ void AParentTankTurret::Death()
 
 void AParentTankTurret::OnHealthChanged(float Health)
 {
+	GEngine->AddOnScreenDebugMessage(3, 2.0f, FColor::Purple, FString::Printf(TEXT("%s HP: %f "), *GetName(), Health));
+
 }
+
 
 AParentTankTurret::AParentTankTurret()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	TankPawnProgressBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP Bar"));
+	TankPawnProgressBar->SetupAttachment(BodyMesh);
+
 }
 
-void AParentTankTurret::SetHealthBar()
+
+void AParentTankTurret::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	TargetController = Cast<ITargetController>(NewController);
+}
+
+void AParentTankTurret::SetHealth()
 {
 	if (Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject()))
 	{
-		UHealthWidget* HPbar = Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject());
-		HPbar->SetHealthValue(HealthComponent->GetHealth());
+		UHealthWidget* HP = Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject());
+		HP->SetHealthValue(HealthComponent->GetHealthPercent());
 	}
 }
 
@@ -71,10 +82,20 @@ void AParentTankTurret::BeginPlay()
 	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-	//SetHealthBar();
 	}
 
 FVector AParentTankTurret::GetEyesPosition() const
 {
 	return CannonSetupPoint->GetComponentLocation();
+}
+
+
+ACannon* AParentTankTurret::GetCannon() const
+{
+	return Cannon;
+}
+
+UHealthComponent* AParentTankTurret::GetHealthComponent()
+{
+	return HealthComponent;
 }

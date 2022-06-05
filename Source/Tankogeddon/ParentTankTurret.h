@@ -85,13 +85,12 @@ protected:
 	UPROPERTY()
 	ACannon* Cannon;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Health Component|Health Bar", meta = (BindWidgetOptional))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class UWidgetComponent* TankPawnProgressBar;
 
 public:
-
-
 	AParentTankTurret();
+	void PossessedBy(AController* NewController);
 
 	virtual void Fire();
 	
@@ -105,8 +104,8 @@ public:
 
 	FVector GetEyesPosition() const;
 
-	void SetHealthBar();
-	
+	void SetHealth();
+
 	class ITargetController* TargetController;
 
 	TSubclassOf<ACannon> CurrentCannon;
@@ -116,4 +115,9 @@ public:
 
 	PlayerDeathEvent PlayerDeath;
 
+	UFUNCTION(BlueprintPure, Category = "Cannon")
+	class ACannon* GetCannon() const;
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+	UHealthComponent* GetHealthComponent();
 };

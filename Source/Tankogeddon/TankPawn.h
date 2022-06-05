@@ -14,6 +14,7 @@ class ATankPlayerController;
 class ACannon;
 class UHealthComponent;
 class USphereComponent;
+class UPlayerStats;
 
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public AParentTankTurret
@@ -99,7 +100,6 @@ public:
 
 	UFUNCTION()
 	void RotateTurretTo(FVector TargetPosition) const;
-	
 	
 
 protected:

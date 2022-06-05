@@ -84,6 +84,8 @@ void ATankPawn::RotateTurretTo(FVector TargetPosition) const
 	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
 }
 
+
+
 void ATankPawn::IncreaseAmmo(const int Ammo) const
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
@@ -91,9 +93,6 @@ void ATankPawn::IncreaseAmmo(const int Ammo) const
 
 void ATankPawn::Death()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
-
 	if (IsPlayerControlled())
 	{
 		AGameHUD* HUD = Cast<AGameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
@@ -103,16 +102,21 @@ void ATankPawn::Death()
 	if (PlayerDeath.IsBound())
 	{			
 		PlayerDeath.Broadcast();					
-	}	
+	}
+
+	FTransform Transform;
+	Transform.SetLocation(GetActorLocation());
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
+
+	
+	if (Cannon)
+	{
+		Cannon->Destroy();
+	}
 
 	Destroy();
-	if (PlayerPawn)
-	{
-		
-		Destroy();
-		
-		//UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
-	}
 }
 
 void ATankPawn::OnHealthChanged(const float Health)
@@ -120,6 +124,8 @@ void ATankPawn::OnHealthChanged(const float Health)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitPlayerSound, GetActorLocation());
 
 	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
+
+	
 }
 
 
@@ -130,7 +136,8 @@ void ATankPawn::BeginPlay()
 	TargetController = Cast<ITargetController>(GetController());
 	CurrentCannon = CannonClass;
 
-	SetHealthBar();
+	AGameHUD* HUD = Cast<AGameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	HUD->UseWidget(EWidgetID::PlayerStats);
 }
 
 void ATankPawn::ChangeCannon()

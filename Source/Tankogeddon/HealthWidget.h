@@ -23,5 +23,5 @@ protected:
 public:
 	virtual void NativeConstruct() override;
 	
-	void SetHealthValue(float Health);
+	void SetHealthValue(float Health) const;
 };

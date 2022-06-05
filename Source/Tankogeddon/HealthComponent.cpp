@@ -14,6 +14,11 @@ float UHealthComponent::GetHealth() const
 	return Health;
 }
 
+float UHealthComponent::GetHealthPercent() const
+{
+	return  Health / MaxHealth;
+}
+
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();

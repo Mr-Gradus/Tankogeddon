@@ -14,7 +14,6 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	Initilize();
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 	
 }
 
@@ -29,6 +28,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		return;
 	}
+	
 	TArray<AActor*> WaypointActors;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AWaypoint::StaticClass(), TankPawn->WaypointTag, WaypointActors);
 
@@ -62,12 +62,13 @@ void AEnemyAIController::Tick(float DeltaTime)
 
 	if(!TankPawn)
 		Initilize();
-	if(!TankPawn)
+	
+	if(!TankPawn || Waypoints.Num() <= 0)
 		return;
-	if (Waypoints.Num() <= 0)
-		return;
+	
 	if (NextWaypoint >= Waypoints.Num())
 		NextWaypoint = 0;
+	
 	const auto Waypoint = Waypoints[NextWaypoint];
 
 	if (2500 < FVector::DistSquared2D(Waypoint, TankPawn->GetActorLocation()))
@@ -80,19 +81,16 @@ void AEnemyAIController::Tick(float DeltaTime)
 	}
 
 	const auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), Waypoint);
-	//TargetRotation.Pitch = 0;
-	//TargetRotation.Roll = 0;
-	const auto Rotation = TankPawn->GetActorRotation();
-	//Rotation.Pitch = 0;
-	//Rotation.Roll = 0;
 
+	const auto Rotation = TankPawn->GetActorRotation();
+	
 	const auto Direction = FRotator::NormalizeAxis(TargetRotation.Yaw - Rotation.Yaw);
 
 	const auto Diff = FMath::Abs(Direction);
 	 
 	if ( Diff >= 5)
 	{
-		if (Diff > 60)
+		if (Diff > 75)
 		{
 			TankPawn->MoveForward(0);
 		}
@@ -155,11 +153,9 @@ bool AEnemyAIController::IsPlayerSeen()
 	{
 		if(HitResult.Actor.Get())
 		{
-		//DrawDebugLine(GetWorld(), EyesPos, HitResult.Location, FColor::Blue, false, 0.5f, 0, -1);
 		return HitResult.Actor.Get() == PlayerPawn;
 		}
 	}
-	//DrawDebugLine(GetWorld(), EyesPos, PlayerPos, FColor::Blue, false, 0.5f, 0, -1);
 	return false;
 }
 

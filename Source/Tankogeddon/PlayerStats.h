@@ -14,25 +14,31 @@ class TANKOGEDDON_API UPlayerStats : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UProgressBar* PlayerHealth;
 
-	UPROPERTY(meta = (BindWidgetAnimOptional), Transient, BlueprintReadOnly)
-	UWidgetAnimation* PlayerDamageAnim;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	//UWidgetAnimation* PlayerDamageAnim;
 
-	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UTextBlock* PlayerCannon;
 
-	UPROPERTY(meta = (BindWidgetOptional), BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UTextBlock* PlayerAmmo;
 
 public:
 	virtual void NativeConstruct() override;
 
-	void ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnimation = true);
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void ChangeCannon(const FString& CannonClass);
 
-	void ChangeAmmo(float CurrentAmmo, float MaxAmmo);
+
+
+
+	//void ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnimation = true);
+
+	//void ChangeCannon(const FString& CannonClass);
+
+	//void ChangeAmmo(float CurrentAmmo, float MaxAmmo);
 
 };

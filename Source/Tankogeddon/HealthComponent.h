@@ -22,10 +22,11 @@ public:
 	UHealthComponent();
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health")
-	float MaxHealth = 10;
+	float MaxHealth = 10.f;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const;
+	float GetHealthPercent() const;
 
 	void TakeDamage(const FDamageInfo& DamageInfo);
 	
@@ -40,6 +41,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float Health = 0;
+	float Health = 0.f;
 		
 };
