@@ -3,6 +3,7 @@
 
 #include "TankFactory.h"
 
+#include "HealthWidget.h"
 #include "MapLoader.h"
 #include "TimerManager.h"
 #include "Components/StaticMeshComponent.h"
@@ -30,6 +31,8 @@ ATankFactory::ATankFactory()
 	HealthComponent->OnDeath.AddUObject(this, &ATankFactory::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankFactory::DamageTaked);
 
+	ProgressBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP Bar"));
+	ProgressBarWidgetComponent->SetupAttachment(BuildingMesh);
 
 }
 
@@ -41,11 +44,15 @@ void ATankFactory::BeginPlay()
 		LinkedMapLoader->SetIsActivated(false);
 
 	GetWorld()->GetTimerManager().SetTimer(TargetingTimerHandle, this, &ATankFactory::SpawnNewTank, SpawnTankRate, true, 3);
+
+	SetHealth();
 }
 
 void ATankFactory::TakeDamage(const FDamageInfo DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
+
+	SetHealth();
 }
 
 void ATankFactory::Death()
@@ -54,13 +61,16 @@ void ATankFactory::Death()
 		LinkedMapLoader->SetIsActivated(true);
 	Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(TargetingTimerHandle);
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestuctFactory, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
 }
 
 void ATankFactory::DamageTaked(const float DamageValue) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Factory %s taked damage:%f Health:%f"), *GetName(), DamageValue, HealthComponent->GetHealth());
+	//UE_LOG(LogTemp, Warning, TEXT("Factory %s taked damage:%f Health:%f"), *GetName(), DamageValue, HealthComponent->GetHealth());
+
+	
 }
 
 void ATankFactory::SpawnNewTank()
@@ -78,4 +88,22 @@ void ATankFactory::SpawnNewTank()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnParticleSystem, SpawnTransform);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, GetActorLocation());
 	}
+}
+
+void ATankFactory::SetHealth()
+{
+	if(IsValid(ProgressBarWidgetComponent))
+	{
+		const UHealthWidget* HealthWidget = Cast<UHealthWidget>(ProgressBarWidgetComponent->GetUserWidgetObject());
+		
+		if (IsValid(HealthWidget))
+		{
+			HealthWidget->SetHealthValue(GetHealthComponent()->GetHealthPercent());
+		}
+	}
+}
+
+UHealthComponent* ATankFactory::GetHealthComponent()
+{
+	return HealthComponent;
 }

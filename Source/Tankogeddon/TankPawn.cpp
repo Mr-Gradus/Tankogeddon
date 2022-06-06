@@ -2,7 +2,6 @@
 
 
 #include "TankPawn.h"
-
 #include "GameHUD.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,7 +14,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 
 ATankPawn::ATankPawn()
@@ -97,16 +95,16 @@ void ATankPawn::Death()
 	if (IsPlayerControlled())
 	{
 		AGameHUD* HUD = Cast<AGameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-		HUD->UseWidget(EWidgetID::GameOver);		
+		HUD->UseWidget(EWidgetID::GameOver);
 	}
-	
+	 
 	if (PlayerDeath.IsBound())
 	{			
-		PlayerDeath.Broadcast();					
+		PlayerDeath.Broadcast();
 	}
 
-	FTransform Transform;
-	Transform.SetLocation(GetActorLocation());
+	//FTransform Transform;
+	//Transform.SetLocation(GetActorLocation());
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestructObject, GetActorTransform());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructSound, GetActorLocation());
@@ -124,12 +122,8 @@ void ATankPawn::OnHealthChanged(const float Health)
 {
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitPlayerSound, GetActorLocation());
 
-	GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
-
-	
+	//GEngine->AddOnScreenDebugMessage(23423, 999999, FColor::Magenta, FString::Printf(TEXT("Tank HP %f"), Health));
 }
-
-
 
 void ATankPawn::BeginPlay()
 {

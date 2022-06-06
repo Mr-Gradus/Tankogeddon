@@ -108,7 +108,7 @@ public:
 
 	void SetHealth();
 
-	class ITargetController* TargetController;
+	ITargetController* TargetController;
 
 	TSubclassOf<ACannon> CurrentCannon;
 
@@ -118,7 +118,7 @@ public:
 	PlayerDeathEvent PlayerDeath;
 
 	UFUNCTION(BlueprintPure, Category = "Cannon")
-	class ACannon* GetCannon() const;
+	ACannon* GetCannon() const;
 
 	UFUNCTION(BlueprintPure, Category = "Health")
 	UHealthComponent* GetHealthComponent();

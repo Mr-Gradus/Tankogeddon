@@ -32,14 +32,4 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-
-
-
-
-	//void ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnimation = true);
-
-	//void CannonInfo(const FString& CannonClass);
-
-	//void ChangeAmmo(float CurrentAmmo, float MaxAmmo);
-
 };

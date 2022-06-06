@@ -33,6 +33,9 @@ ATurret::ATurret()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 	HealthComponent->OnDeath.AddUObject(this, &ATurret::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::OnHealthChanged);
+
+	ProgressBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP Bar"));
+	ProgressBarWidgetComponent->SetupAttachment(BodyMesh);
 }
 
 void ATurret::PostInitializeComponents()

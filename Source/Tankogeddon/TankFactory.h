@@ -54,6 +54,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
 	AMapLoader* LinkedMapLoader;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UWidgetComponent* ProgressBarWidgetComponent;
 
 public:	
 	ATankFactory();
@@ -67,6 +69,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void SpawnNewTank();
+	void SetHealth();
+	UHealthComponent* GetHealthComponent();
 
 	UFUNCTION()
 	void Death();
