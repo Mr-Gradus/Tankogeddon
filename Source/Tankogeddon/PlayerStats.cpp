@@ -2,6 +2,7 @@
 #include "PlayerStats.h"
 
 #include "ParentTankTurret.h"
+#include "TankPawn.h"
 #include "Kismet/KismetTextLibrary.h"
 
 void UPlayerStats::NativeConstruct()
@@ -16,9 +17,10 @@ void UPlayerStats::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (Cast<AParentTankTurret>(GetOwningPlayerPawn()))
 	{
 		float Ammo = Cast<AParentTankTurret>(GetOwningPlayerPawn())->GetCannon()->GetAmmo();
-		TSubclassOf<ACannon> CannonName = Cast<AParentTankTurret>(GetOwningPlayerPawn())->CurrentCannon;
+		//TSubclassOf<ACannon> CannonName = Cast<AParentTankTurret>(GetOwningPlayerPawn())->GetCannon()->;
 		
 		PlayerAmmo->SetText(UKismetTextLibrary::Conv_FloatToText(Ammo,ERoundingMode::HalfFromZero));
+		//PlayerCannon->SetText(FText::FromString(CannonName));
 	}
 		
 	if (Cast<AParentTankTurret>(GetOwningPlayerPawn()))
@@ -27,8 +29,20 @@ void UPlayerStats::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		
 		PlayerHealth->SetPercent(HP);
 	}
+
+	if (Cast<ATankPawn>(GetOwningPlayerPawn()))
+	{
+		ATankPawn* CannonInfo = Cast<ATankPawn>(GetOwningPlayerPawn());
+		PlayerCannon->SetText(FText::FromString(CannonInfo->GetName()));
+	}
+
+	
 }
 
+//void UPlayerStats::CannonInfo(const FString& CannonClass)
+//{
+//	PlayerCannon->SetText(FText::FromString(CannonClass));
+//}
 
 /*
 void UPlayerStats::ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnimation)
@@ -43,10 +57,7 @@ void UPlayerStats::ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnim
 
 }
 
-void UPlayerStats::ChangeCannon(const FString& CannonClass)
-{
-	PlayerCannon->SetText(FText::FromString(CannonClass));
-}
+
 
 void UPlayerStats::ChangeAmmo(float CurrentAmmo, float MaxAmmo)
 {

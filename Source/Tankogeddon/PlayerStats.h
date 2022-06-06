@@ -6,7 +6,8 @@
 #include "Components/TextBlock.h"
 #include "PlayerStats.generated.h"
 
-
+class UProgressBar;
+class UTextBlock;
 
 UCLASS()
 class TANKOGEDDON_API UPlayerStats : public UUserWidget
@@ -37,7 +38,7 @@ public:
 
 	//void ChangeHealth(float CurrentHealth, float MaxHealth, bool bAnimation = true);
 
-	//void ChangeCannon(const FString& CannonClass);
+	//void CannonInfo(const FString& CannonClass);
 
 	//void ChangeAmmo(float CurrentAmmo, float MaxAmmo);
 

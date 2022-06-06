@@ -8,6 +8,7 @@
 #include "Components/ProgressBar.h"
 #include "HealthWidget.generated.h"
 
+class UProgressBar;
 /**
  * 
  */
@@ -17,11 +18,12 @@ class TANKOGEDDON_API UHealthWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = (BindWidgetOptional), BlueprintReadOnly)
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UProgressBar* TankPawnProgressBar;
 
 public:
 	virtual void NativeConstruct() override;
-	
+
 	void SetHealthValue(float Health) const;
 };

@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "AmmoBox.h"
 #include "DamageTaker.h"
+#include "GoogleVRWidgetInteractionComponent.h"
 #include "HealthComponent.h"
 #include "TargetController.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -30,7 +31,7 @@ class TANKOGEDDON_API AParentTankTurret : public APawn, public IDamageTaker
 	DECLARE_EVENT(AParentTankTurret, PlayerDeathEvent);
 
 	
-protected:
+public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Components")
 	UBoxComponent* Collision;
 
@@ -85,8 +86,9 @@ protected:
 	UPROPERTY()
 	ACannon* Cannon;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class UWidgetComponent* TankPawnProgressBar;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UWidgetComponent* ProgressBarWidgetComponent;
+
 
 public:
 	AParentTankTurret();

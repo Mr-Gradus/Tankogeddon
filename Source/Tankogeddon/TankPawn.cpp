@@ -51,8 +51,9 @@ ATankPawn::ATankPawn()
 	HealthComponent->OnDeath.AddUObject(this, &ATankPawn::Death);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::OnHealthChanged);
 
-	TankPawnProgressBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("BarHP"));
-	TankPawnProgressBar->SetupAttachment(BodyMesh);
+	ProgressBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP Bar"));
+	ProgressBarWidgetComponent->SetupAttachment(BodyMesh);
+
 }
 
 void ATankPawn::MoveForward(float AxisValue)
@@ -138,6 +139,8 @@ void ATankPawn::BeginPlay()
 
 	AGameHUD* HUD = Cast<AGameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	HUD->UseWidget(EWidgetID::PlayerStats);
+
+	
 }
 
 void ATankPawn::ChangeCannon()

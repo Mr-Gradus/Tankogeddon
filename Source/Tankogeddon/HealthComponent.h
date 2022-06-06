@@ -41,6 +41,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float Health = 0.f;
+	float CurrentHealth = 0.f;
 		
 };

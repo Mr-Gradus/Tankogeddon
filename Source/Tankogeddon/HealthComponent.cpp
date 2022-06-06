@@ -11,33 +11,35 @@ UHealthComponent::UHealthComponent()
 
 float UHealthComponent::GetHealth() const
 {
-	return Health;
+	return CurrentHealth;
 }
 
 float UHealthComponent::GetHealthPercent() const
 {
-	return  Health / MaxHealth;
+	return  CurrentHealth / MaxHealth;
 }
 
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Health = MaxHealth;
+	CurrentHealth = MaxHealth;
 
 }
 void UHealthComponent::TakeDamage(const FDamageInfo& DamageInfo)
 {
-	const float PrevHealth = Health;
-	Health -= DamageInfo.Damage;
-	if (Health != PrevHealth)
+	const float PrevHealth = CurrentHealth;
+
+	CurrentHealth -= DamageInfo.Damage;
+
+	if (CurrentHealth != PrevHealth)
 	{
 		if (OnHealthChanged.IsBound())
-			OnHealthChanged.Broadcast(Health);
+			OnHealthChanged.Broadcast(CurrentHealth);
 	}
-	if (Health <= 0)
+	if (CurrentHealth <= 0)
 	{
-		Health = 0;
+		CurrentHealth = 0;
 		if (OnDeath.IsBound())
 			OnDeath.Broadcast();
 	}

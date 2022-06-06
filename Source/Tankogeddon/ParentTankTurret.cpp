@@ -2,13 +2,14 @@
 
 
 #include "ParentTankTurret.h"
-
+#include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
+#include "Components/WidgetComponent.h"
 #include "GameHUD.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthWidget.h"
-#include "Components/WidgetComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 
 void AParentTankTurret::Fire()
@@ -23,6 +24,7 @@ void AParentTankTurret::TakeDamage(const FDamageInfo DamageInfo)
 {
 	HealthComponent->TakeDamage(DamageInfo);
 
+	SetHealth();
 }
 
 void AParentTankTurret::Death()
@@ -50,8 +52,6 @@ AParentTankTurret::AParentTankTurret()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	TankPawnProgressBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP Bar"));
-	TankPawnProgressBar->SetupAttachment(BodyMesh);
 
 }
 
@@ -63,14 +63,20 @@ void AParentTankTurret::PossessedBy(AController* NewController)
 	TargetController = Cast<ITargetController>(NewController);
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AParentTankTurret::SetHealth()
 {
-	if (Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject()))
+	if(IsValid(ProgressBarWidgetComponent))
 	{
-		UHealthWidget* HP = Cast<UHealthWidget>(TankPawnProgressBar->GetUserWidgetObject());
-		HP->SetHealthValue(HealthComponent->GetHealthPercent());
+		const UHealthWidget* HealthWidget = Cast<UHealthWidget>(ProgressBarWidgetComponent->GetUserWidgetObject());
+		
+		if (IsValid(HealthWidget))
+		{
+			HealthWidget->SetHealthValue(GetHealthComponent()->GetHealthPercent());
+		}
 	}
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AParentTankTurret::BeginPlay()
 {
@@ -82,7 +88,8 @@ void AParentTankTurret::BeginPlay()
 	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, Params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-	}
+	SetHealth();
+}
 
 FVector AParentTankTurret::GetEyesPosition() const
 {

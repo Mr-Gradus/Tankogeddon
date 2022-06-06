@@ -109,7 +109,6 @@ protected:
 	UFUNCTION()
 	virtual void Destroyed() override;
 	
-	//UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	virtual void Death() override;
 
 	UFUNCTION()

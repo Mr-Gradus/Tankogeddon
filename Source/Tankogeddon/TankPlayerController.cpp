@@ -70,7 +70,6 @@ void ATankPlayerController::BeginPlay()
 	Super::BeginPlay();
 	if(TankPawn)
 		TankPawn = Cast<ATankPawn>(GetPawn());
-
 }
 
 void ATankPlayerController::MoveForward(float AxisValue)
