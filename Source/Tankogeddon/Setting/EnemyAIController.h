@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "TankPawn.h"
+#include "Tankogeddon/TankPawn.h"
 #include "EnemyAIController.generated.h"
 
 class ATankPawn;

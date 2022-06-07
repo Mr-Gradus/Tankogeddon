@@ -3,8 +3,8 @@
 
 #include "TankFactory.h"
 
-#include "HealthWidget.h"
-#include "MapLoader.h"
+#include "Tankogeddon/UI/HealthWidget.h"
+#include "Tankogeddon/Setting/MapLoader.h"
 #include "TimerManager.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"

@@ -5,11 +5,10 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
-#include "GameHUD.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "HealthWidget.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "UI/HealthWidget.h"
 
 
 void AParentTankTurret::Fire()

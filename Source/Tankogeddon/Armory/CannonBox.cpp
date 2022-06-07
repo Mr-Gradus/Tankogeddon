@@ -2,7 +2,7 @@
 
 
 #include "CannonBox.h"
-#include "TankPawn.h"
+#include "Tankogeddon/TankPawn.h"
 
 
 // Sets default values

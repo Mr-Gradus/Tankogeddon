@@ -2,10 +2,8 @@
 
 
 #include "TankPlayerController.h"
-#include "DrawDebugHelpers.h"
-#include "GameHUD.h"
-#include "Components/WidgetInteractionComponent.h"
-#include "TankPawn.h"
+#include "Tankogeddon/UI/GameHUD.h"
+#include "Tankogeddon/TankPawn.h"
 
 
 ATankPlayerController::ATankPlayerController()

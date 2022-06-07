@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameStructs.h"
+#include "Tankogeddon/Setting/GameStructs.h"
 #include "Projectile.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"

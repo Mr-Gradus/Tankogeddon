@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DamageTaker.h"
+#include "Tankogeddon/Setting/DamageTaker.h"
 #include "TankPawn.h"
 #include "GameFramework/Actor.h"
 #include "TankFactory.generated.h"

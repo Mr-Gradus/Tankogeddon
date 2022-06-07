@@ -2,7 +2,7 @@
 
 
 #include "PhysicsProjectile.h"
-#include "PhysicsComponent.h"
+#include "Tankogeddon/Setting/PhysicsComponent.h"
 #include <Particles/ParticleSystemComponent.h>
 #include <DrawDebugHelpers.h>
 #include <Kismet/KismetMathLibrary.h>

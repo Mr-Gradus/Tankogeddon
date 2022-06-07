@@ -7,7 +7,7 @@
 #include "TimerManager.h"
 #include <Engine/World.h>
 #include <Components/PrimitiveComponent.h>
-#include "DamageTaker.h"
+#include "Tankogeddon/Setting/DamageTaker.h"
 #include "Kismet/GameplayStatics.h"
 
 AProjectile::AProjectile()

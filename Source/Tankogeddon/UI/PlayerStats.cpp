@@ -1,9 +1,8 @@
 
 #include "PlayerStats.h"
-
-#include "ParentTankTurret.h"
-#include "TankPawn.h"
+#include "Tankogeddon/TankPawn.h"
 #include "Kismet/KismetTextLibrary.h"
+#include "Tankogeddon/ParentTankTurret.h"
 
 void UPlayerStats::NativeConstruct()
 {

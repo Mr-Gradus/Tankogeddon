@@ -1,9 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Cannon.h"
+#include "Tankogeddon/Armory/Cannon.h"
 #include "ParentTankTurret.h"
-#include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
 #include "TankPawn.generated.h"
 

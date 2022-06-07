@@ -1,7 +1,7 @@
 
 #include "Turret.h"
-#include "TankPlayerController.h"
-#include "Cannon.h"
+#include "Tankogeddon/Setting/TankPlayerController.h"
+#include "Tankogeddon/Armory/Cannon.h"
 #include "DrawDebugHelpers.h"
 #include "TankPawn.h"
 #include "Kismet/KismetMathLibrary.h"

@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Cannon.h"
+#include "Tankogeddon/Armory/Cannon.h"
 #include "Components/BoxComponent.h"
-#include "AmmoBox.h"
-#include "DamageTaker.h"
+#include "Tankogeddon/Armory/AmmoBox.h"
+#include "Tankogeddon/Setting/DamageTaker.h"
 #include "GoogleVRWidgetInteractionComponent.h"
-#include "HealthComponent.h"
-#include "TargetController.h"
+#include "Tankogeddon/Setting/HealthComponent.h"
+#include "Tankogeddon/Setting/TargetController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Setting/GameStructs.h"
 #include "ParentTankTurret.generated.h"
 
 class UBoxComponent;
@@ -95,14 +96,16 @@ public:
 	void PossessedBy(AController* NewController);
 
 	virtual void Fire();
-	
+
+	void TakeDamage(FDamageInfo DamageInfo);
+
 	virtual void Death();
 
 	virtual void OnHealthChanged(float Health);
 
 	virtual void BeginPlay() override;
 
-	virtual void TakeDamage(const FDamageInfo DamageInfo) override;
+	//virtual void TakeDamage(const FDamageInfo DamageInfo) override;
 
 	FVector GetEyesPosition() const;
 

@@ -2,13 +2,13 @@
 
 
 #include "TankPawn.h"
-#include "GameHUD.h"
+#include "Tankogeddon/UI/GameHUD.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "TankPlayerController.h"
-#include "HealthComponent.h"
-#include "HealthWidget.h"
+#include "Tankogeddon/Setting/TankPlayerController.h"
+#include "Tankogeddon/Setting/HealthComponent.h"
+#include "Tankogeddon/UI/HealthWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"

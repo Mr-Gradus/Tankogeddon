@@ -3,7 +3,7 @@
 
 #include "EnemyAIController.h"
 #include "DrawDebugHelpers.h"
-#include "TankPawn.h"
+#include "Tankogeddon/TankPawn.h"
 #include "Waypoint.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
