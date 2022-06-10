@@ -9,13 +9,19 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SRadioButtonsList::Construct(const FArguments& InArgs)
 {
 	OnRadioChoiceChanged = InArgs._OnRadioChoiceChanged;
-
+	
 	CurrentChoice = ERadioChoice::Radio0;
+
+	CountCheckBox = InArgs._CountCheckBox;
 	
 	ChildSlot
-	[
-		SNew(SVerticalBox)
+[
 
+//	[
+//		SAssignNew(VerticalBoxMake, SVerticalBox)
+//	];		
+
+		SNew(SVerticalBox)
 		+SVerticalBox::Slot()
 		[
 			CreateRadioButton("Option1", ERadioChoice::Radio0)
@@ -31,12 +37,26 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 			CreateRadioButton("Option3", ERadioChoice::Radio2)
 
 		]
-	];
-	
+
+];
 }
+/*
+void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	VerticalBoxMake->ClearChildren();
+
+
+	VerticalBoxMake->AddSlot();
+	[
+		CreateRadioButton("Option1", ERadioChoice::Radio0)	
+	];
+
+	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+}
+*/
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(ERadioChoice RadioButtonID)
+ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(ERadioChoice RadioButtonID) const
 {
 	return (CurrentChoice == RadioButtonID) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 }

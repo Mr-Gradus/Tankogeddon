@@ -28,6 +28,11 @@ protected:
 
 	/** Handle the actual click event from slate and forward it on */
 	void HandleOnRadioChoiceChanged(ERadioChoice NewRadioChoice);
+	//int32 GetCountCheckBox() const;
+
 protected:
 	TSharedPtr<SRadioButtonsList> MyRadioButtons;
+
+	UPROPERTY(BlueprintReadWrite, Category= "RadioButtons")
+	int32 CountCheckBox;
 };

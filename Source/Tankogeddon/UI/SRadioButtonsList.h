@@ -22,20 +22,28 @@ public:
 		//Called when radio choice is changed 
 		SLATE_EVENT(FOnRadioChoiceChanged, OnRadioChoiceChanged)
 
+		SLATE_ATTRIBUTE(int32, CountCheckBox);
+
 	SLATE_END_ARGS()
 
 	// Constructs this widget with InArgs
 	void Construct(const FArguments& InArgs);
+	//virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
 
 protected:
-	ERadioChoice CurrentChoice;
+
+	//UPROPERTY(BlueprintReadWrite, Category = "RadioButtons")
+	ERadioChoice CurrentChoice = ERadioChoice::Radio0;
 
 	FOnRadioChoiceChanged OnRadioChoiceChanged;
 
-	ECheckBoxState IsRadioButtonChecked(ERadioChoice RadioButtonID);
+	ECheckBoxState IsRadioButtonChecked(ERadioChoice RadioButtonID) const;
 
 	void HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, ERadioChoice RadioButtonID);
 
 	TSharedRef<SWidget> CreateRadioButton(const FString& RadioText, ERadioChoice RadioButtonChoice);
-	
+
+	TAttribute<int32> CountCheckBox;
+
+	TSharedPtr<SVerticalBox> VerticalBoxMake;
 };
