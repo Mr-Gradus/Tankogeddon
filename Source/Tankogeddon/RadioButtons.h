@@ -5,10 +5,10 @@
 #include "UI/SRadioButtonsList.h"
 #include "RadioButtons.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRadioChoiceChangedEvent, ERadioChoice, NewRadioChoise);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRadioChoiceChangedEvent, int32, NewRadioChoice);
 
 UCLASS()
-class TANKOGEDDON_API URadioButtons : public UWidget
+class TANKOGEDDON_API URadioButtons final : public UWidget
 {
 	GENERATED_BODY()
 
@@ -27,12 +27,18 @@ protected:
 	//~ End UWidget Interface
 
 	/** Handle the actual click event from slate and forward it on */
-	void HandleOnRadioChoiceChanged(ERadioChoice NewRadioChoice);
-	//int32 GetCountCheckBox() const;
+	void HandleOnRadioChoiceChanged(int32 RadioButtonIndex) const;
+
+	int32 GetCountCheckBox() const;
+
+	int32 GetCurrentChoice() const;
 
 protected:
 	TSharedPtr<SRadioButtonsList> MyRadioButtons;
 
-	UPROPERTY(BlueprintReadWrite, Category= "RadioButtons")
+	UPROPERTY(EditAnywhere)
 	int32 CountCheckBox;
+
+	UPROPERTY(EditAnywhere)
+	int32 CurrentChoice;
 };

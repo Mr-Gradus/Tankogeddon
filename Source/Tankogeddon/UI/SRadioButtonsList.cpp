@@ -10,18 +10,16 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 {
 	OnRadioChoiceChanged = InArgs._OnRadioChoiceChanged;
 	
-	CurrentChoice = ERadioChoice::Radio0;
-
+	CurrentChoice = InArgs._CurrentChoice;
+	
 	CountCheckBox = InArgs._CountCheckBox;
 	
 	ChildSlot
-[
+	[
+		SAssignNew(VerticalBoxMake, SVerticalBox)
+	];		
 
-//	[
-//		SAssignNew(VerticalBoxMake, SVerticalBox)
-//	];		
-
-		SNew(SVerticalBox)
+/*		SNew(SVerticalBox)
 		+SVerticalBox::Slot()
 		[
 			CreateRadioButton("Option1", ERadioChoice::Radio0)
@@ -37,43 +35,50 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 			CreateRadioButton("Option3", ERadioChoice::Radio2)
 
 		]
-
-];
+*/
 }
-/*
+
 void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
-	VerticalBoxMake->ClearChildren();
-
-
-	VerticalBoxMake->AddSlot();
-	[
-		CreateRadioButton("Option1", ERadioChoice::Radio0)	
-	];
 
 	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+
+	if (CurrentCheckBoxCount != CountCheckBox.Get())
+	{
+		VerticalBoxMake->ClearChildren();
+
+		for (int i = 1; i < CountCheckBox.Get(); ++i)
+		{
+			FString Num = FString::FromInt(i);
+			VerticalBoxMake->AddSlot()
+			[
+				CreateRadioButton("Option" + Num, i)
+			];
+		}
+	
+		CurrentCheckBoxCount = CountCheckBox.Get();
+	}
 }
-*/
+
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(ERadioChoice RadioButtonID) const
+ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(int32 RadioButtonID) 
 {
-	return (CurrentChoice == RadioButtonID) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+	return (CurrentChoice.Get() == RadioButtonID) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 }
 
-void SRadioButtonsList::HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, ERadioChoice RadioButtonID)
+void SRadioButtonsList::HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, int32 RadioButtonID)
 {
 	if (NewRadioState == ECheckBoxState::Checked)
 	{
 		CurrentChoice = RadioButtonID;
-		OnRadioChoiceChanged.ExecuteIfBound(CurrentChoice);
+		OnRadioChoiceChanged.ExecuteIfBound(RadioButtonID);
 	}
 }
 
-TSharedRef<SWidget> SRadioButtonsList::CreateRadioButton(const FString& RadioText, ERadioChoice RadioButtonChoice)
+TSharedRef<SWidget> SRadioButtonsList::CreateRadioButton(const FString& RadioText, int32 RadioButtonChoice)
 {
 	return SNew(SCheckBox)
-
 	.IsChecked(MakeAttributeRaw(this, &SRadioButtonsList::IsRadioButtonChecked, RadioButtonChoice))
 	.OnCheckStateChanged(this, &SRadioButtonsList::HandleRadioButtonStateChanged, RadioButtonChoice)
 	[

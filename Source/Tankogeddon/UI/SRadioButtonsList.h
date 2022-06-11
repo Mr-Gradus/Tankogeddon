@@ -4,46 +4,45 @@
 #include "Widgets/SCompoundWidget.h"
 
 
-UENUM(BlueprintType)
-enum class ERadioChoice : uint8
-{
-	Radio0,
-	Radio1,
-	Radio2,
-};
-
-DECLARE_DELEGATE_OneParam(FOnRadioChoiceChanged, ERadioChoice /*NewRadioChoice*/);
+DECLARE_DELEGATE_OneParam(FOnRadioChoiceChanged, int32);
 
 class TANKOGEDDON_API SRadioButtonsList : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SRadioButtonsList)
 	{}
-		//Called when radio choice is changed 
 		SLATE_EVENT(FOnRadioChoiceChanged, OnRadioChoiceChanged)
 
 		SLATE_ATTRIBUTE(int32, CountCheckBox);
 
+		SLATE_ATTRIBUTE(int32, CurrentChoice);
+
 	SLATE_END_ARGS()
 
-	// Constructs this widget with InArgs
 	void Construct(const FArguments& InArgs);
-	//virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
+
+	virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
 
 protected:
 
-	//UPROPERTY(BlueprintReadWrite, Category = "RadioButtons")
-	ERadioChoice CurrentChoice = ERadioChoice::Radio0;
+	
 
 	FOnRadioChoiceChanged OnRadioChoiceChanged;
 
-	ECheckBoxState IsRadioButtonChecked(ERadioChoice RadioButtonID) const;
+	ECheckBoxState IsRadioButtonChecked(int32 RadioButtonID);
 
-	void HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, ERadioChoice RadioButtonID);
+	void HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, int32 RadioButtonID);
 
-	TSharedRef<SWidget> CreateRadioButton(const FString& RadioText, ERadioChoice RadioButtonChoice);
+	TSharedRef<SWidget> CreateRadioButton(const FString& RadioText, int32 RadioButtonChoice);
+
+	TAttribute<int32> CurrentChoice;
 
 	TAttribute<int32> CountCheckBox;
 
+	int32 CurrentCheckBoxCount;
+
 	TSharedPtr<SVerticalBox> VerticalBoxMake;
+
+	int32 RadioButtonIndex = 0;
+
 };
