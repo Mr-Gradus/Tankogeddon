@@ -36,9 +36,9 @@ protected:
 protected:
 	TSharedPtr<SRadioButtonsList> MyRadioButtons;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta=(DesignerRebuild))
 	int32 CountCheckBox;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta=(DesignerRebuild))
 	int32 CurrentChoice;
 };

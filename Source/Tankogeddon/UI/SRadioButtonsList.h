@@ -33,6 +33,8 @@ protected:
 
 	void HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, int32 RadioButtonID);
 
+	void BuildButtons();
+
 	TSharedRef<SWidget> CreateRadioButton(const FString& RadioText, int32 RadioButtonChoice);
 
 	TAttribute<int32> CurrentChoice;
@@ -43,6 +45,6 @@ protected:
 
 	TSharedPtr<SVerticalBox> VerticalBoxMake;
 
-	int32 RadioButtonIndex = 0;
+	int32 RadioButtonIndex;
 
 };

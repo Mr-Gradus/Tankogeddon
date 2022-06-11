@@ -43,21 +43,7 @@ void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InC
 
 	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
-	if (CurrentCheckBoxCount != CountCheckBox.Get())
-	{
-		VerticalBoxMake->ClearChildren();
-
-		for (int i = 1; i < CountCheckBox.Get(); ++i)
-		{
-			FString Num = FString::FromInt(i);
-			VerticalBoxMake->AddSlot()
-			[
-				CreateRadioButton("Option" + Num, i)
-			];
-		}
-	
-		CurrentCheckBoxCount = CountCheckBox.Get();
-	}
+	BuildButtons();
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -73,6 +59,25 @@ void SRadioButtonsList::HandleRadioButtonStateChanged(ECheckBoxState NewRadioSta
 	{
 		CurrentChoice = RadioButtonID;
 		OnRadioChoiceChanged.ExecuteIfBound(RadioButtonID);
+	}
+}
+
+void SRadioButtonsList::BuildButtons()
+{
+	if (CurrentCheckBoxCount != CountCheckBox.Get())
+	{
+		VerticalBoxMake->ClearChildren();
+
+		for (int i = 1; i <= CountCheckBox.Get(); ++i)
+		{
+			FString Num = FString::FromInt(i);
+			VerticalBoxMake->AddSlot()
+			[
+				CreateRadioButton("Option" + Num, i)
+			];
+		}
+	
+		CurrentCheckBoxCount = CountCheckBox.Get();
 	}
 }
 
