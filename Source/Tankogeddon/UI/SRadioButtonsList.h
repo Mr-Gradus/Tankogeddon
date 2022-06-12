@@ -1,8 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/Button.h"
 #include "Widgets/SCompoundWidget.h"
 
+class UButton;
 
 DECLARE_DELEGATE_OneParam(FOnRadioChoiceChanged, int32);
 
@@ -17,19 +19,23 @@ public:
 
 		SLATE_ATTRIBUTE(int32, CurrentChoice);
 
+		SLATE_ATTRIBUTE(int32, AddCheckBox);
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
 	virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
+	TAttribute<int32> CountCheckBox;
 
+	
 protected:
 
 	
 
 	FOnRadioChoiceChanged OnRadioChoiceChanged;
 
-	ECheckBoxState IsRadioButtonChecked(int32 RadioButtonID);
+	ECheckBoxState IsRadioButtonChecked(int32 RadioButtonID) const;
 
 	void HandleRadioButtonStateChanged(ECheckBoxState NewRadioState, int32 RadioButtonID);
 
@@ -39,12 +45,12 @@ protected:
 
 	TAttribute<int32> CurrentChoice;
 
-	TAttribute<int32> CountCheckBox;
+	TAttribute<int32> AddCheckBox;
 
-	int32 CurrentCheckBoxCount;
+	int32 CurrentCheckBoxCount = 0;
 
 	TSharedPtr<SVerticalBox> VerticalBoxMake;
 
-	int32 RadioButtonIndex;
+	int32 RadioButtonIndex = 0;
 
 };

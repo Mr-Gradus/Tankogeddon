@@ -31,6 +31,7 @@ protected:
 	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
 	//UWidgetAnimation* MainMenuAnim;
 
+
 public:
 	virtual void NativeConstruct() override;
 

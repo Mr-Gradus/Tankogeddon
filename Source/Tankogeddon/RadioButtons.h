@@ -5,6 +5,8 @@
 #include "UI/SRadioButtonsList.h"
 #include "RadioButtons.generated.h"
 
+class UButton;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRadioChoiceChangedEvent, int32, NewRadioChoice);
 
 UCLASS()
@@ -20,6 +22,8 @@ public:
 	/** Called when radio choice changed by click */
 	UPROPERTY(BlueprintAssignable, Category = "RadioButtons|Event")
 	FOnRadioChoiceChangedEvent OnRadioChoiceChanged;
+
+	
 
 protected:
 	//~ Begin UWidget Interface
@@ -41,4 +45,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, meta=(DesignerRebuild))
 	int32 CurrentChoice;
+
+	
 };

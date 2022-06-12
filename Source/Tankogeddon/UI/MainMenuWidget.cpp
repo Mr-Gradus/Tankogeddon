@@ -2,7 +2,7 @@
 #include "MainMenuWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Tankogeddon/UI/SRadioButtonsList.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -29,8 +29,6 @@ void UMainMenuWidget::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitClicked);
 	}
 
-	
-
 }
 
 void UMainMenuWidget::OnNewGameClicked()
@@ -50,3 +48,4 @@ void UMainMenuWidget::OnQuitClicked()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
 }
+

@@ -13,11 +13,14 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 	CurrentChoice = InArgs._CurrentChoice;
 	
 	CountCheckBox = InArgs._CountCheckBox;
+
+	AddCheckBox = InArgs._AddCheckBox;
 	
 	ChildSlot
 	[
 		SAssignNew(VerticalBoxMake, SVerticalBox)
-	];		
+	];
+	
 
 /*		SNew(SVerticalBox)
 		+SVerticalBox::Slot()
@@ -44,11 +47,15 @@ void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InC
 	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
 	BuildButtons();
+
+	
 }
+
+
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(int32 RadioButtonID) 
+ECheckBoxState SRadioButtonsList::IsRadioButtonChecked(int32 RadioButtonID) const
 {
 	return (CurrentChoice.Get() == RadioButtonID) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 }

@@ -1,6 +1,7 @@
 
 #include "RadioButtons.h"
 
+
 void URadioButtons::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
@@ -14,6 +15,7 @@ TSharedRef<SWidget> URadioButtons::RebuildWidget()
 	.OnRadioChoiceChanged(BIND_UOBJECT_DELEGATE(FOnRadioChoiceChanged, HandleOnRadioChoiceChanged))
 	.CountCheckBox(GetCountCheckBox())
 	.CurrentChoice(GetCurrentChoice());
+	
 		
 	return MyRadioButtons.ToSharedRef();
 }
@@ -35,3 +37,5 @@ int32 URadioButtons::GetCurrentChoice() const
 {
 	return CurrentChoice;
 }
+
+
