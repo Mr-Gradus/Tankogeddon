@@ -19,7 +19,6 @@ public:
 
 		SLATE_ATTRIBUTE(int32, CurrentChoice);
 
-		SLATE_ATTRIBUTE(int32, AddCheckBox);
 
 	SLATE_END_ARGS()
 
@@ -44,8 +43,6 @@ protected:
 	TSharedRef<SWidget> CreateRadioButton(const FString& RadioText, int32 RadioButtonChoice);
 
 	TAttribute<int32> CurrentChoice;
-
-	TAttribute<int32> AddCheckBox;
 
 	int32 CurrentCheckBoxCount = 0;
 

@@ -14,8 +14,6 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 	
 	CountCheckBox = InArgs._CountCheckBox;
 
-	AddCheckBox = InArgs._AddCheckBox;
-	
 	ChildSlot
 	[
 		SAssignNew(VerticalBoxMake, SVerticalBox)
