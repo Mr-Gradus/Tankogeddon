@@ -46,5 +46,7 @@ protected:
 	UPROPERTY(EditAnywhere, meta=(DesignerRebuild))
 	int32 CurrentChoice;
 
+	UFUNCTION(BlueprintCallable)
+	void AddCountCheckBox(int32 AddValue);
 	
 };
