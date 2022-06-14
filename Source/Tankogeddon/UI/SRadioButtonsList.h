@@ -25,6 +25,7 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
+
 	TAttribute<int32> CountCheckBox;
 
 	
