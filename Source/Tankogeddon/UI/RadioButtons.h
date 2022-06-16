@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
-#include "UI/SRadioButtonsList.h"
-#include "RadioButtons.generated.h"
+#include "SRadioButtonsList.h"
+#include "RadioButtonsWidgetStyle.h"
 
-class UButton;
+#include "RadioButtons.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRadioChoiceChangedEvent, int32, NewRadioChoice);
 
 UCLASS()
-class TANKOGEDDON_API URadioButtons final : public UWidget
+class TANKOGEDDON_API URadioButtons : public UWidget
 {
 	GENERATED_BODY()
 
@@ -23,6 +23,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "RadioButtons|Event")
 	FOnRadioChoiceChangedEvent OnRadioChoiceChanged;
 
+	UPROPERTY(EditAnywhere, Category = "Appearance", meta = (DisplayName = "Style"))
+	FRadioButtonsStyle WidgetStyle;
 	
 
 protected:

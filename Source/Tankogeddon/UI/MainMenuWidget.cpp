@@ -1,5 +1,7 @@
 
 #include "MainMenuWidget.h"
+
+#include "StyleSet.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tankogeddon/UI/SRadioButtonsList.h"
@@ -29,6 +31,17 @@ void UMainMenuWidget::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitClicked);
 	}
 
+}
+
+void UMainMenuWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (RadioButtons_0)
+	{
+		RadioButtons_0->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyle")
+			);
+	}
 }
 
 void UMainMenuWidget::OnNewGameClicked()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RadioButtons.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Animation/WidgetAnimation.h"
@@ -16,7 +17,7 @@ class TANKOGEDDON_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* NewGameBtn;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -33,10 +34,15 @@ protected:
 
 
 public:
+
+	virtual void NativePreConstruct() override;
+
 	virtual void NativeConstruct() override;
 
-	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	URadioButtons* RadioButtons_0;
 protected:
+
 	UFUNCTION()
 	void OnNewGameClicked();
 

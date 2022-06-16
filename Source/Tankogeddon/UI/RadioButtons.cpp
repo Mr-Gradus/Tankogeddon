@@ -1,5 +1,5 @@
 
-#include "RadioButtons.h"
+#include "Tankogeddon/UI/RadioButtons.h"
 
 
 void URadioButtons::ReleaseSlateResources(bool bReleaseChildren)
@@ -12,6 +12,7 @@ void URadioButtons::ReleaseSlateResources(bool bReleaseChildren)
 TSharedRef<SWidget> URadioButtons::RebuildWidget()
 {
 	MyRadioButtons = SNew(SRadioButtonsList)
+	.Style(&WidgetStyle)
 	.OnRadioChoiceChanged(BIND_UOBJECT_DELEGATE(FOnRadioChoiceChanged, HandleOnRadioChoiceChanged))
 	.CountCheckBox(GetCountCheckBox())
 	.CurrentChoice(GetCurrentChoice());

@@ -8,6 +8,8 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void SRadioButtonsList::Construct(const FArguments& InArgs)
 {
+	SetRadioButtonStyle(InArgs._Style);	
+
 	OnRadioChoiceChanged = InArgs._OnRadioChoiceChanged;
 	
 	CurrentChoice = InArgs._CurrentChoice;
@@ -19,24 +21,6 @@ void SRadioButtonsList::Construct(const FArguments& InArgs)
 		SAssignNew(VerticalBoxMake, SVerticalBox)
 	];
 	
-
-/*		SNew(SVerticalBox)
-		+SVerticalBox::Slot()
-		[
-			CreateRadioButton("Option1", ERadioChoice::Radio0)
-		]
-
-		+SVerticalBox::Slot()
-		[
-			CreateRadioButton("Option2", ERadioChoice::Radio1)
-		]
-
-		+SVerticalBox::Slot()
-		[
-			CreateRadioButton("Option3", ERadioChoice::Radio2)
-
-		]
-*/
 }
 
 void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
@@ -45,11 +29,7 @@ void SRadioButtonsList::Tick(const FGeometry& AllottedGeometry, const double InC
 	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
 	BuildButtons();
-
-	
 }
-
-
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -91,9 +71,16 @@ TSharedRef<SWidget> SRadioButtonsList::CreateRadioButton(const FString& RadioTex
 	return SNew(SCheckBox)
 	.IsChecked(MakeAttributeRaw(this, &SRadioButtonsList::IsRadioButtonChecked, RadioButtonChoice))
 	.OnCheckStateChanged(this, &SRadioButtonsList::HandleRadioButtonStateChanged, RadioButtonChoice)
+	.Style(CheckBoxStyle)
 	[
 		SNew(STextBlock)
 		.Text(FText::FromString(RadioText))
+		.TextStyle(TextBlockStyle)
 	];
 }
 
+void SRadioButtonsList::SetRadioButtonStyle(const FRadioButtonsStyle* InStyle)
+{
+	CheckBoxStyle = &InStyle->CheckBoxStyle;
+	TextBlockStyle = &InStyle->TextBlockStyle;
+}
