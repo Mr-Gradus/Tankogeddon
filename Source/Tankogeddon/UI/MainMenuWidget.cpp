@@ -42,6 +42,11 @@ void UMainMenuWidget::NativePreConstruct()
 		RadioButtons_0->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyle")
 			);
 	}
+
+//	if (QuitBtn)
+//	{
+//		QuitBtn->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FButtonsStyle>(FName("ButtonsStyle");
+//	}	
 }
 
 void UMainMenuWidget::OnNewGameClicked()

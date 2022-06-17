@@ -17,7 +17,7 @@ class TANKOGEDDON_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(EditAnywhere, meta = (BindWidgetOptional))
 	UButton* NewGameBtn;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -32,15 +32,19 @@ protected:
 	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
 	//UWidgetAnimation* MainMenuAnim;
 
+	UPROPERTY(VisibleAnywhere, meta = (BindWidgetOptional))
+	URadioButtons* RadioButtons_0;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	UButton* BluePng;
+	
 public:
 
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
-	URadioButtons* RadioButtons_0;
+	
 protected:
 
 	UFUNCTION()
