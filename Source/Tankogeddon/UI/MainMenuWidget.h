@@ -5,11 +5,12 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Animation/WidgetAnimation.h"
+#include "Components/ComboBoxString.h"
 #include "MainMenuWidget.generated.h"
 
 class UButton;
-
-
+class URadioButtons;
+class UComboBoxString;
 
 UCLASS()
 class TANKOGEDDON_API UMainMenuWidget : public UUserWidget
@@ -26,24 +27,34 @@ protected:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* OptionBtn;
 
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UButton* QuitBtn;
 
 	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
 	//UWidgetAnimation* MainMenuAnim;
 
-	UPROPERTY(VisibleAnywhere, meta = (BindWidgetOptional))
-	URadioButtons* RadioButtons_0;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	URadioButtons* RadioButton;
 
-	UPROPERTY(meta = (BindWidgetOptional))
-	UButton* BluePng;
-	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	UComboBoxString* ThemeComboBox;
+/*
+	UPROPERTY(BlueprintReadOnly)
+	FName Theme1 = "Standart";
+
+	UPROPERTY(BlueprintReadOnly)
+	FName Theme2 = "Black";
+
+	UPROPERTY(BlueprintReadOnly)
+	FName Theme3 = "Red";
+*/	
 public:
 
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 protected:
 
@@ -59,5 +70,6 @@ protected:
 	UFUNCTION()
 	void OnQuitClicked();
 
-	
+	UFUNCTION(BlueprintCallable)
+	void SelectTheme();
 };

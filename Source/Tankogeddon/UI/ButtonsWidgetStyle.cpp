@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Tankogeddon/UI/ButtonsWidgetStyle.h"
+#include "Styling/CoreStyle.h"
+
 
 FButtonsStyle::FButtonsStyle()
 {
+	ButtonStyle = FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("ButtonStyle");
 }
 
 FButtonsStyle::~FButtonsStyle()

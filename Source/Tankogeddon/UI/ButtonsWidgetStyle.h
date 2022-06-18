@@ -1,29 +1,30 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Styling/SlateWidgetStyle.h"
 #include "Styling/SlateWidgetStyleContainerBase.h"
+#include "Styling/SlateTypes.h"
 
 #include "ButtonsWidgetStyle.generated.h"
 
-/**
- * 
- */
 USTRUCT()
 struct TANKOGEDDON_API FButtonsStyle : public FSlateWidgetStyle
 {
 	GENERATED_USTRUCT_BODY()
 
 	FButtonsStyle();
-	virtual ~FButtonsStyle();
+	virtual ~FButtonsStyle() override;
 
-	// FSlateWidgetStyle
 	virtual void GetResources(TArray<const FSlateBrush*>& OutBrushes) const override;
+
 	static const FName TypeName;
+
 	virtual const FName GetTypeName() const override { return TypeName; };
+
 	static const FButtonsStyle& GetDefault();
+
+	UPROPERTY(EditAnywhere, Category = Appearance)
+	FButtonStyle ButtonStyle;  
 };
 
 /**

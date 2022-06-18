@@ -1,6 +1,7 @@
 
 #include "MainMenuWidget.h"
 
+#include "ButtonsWidgetStyle.h"
 #include "StyleSet.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -30,23 +31,37 @@ void UMainMenuWidget::NativeConstruct()
 	{
 		QuitBtn->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitClicked);
 	}
+	if (QuitBtn)
+	{
+		QuitBtn->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FButtonStyle>(FName("ButtonStyle")
+			);
+	}	
+}
 
+void UMainMenuWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (RadioButton)
+	{
+		SelectTheme();
+	}
 }
 
 void UMainMenuWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	if (RadioButtons_0)
+	if (RadioButton)
 	{
-		RadioButtons_0->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyle")
-			);
+		SelectTheme();
 	}
 
-//	if (QuitBtn)
-//	{
-//		QuitBtn->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FButtonsStyle>(FName("ButtonsStyle");
-//	}	
+	if (QuitBtn)
+	{
+		QuitBtn->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FButtonStyle>(FName("ButtonStyle")
+			);
+	}	
 }
 
 void UMainMenuWidget::OnNewGameClicked()
@@ -65,5 +80,23 @@ void UMainMenuWidget::OnOptionClicked()
 void UMainMenuWidget::OnQuitClicked()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+}
+
+void UMainMenuWidget::SelectTheme()
+{
+
+const auto Theme = ThemeComboBox->GetSelectedIndex(); 
+	if (Theme == 1)
+	{
+		RadioButton->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyleBlack"));
+	}
+	if (Theme == 2)
+	{
+		RadioButton->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyleRed"));	
+	}
+	if (Theme == 0)
+	{
+		RadioButton->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FRadioButtonsStyle>(FName("RadioButtonsStyle"));
+	}
 }
 
