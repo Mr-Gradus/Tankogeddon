@@ -1,12 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TankPlayerController.h"
 #include "Tankogeddon/UI/GameHUD.h"
 #include "Tankogeddon/TankPawn.h"
 
 
-ATankPlayerController::ATankPlayerController()
+ATankPlayerController::ATankPlayerController(const FObjectInitializer & Obj) : Super(Obj)
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
@@ -16,32 +13,19 @@ ATankPlayerController::ATankPlayerController()
 void ATankPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-	InputComponent->BindAxis("MoveForward", this, &ATankPlayerController::MoveForward);
-	InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
-	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
-	InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
-	InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
-	InputComponent->BindAxis("GamepadRotateRight", this, &ATankPlayerController::GRotateRight);
-	//InputComponent->BindAxis("GamepadRotateLeft", this, &ATankPlayerController::GRotateLeft);
-	/*
-		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this,
-	&ATankPlayerController::OnLeftMouseButtonDown);
-		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released, this,
-		&ATankPlayerController::OnLeftMouseButtonUp);
-	*/
+	if (InputComponent)
+	{
+		InputComponent->BindAxis("MoveForward", this, &ATankPlayerController::MoveForward);
+		InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
+		InputComponent->BindAction("Shoot", IE_Pressed, this, &ATankPlayerController::Fire);
+		InputComponent->BindAction("AltShoot", IE_Pressed, this, &ATankPlayerController::FireSpecial);
+		InputComponent->BindAction("ChangeCannon", IE_Pressed, this, &ATankPlayerController::ChangeCannon);
+		InputComponent->BindAxis("GamepadRotateRight", this, &ATankPlayerController::GRotateRight);
+		
+		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released, this, FInputActionHandlerSignature::TUObjectMethodDelegate<ATankPlayerController>::FMethodPtr(
+			                        &ATankPlayerController::OnLeftMouseButtonUp));
+	}
 }
-
-	/*
-	void ATankPlayerController::OnLeftMouseButtonDown()
-	{
-		WidgetInteractComp->PressPointerKey(EKeys::LeftMouseButton);
-	}
-	void AMyPlayerController::OnLeftMouseButtonUp()
-	{
-		WidgetInteractComp->ReleasePointerKey(EKeys::LeftMouseButton);
-	}
-	*/
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
@@ -59,7 +43,6 @@ if (!GetPawn())
 	auto Z = FMath::Abs(GetPawn()->GetActorLocation().Z - ScreenMousePosition.Z);   
 	
 	MousePos = ScreenMousePosition - Z * MouseDirection / MouseDirection.Z;
-	//DrawDebugLine(GetWorld(), TankPawn->GetActorLocation(), MousePos, FColor::Green, false, 0.1f, 0.5);
 	
 }
 
@@ -92,6 +75,15 @@ void ATankPlayerController::GRotateRight(float AxisValue)
 	if (TankPawn)
 		TankPawn->TurretRotateRight(AxisValue);
 	
+}
+
+void ATankPlayerController::OnLeftMouseButtonUp() const
+{
+	if (OnMouseButtonUp.IsBound())
+    {
+		OnMouseButtonUp.Broadcast();
+    }
+
 }
 
 void ATankPlayerController::Fire()

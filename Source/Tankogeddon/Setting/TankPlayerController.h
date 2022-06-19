@@ -22,7 +22,7 @@ protected:
 	FVector MousePos;
 
 public:
-	ATankPlayerController();
+	ATankPlayerController(const FObjectInitializer & Obj);
 	
 	virtual void SetupInputComponent() override;
 
@@ -36,7 +36,7 @@ public:
 
 	void ChangeCannon();
 
-
+	FSimpleMulticastDelegate OnMouseButtonUp;
 
 
 protected:
@@ -50,4 +50,5 @@ protected:
 
 	void GRotateRight(float AxisValue);
 
+	void OnLeftMouseButtonUp() const;
 };
