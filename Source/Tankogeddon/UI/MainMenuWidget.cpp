@@ -61,7 +61,9 @@ void UMainMenuWidget::NativePreConstruct()
 	{
 		QuitBtn->WidgetStyle = FStyleSet::Get().GetWidgetStyle<FButtonStyle>(FName("ButtonStyle")
 			);
-	}	
+	}
+
+	
 }
 
 void UMainMenuWidget::OnNewGameClicked()

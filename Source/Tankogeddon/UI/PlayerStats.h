@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "PlayerStats.generated.h"
@@ -27,9 +28,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	UTextBlock* PlayerAmmo;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	UButton* QuitBtn;
+
 public:
 	virtual void NativeConstruct() override;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativePreConstruct() override;
+
+	UFUNCTION()
+	void OnQuitClicked();
 };
+
