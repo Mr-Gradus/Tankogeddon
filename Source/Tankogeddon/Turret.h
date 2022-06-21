@@ -22,8 +22,8 @@ protected:
 	const FString BodyMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
 	const FString TurretMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
 
-	UPROPERTY()
-	ATankPawn* TankPawn;
+	//UPROPERTY()
+	//ATankPawn* TankPawn;
 	
 public:	
 
@@ -39,15 +39,15 @@ protected:
 
 	virtual void Destroyed() override;
 
-	void Targeting();
+	virtual void Targeting();
 
-	void RotateToPlayer() const;
+	virtual void RotateToPlayer() const;
 
-	bool IsPlayerInRange() const;
+	virtual bool IsPlayerInRange() const;
 
-	bool DetectPlayerVisibility() const;
+	virtual bool DetectPlayerVisibility() const;
 
-	bool IsPlayerSeen() const;
+	virtual bool IsPlayerSeen() const;
 
-	bool CanFire() const;
+	virtual bool CanFire() const;
 };

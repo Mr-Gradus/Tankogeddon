@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Setting/EnemyAIController.h"
 
 
 ATurret::ATurret()
@@ -57,6 +58,7 @@ void ATurret::BeginPlay()
 
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
+
 	FTimerHandle TargetingTimerHandle;
 
 	GetWorld()->GetTimerManager().SetTimer(TargetingTimerHandle, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
@@ -65,10 +67,7 @@ void ATurret::BeginPlay()
 
 void ATurret::OnHealthChanged(const float Health)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Turret HP %f"), Health));
 }
-
-
 
 void ATurret::Destroyed()
 {
@@ -80,14 +79,17 @@ void ATurret::Destroyed()
 
 void ATurret::Targeting()
 {
-	if (IsPlayerInRange())
+	if (PlayerPawn)
 	{
-		RotateToPlayer();
-	}
+		if (IsPlayerInRange())
+		{
+			RotateToPlayer();
+		}
 
-	if (CanFire() && Cannon && Cannon->IsReadyToFire())
-	{
-		Fire();
+		if (CanFire() && Cannon && Cannon->IsReadyToFire())
+		{
+			Fire();
+		}
 	}
 }
 
@@ -97,6 +99,7 @@ void ATurret::RotateToPlayer() const
 	FRotator CurrRotation = TurretMesh->GetComponentRotation();
 	CurrRotation.Pitch = TargetRotation.Pitch;
 	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TargetingSpeed));
+
 }
 
 bool ATurret::IsPlayerInRange() const

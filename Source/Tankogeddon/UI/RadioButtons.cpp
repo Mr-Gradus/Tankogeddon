@@ -41,8 +41,10 @@ int32 URadioButtons::GetCurrentChoice() const
 
 void URadioButtons::AddCountCheckBox(int32 AddValue)
 {
-	MyRadioButtons->CountCheckBox = AddValue;
-	
+	if (MyRadioButtons.IsValid())
+	{
+		MyRadioButtons->CountCheckBox = AddValue;
+	}	
 }
 
 
