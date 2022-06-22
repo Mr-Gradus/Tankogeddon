@@ -47,9 +47,9 @@ void UActorSpawnerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 
 		float TraceDistance = 1000000.f;
 
+		
 		GetWorld()->LineTraceSingleByChannel(HitResult, WorldMouseLocation, WorldMouseLocation +
 			WorldMouseDirection * TraceDistance, ECollisionChannel::ECC_WorldStatic);
-
 		
 		
 		if (HitResult.Actor.Get())
@@ -57,4 +57,5 @@ void UActorSpawnerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 			DraggedActor->SetActorLocation(HitResult.Location);
 		}
 	}
+
 }

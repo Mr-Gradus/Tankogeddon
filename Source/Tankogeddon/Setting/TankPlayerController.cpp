@@ -24,6 +24,7 @@ void ATankPlayerController::SetupInputComponent()
 		
 		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released, this, FInputActionHandlerSignature::TUObjectMethodDelegate<ATankPlayerController>::FMethodPtr(
 			                        &ATankPlayerController::OnLeftMouseButtonUp));
+
 	}
 }
 
