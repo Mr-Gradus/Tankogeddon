@@ -13,7 +13,10 @@
 				"AIModule",
 				"UMG",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"CoreUObject",
+				"QuestSystem"
+
 			]
 		}
 	]
