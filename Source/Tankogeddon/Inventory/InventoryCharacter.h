@@ -7,7 +7,7 @@
 #include "InventoryCharacter.generated.h"
 
 UCLASS()
-class MYINVENTORY_API AInventoryCharacter : public ACharacter
+class TANKOGEDDON_API AInventoryCharacter : public ACharacter
 {
 	GENERATED_BODY()
 

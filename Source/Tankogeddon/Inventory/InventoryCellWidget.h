@@ -11,7 +11,7 @@ class UImage;
 class UTextBlock;
 
 UCLASS()
-class MYINVENTORY_API UInventoryCellWidget : public UUserWidget
+class TANKOGEDDON_API UInventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

@@ -1,4 +1,4 @@
-#include "MyInventory/Inventory/InventoryCellWidget.h"
+#include "Tankogeddon/Inventory/InventoryCellWidget.h"
 
 bool UInventoryCellWidget::AddItem(const FInventorySlotInfo& Item, const FInventoryItemInfo& ItemInfo)
 {

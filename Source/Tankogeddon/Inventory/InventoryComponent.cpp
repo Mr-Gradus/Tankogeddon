@@ -1,4 +1,4 @@
-#include "MyInventory/Inventory/InventoryComponent.h"
+#include "Tankogeddon/Inventory/InventoryComponent.h"
 
 UInventoryComponent::UInventoryComponent()
 {

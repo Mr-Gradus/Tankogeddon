@@ -9,7 +9,7 @@
 
 
 UCLASS()
-class MYINVENTORY_API UInventoryWidget : public UUserWidget
+class TANKOGEDDON_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

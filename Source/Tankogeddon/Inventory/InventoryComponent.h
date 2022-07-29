@@ -7,7 +7,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYINVENTORY_API UInventoryComponent : public UActorComponent
+class TANKOGEDDON_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

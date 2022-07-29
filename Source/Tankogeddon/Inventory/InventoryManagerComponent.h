@@ -12,7 +12,7 @@ struct FInventoryItemInfo;
 class UInventoryComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYINVENTORY_API UInventoryManagerComponent : public UActorComponent
+class TANKOGEDDON_API UInventoryManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
