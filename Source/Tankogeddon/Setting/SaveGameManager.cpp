@@ -8,7 +8,7 @@ void USaveGameManager::Init()
 	CurrentSave = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 }
 
-bool USaveGameManager::DoesSaveGameExist(const FString& SlotName) const
+bool USaveGameManager::DoesSaveGameExist(const FString& SlotName) 
 {
 	return UGameplayStatics::DoesSaveGameExist(SlotName, 0);
 }

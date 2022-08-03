@@ -1,7 +1,6 @@
 #include "Tankogeddon/Setting/MySaveGame.h"
 #include "NPC_Pawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 class ANPC_Pawn;
 

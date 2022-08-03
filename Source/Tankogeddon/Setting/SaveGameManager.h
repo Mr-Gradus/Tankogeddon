@@ -24,8 +24,8 @@ public:
 	FOnGameFromSlotAction OnGameSavedToSlot;
 
 
-	UFUNCTION(BlueprintPure)
-	bool DoesSaveGameExist(const FString& SlotName) const;
+	UFUNCTION(BlueprintCallable)
+	bool DoesSaveGameExist(const FString& SlotName);
 
 	UFUNCTION(BlueprintCallable)
 	void LoadGame(const FString& SlotName);
