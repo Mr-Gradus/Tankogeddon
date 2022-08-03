@@ -1,6 +1,7 @@
 #include "Tankogeddon/Setting/SaveGameManager.h"
 #include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "Tankogeddon/ParentTankTurret.h"
 
 
 void USaveGameManager::Init()
@@ -16,35 +17,20 @@ bool USaveGameManager::DoesSaveGameExist(const FString& SlotName)
 void USaveGameManager::LoadGame(const FString& SlotName)
 {
 
+	LoadPlayer();
+	
 	UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, FAsyncLoadGameFromSlotDelegate::CreateUObject(this,
 	&USaveGameManager::OnGameLoadedFromSlotHandle));
 
-	//CurrentSave = Cast<UMySaveGame>(UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, OnGameLoadedFromSlot));
-
-	//if (!DoesSaveGameExist(SlotName))
-	//{
-	//	return;
-	//}
-
-	//FAsyncLoadGameFromSlotDelegate LoadDelegate;
-	//LoadDelegate.BindUObject(this, &ThisClass::OnGameLoadedFunc);
-
-	//UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, LoadDelegate);
 }
 
 void USaveGameManager::SaveCurrentGame(const FString& SlotName)
 {
+	
+	SavePlayer();
 
 	UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, FAsyncSaveGameToSlotDelegate::CreateUObject(this,
 	&USaveGameManager::OnGameSavedToSlotHandle));
-	
-	//UGameplayStatics::SaveGameToSlot(CurrentSave, SlotName, 0);
-	//FAsyncSaveGameToSlotDelegate SaveDelegate;
-	//SaveDelegate.BindUObject(this, &ThisClass::OnGameSavedFunc);
-
-	//CurrentSave->CollectData(GetWorld());
-
-	//UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, SaveDelegate);
 }
 
 void USaveGameManager::OnGameLoadedFunc(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame)
@@ -53,7 +39,6 @@ void USaveGameManager::OnGameLoadedFunc(const FString& SlotName, const int32 Use
 	
 	OnGameLoadedFromSlot.Broadcast(SlotName);
 
-	CurrentSave->ApplyData(GetWorld());
 }
 
 void USaveGameManager::OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess) const
@@ -76,5 +61,32 @@ void USaveGameManager::OnGameSavedToSlotHandle(const FString& SlotName, const in
 	if (OnGameSavedToSlot.IsBound())
 	{
 		OnGameSavedToSlot.Broadcast(SlotName);
+	}
+}
+
+void USaveGameManager::SavePlayer()
+{
+	AParentTankTurret* Player = Cast<AParentTankTurret>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	
+	if (IsValid(Player))
+	{
+		CurrentSave->SavedPlayerData.Position = Player->GetActorLocation();
+		CurrentSave->SavedPlayerData.Rotation = Player->GetActorRotation();
+		CurrentSave->SavedPlayerData.Health = Player->GetHealthComponent()->GetHealth();
+		CurrentSave->SavedPlayerData.Ammo = Player->GetCannon()->GetAmmo();
+	}
+	
+}
+
+void USaveGameManager::LoadPlayer()
+{
+	AParentTankTurret* Player = Cast<AParentTankTurret>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	
+	if (IsValid(Player))
+	{
+		Player->SetActorRelativeLocation(CurrentSave->SavedPlayerData.Position, true);
+		Player->SetActorRelativeRotation(CurrentSave->SavedPlayerData.Rotation,true);
+		Player->OnHealthChanged(CurrentSave->SavedPlayerData.Health);
+		Player->Cannon->SetAmmo(CurrentSave->SavedPlayerData.Ammo);	
 	}
 }

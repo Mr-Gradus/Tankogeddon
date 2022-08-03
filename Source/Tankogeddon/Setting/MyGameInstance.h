@@ -1,10 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SaveGameManager.h"
 #include "Engine/GameInstance.h"
 #include "MyGameInstance.generated.h"
 
-class USaveGameManager;
 
 UCLASS()
 class TANKOGEDDON_API UMyGameInstance : public UGameInstance

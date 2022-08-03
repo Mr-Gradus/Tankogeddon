@@ -1,6 +1,4 @@
 #include "Tankogeddon/Setting/MyGameInstance.h"
-#include "SaveGameManager.h"
-#include "Kismet/GameplayStatics.h"
 
 void UMyGameInstance::Init()
 {

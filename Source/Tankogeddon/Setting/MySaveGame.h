@@ -17,6 +17,9 @@ struct FPlayerInfo
 
 	UPROPERTY()
 	FVector Position;
+
+	UPROPERTY()
+	FRotator Rotation;
 };
 
 UCLASS()
@@ -31,10 +34,4 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FPlayerInfo SavedPlayerData;
 
-	UPROPERTY()
-	TArray<uint8> Bytes;
-
-	void CollectData(UWorld* World);
-
-	void ApplyData(UWorld* World);
 };

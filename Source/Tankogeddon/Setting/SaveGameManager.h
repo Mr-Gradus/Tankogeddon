@@ -44,4 +44,6 @@ protected:
 	void OnGameLoadedFromSlotHandle(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame);
 
 	void OnGameSavedToSlotHandle(const FString& SlotName, const int32 UserIndex, bool bSuccess) const;
+	void SavePlayer();
+	void LoadPlayer();
 };
