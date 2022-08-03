@@ -14,11 +14,7 @@ class TANKOGEDDON_API UMyGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 
-	UFUNCTION(BlueprintPure, meta = (WorldContext = WorldContextObject))
-	static USaveGameManager* GetSaveManager(const UObject* WorldContextObject);
-
 protected:
-
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	USaveGameManager* SaveGameManager;
 };

@@ -9,9 +9,10 @@ enum class EWidgetID : uint8
 {
 None,
 MainMenu,
-Options,
 GameOver,
-PlayerStats	
+PlayerStats,
+SaveLoad	
+
 };
 
 UCLASS()

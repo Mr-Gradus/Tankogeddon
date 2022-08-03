@@ -15,37 +15,66 @@ bool USaveGameManager::DoesSaveGameExist(const FString& SlotName) const
 
 void USaveGameManager::LoadGame(const FString& SlotName)
 {
-	if (!DoesSaveGameExist(SlotName))
-	{
-		return;
-	}
 
-	FAsyncLoadGameFromSlotDelegate LoadDelegate;
-	LoadDelegate.BindUObject(this, &ThisClass::OnGameLoadedFunc);
+	UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, FAsyncLoadGameFromSlotDelegate::CreateUObject(this,
+	&USaveGameManager::OnGameLoadedFromSlotHandle));
 
-	UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, LoadDelegate);
+	//CurrentSave = Cast<UMySaveGame>(UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, OnGameLoadedFromSlot));
+
+	//if (!DoesSaveGameExist(SlotName))
+	//{
+	//	return;
+	//}
+
+	//FAsyncLoadGameFromSlotDelegate LoadDelegate;
+	//LoadDelegate.BindUObject(this, &ThisClass::OnGameLoadedFunc);
+
+	//UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, LoadDelegate);
 }
 
-void USaveGameManager::SaveGame(const FString& SlotName)
+void USaveGameManager::SaveCurrentGame(const FString& SlotName)
 {
-	FAsyncSaveGameToSlotDelegate SaveDelegate;
-	SaveDelegate.BindUObject(this, &ThisClass::OnGameSavedFunc);
 
-	CurrentSave->CollectData(GetWorld());
+	UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, FAsyncSaveGameToSlotDelegate::CreateUObject(this,
+	&USaveGameManager::OnGameSavedToSlotHandle));
+	
+	//UGameplayStatics::SaveGameToSlot(CurrentSave, SlotName, 0);
+	//FAsyncSaveGameToSlotDelegate SaveDelegate;
+	//SaveDelegate.BindUObject(this, &ThisClass::OnGameSavedFunc);
 
-	UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, SaveDelegate);
+	//CurrentSave->CollectData(GetWorld());
+
+	//UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, SaveDelegate);
 }
 
 void USaveGameManager::OnGameLoadedFunc(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame)
 {
 	CurrentSave = Cast<UMySaveGame>(SaveGame);
 	
-	OnGameLoaded.Broadcast(SlotName);
+	OnGameLoadedFromSlot.Broadcast(SlotName);
 
 	CurrentSave->ApplyData(GetWorld());
 }
 
 void USaveGameManager::OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess) const
 {
-	OnGameSaved.Broadcast(SlotName);
+	OnGameSavedToSlot.Broadcast(SlotName);
+}
+
+void USaveGameManager::OnGameLoadedFromSlotHandle(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame)
+{
+	CurrentSave = Cast<UMySaveGame>(SaveGame);
+	
+	if (OnGameLoadedFromSlot.IsBound())
+	{
+		OnGameLoadedFromSlot.Broadcast(SlotName);
+	}
+}
+
+void USaveGameManager::OnGameSavedToSlotHandle(const FString& SlotName, const int32 UserIndex, bool bSuccess) const
+{
+	if (OnGameSavedToSlot.IsBound())
+	{
+		OnGameSavedToSlot.Broadcast(SlotName);
+	}
 }

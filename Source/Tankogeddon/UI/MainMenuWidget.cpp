@@ -73,6 +73,7 @@ void UMainMenuWidget::OnNewGameClicked()
 
 void UMainMenuWidget::OnLoadClicked()
 {
+	
 }
 
 void UMainMenuWidget::OnOptionClicked()

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TankPawn.h"
 #include "Tankogeddon/UI/GameHUD.h"
 #include "Components/StaticMeshComponent.h"
@@ -83,8 +80,6 @@ void ATankPawn::RotateTurretTo(FVector TargetPosition) const
 	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
 }
 
-
-
 void ATankPawn::IncreaseAmmo(const int Ammo) const
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
@@ -133,8 +128,6 @@ void ATankPawn::BeginPlay()
 
 	AGameHUD* HUD = Cast<AGameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	HUD->UseWidget(EWidgetID::PlayerStats);
-
-	
 }
 
 void ATankPawn::ChangeCannon()
