@@ -19,8 +19,9 @@ void USaveGameManager::LoadGame(const FString& SlotName)
 
 	LoadPlayer();
 	
-	UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, FAsyncLoadGameFromSlotDelegate::CreateUObject(this,
-	&USaveGameManager::OnGameLoadedFromSlotHandle));
+	UGameplayStatics::LoadGameFromSlot(SlotName, 0);
+	//UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, FAsyncLoadGameFromSlotDelegate::CreateUObject(this,
+	//&USaveGameManager::OnGameLoadedFromSlotHandle));
 
 }
 
@@ -72,21 +73,50 @@ void USaveGameManager::SavePlayer()
 	{
 		CurrentSave->SavedPlayerData.Position = Player->GetActorLocation();
 		CurrentSave->SavedPlayerData.Rotation = Player->GetActorRotation();
-		CurrentSave->SavedPlayerData.Health = Player->GetHealthComponent()->GetHealth();
+		CurrentSave->SavedPlayerData.Health = Player->HealthComponent->CurrentHealth;
 		CurrentSave->SavedPlayerData.Ammo = Player->GetCannon()->GetAmmo();
 	}
 	
 }
 
+void USaveGameManager::SaveEnemyTank()
+{
+
+	AParentTankTurret* Player = Cast<AParentTankTurret>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+
+
+	/*CurrentSave->SavedEnemyData.Empty();
+
+	for (auto Target : GetAllEnemyOfClass(ATankPawn::StaticClass()))
+	{
+		auto SaveTankPawn = Cast<ATankPawn>(Target);
+		
+		if (IsValid(SaveTankPawn))
+		{
+			FEnemyTankData NewTempTankData;
+			NewTempTankData.Location = SaveTankPawn->GetActorLocation();
+			NewTempTankData.Rotation = SaveTankPawn->GetActorRotation();
+			NewTempTankData.Health = SaveTankPawn->GetHealthComponent()->GetHealth();
+			NewTempTankData.CannonClass = SaveTankPawn->CannonClass.Get();
+			NewTempTankData.TargetRangeRadius = SaveTankPawn->TargetRange->GetScaledSphereRadius();
+			NewTempTankData.WaypointTag = SaveTankPawn->WaypointTag;
+			
+			CurrentGameObject->EnemyTankData.Add(NewTempTankData);			
+		}
+	}*/
+}
+
 void USaveGameManager::LoadPlayer()
 {
 	AParentTankTurret* Player = Cast<AParentTankTurret>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
 	
 	if (IsValid(Player))
 	{
 		Player->SetActorRelativeLocation(CurrentSave->SavedPlayerData.Position, true);
 		Player->SetActorRelativeRotation(CurrentSave->SavedPlayerData.Rotation,true);
-		Player->OnHealthChanged(CurrentSave->SavedPlayerData.Health);
+		Player->HealthComponent->CurrentHealth = CurrentSave->SavedPlayerData.Health;
 		Player->Cannon->SetAmmo(CurrentSave->SavedPlayerData.Ammo);	
 	}
 }
