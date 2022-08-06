@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "MySaveGame.h"
+#include "Tankogeddon/ParentTankTurret.h"
 #include "UObject/NoExportTypes.h"
 #include "SaveGameManager.generated.h"
 
@@ -35,7 +36,12 @@ public:
 
 	void OnGameLoadedFunc(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame);
 
-	void OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess) const;
+	void OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess);
+
+	TArray<AActor*> GetAllEnemyOfClass(TSubclassOf<AActor> EnemyClass);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
+	TSubclassOf<AParentTankTurret> SpawnClass;
 
 protected:
 	UPROPERTY(BlueprintReadWrite)
@@ -45,6 +51,7 @@ protected:
 
 	void OnGameSavedToSlotHandle(const FString& SlotName, const int32 UserIndex, bool bSuccess) const;
 	void SavePlayer();
-	void SaveEnemyTank();
+	void SaveEnemy();
 	void LoadPlayer();
+	void LoadEnemy();
 };

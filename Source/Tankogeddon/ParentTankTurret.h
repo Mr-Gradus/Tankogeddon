@@ -80,6 +80,9 @@ public:
 	float Accurency = 10;
 
 	UPROPERTY()
+	AParentTankTurret* ParentClass;
+
+	UPROPERTY()
 	APawn* PlayerPawn;
 
 	UPROPERTY()
@@ -88,6 +91,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent* ProgressBarWidgetComponent;
 
+	
 
 public:
 	AParentTankTurret();

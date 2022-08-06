@@ -46,6 +46,25 @@ struct FEnemyTankInfo
 	UPROPERTY(BlueprintReadWrite)
 	float Health;
 };
+
+USTRUCT(BlueprintType)
+struct FEnemyTurretInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TSubclassOf<ACannon> CannonClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	float TargetRangeRadius;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector Location;
+
+	UPROPERTY(BlueprintReadWrite)
+	float Health;
+};
+
 UCLASS()
 class TANKOGEDDON_API UMySaveGame : public USaveGame
 {
@@ -59,6 +78,9 @@ public:
 	FPlayerInfo SavedPlayerData;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FEnemyTankInfo> SavedEnemyData;
+	TArray<FEnemyTankInfo> SavedEnemyTankData;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FEnemyTurretInfo> SavedEnemyTurretData;
 
 };
