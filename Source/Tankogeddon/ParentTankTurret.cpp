@@ -8,6 +8,20 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "UI/HealthWidget.h"
 
+void AParentTankTurret::SetupCannon(const TSubclassOf<ACannon> SelectCannonClass)
+{
+	if (Cannon)
+	{
+		Cannon->Destroy();
+		Cannon = nullptr;
+	}
+
+	FActorSpawnParameters Params;
+	Params.Instigator = this;
+	Params.Owner = this;
+	Cannon = GetWorld()->SpawnActor<ACannon>(SelectCannonClass, Params);
+	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
 
 void AParentTankTurret::Fire()
 {

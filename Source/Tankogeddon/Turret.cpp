@@ -58,6 +58,7 @@ void ATurret::BeginPlay()
 
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
+	SetupCannon(CannonClass);
 
 	FTimerHandle TargetingTimerHandle;
 

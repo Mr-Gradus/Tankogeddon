@@ -1,13 +1,28 @@
 #include "Tankogeddon/Setting/SaveGameManager.h"
 #include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "Tankogeddon/TankPawn.h"
-#include "Tankogeddon/Turret.h"
+
 
 
 void USaveGameManager::Init()
 {
 	CurrentSave = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	
+	ExistingSavedSlots.Empty();
+	
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	FString FilePath = FPaths::Combine(FPaths::ProjectContentDir(),	ExistingSavedSlotsFilePath);
+
+	if (PlatformFile.FileExists(*FilePath))
+		{
+			FString ExistingSavingsArray;
+			if (FFileHelper::LoadFileToString(ExistingSavingsArray, *FilePath))
+			{
+				ExistingSavingsArray.ParseIntoArray(ExistingSavedSlots, TEXT(","));
+			}
+}
+
+
 }
 
 bool USaveGameManager::DoesSaveGameExist(const FString& SlotName) 
@@ -17,50 +32,39 @@ bool USaveGameManager::DoesSaveGameExist(const FString& SlotName)
 
 void USaveGameManager::LoadGame(const FString& SlotName)
 {
-
-	
-	
 	//UGameplayStatics::LoadGameFromSlot(SlotName, 0);
 	UGameplayStatics::AsyncLoadGameFromSlot(SlotName, 0, FAsyncLoadGameFromSlotDelegate::CreateUObject(this,
 	&USaveGameManager::OnGameLoadedFromSlotHandle));
-
 }
 
 void USaveGameManager::SaveCurrentGame(const FString& SlotName)
 {
-		
+	SavePlayer();
+	SaveEnemy();
 
 	UGameplayStatics::AsyncSaveGameToSlot(CurrentSave, SlotName, 0, FAsyncSaveGameToSlotDelegate::CreateUObject(this,
 	&USaveGameManager::OnGameSavedToSlotHandle));
 }
 
-void USaveGameManager::OnGameLoadedFunc(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame)
-{
-	CurrentSave = Cast<UMySaveGame>(SaveGame);
 
-	LoadPlayer();
-	LoadEnemy();
-	
-	OnGameLoadedFromSlot.Broadcast(SlotName);
-
-}
-
-void USaveGameManager::OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess) 
-{
-	SavePlayer();
-	SaveEnemy();
-	
-	OnGameSavedToSlot.Broadcast(SlotName);
-}
 
 void USaveGameManager::OnGameLoadedFromSlotHandle(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame)
 {
 	CurrentSave = Cast<UMySaveGame>(SaveGame);
+
+	LoadPlayer();
 	
 	if (OnGameLoadedFromSlot.IsBound())
 	{
 		OnGameLoadedFromSlot.Broadcast(SlotName);
 	}
+
+	if (!ExistingSavedSlots.Contains(SlotName))
+    {
+		ExistingSavedSlots.Add(SlotName);
+		CacheExistingSavedSlotsInfo();
+    }
+
 }
 
 void USaveGameManager::OnGameSavedToSlotHandle(const FString& SlotName, const int32 UserIndex, bool bSuccess) const
@@ -144,7 +148,7 @@ void USaveGameManager::LoadPlayer()
 	}
 }
 
-void USaveGameManager::LoadEnemy() /// Дописать Для турелей и танков отдельные спауны по классам ATurret и ATankPawn 
+void USaveGameManager::LoadEnemy(TSubclassOf<ATurret> SpawnTurret, TSubclassOf<ATankPawn> SpawnTank) /// Дописать Для турелей и танков отдельные спауны по классам ATurret и ATankPawn 
 {
 	///Spawn Tanks
 	for (AActor* AllEnemyTank : GetAllEnemyOfClass(ATankPawn::StaticClass()))
@@ -167,11 +171,11 @@ void USaveGameManager::LoadEnemy() /// Дописать Для турелей и
 		FTransform Transform;
 		Transform.SetLocation(CurrentSave->SavedEnemyTankData[i].Location);
 		
-		ATankPawn* NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnClass, Transform,	nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);		
+		ATankPawn* NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTank, Transform,	nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);		
 		NewTank->SetActorRotation(CurrentSave->SavedEnemyTankData[i].Rotation);
 		NewTank->WaypointTag = CurrentSave->SavedEnemyTankData[i].WaypointTag;
-		NewTank->Cannon = CurrentSave->SavedEnemyTankData[i].CannonClass;
-		NewTank->TargetingRange(CurrentSave->SavedEnemyTankData[i].TargetRangeRadius);		
+		NewTank->SetupCannon(CurrentSave->SavedEnemyTankData[i].CannonClass);
+		//NewTank->TargetingRange(CurrentSave->SavedEnemyTankData[i].TargetRangeRadius);		
 		
 		UGameplayStatics::FinishSpawningActor(NewTank, Transform);
 		
@@ -199,14 +203,29 @@ void USaveGameManager::LoadEnemy() /// Дописать Для турелей и
 		FTransform Transform;
 		Transform.SetLocation(CurrentSave->SavedEnemyTurretData[i].Location);
 		
-		ATurret* NewTurret = GetWorld()->SpawnActorDeferred<ATurret>(SpawnClass, Transform,	nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);		
-		NewTurret->Cannon(CurrentSave->SavedEnemyTurretData[i].CannonClass);
-		NewTurret->TargetingRange(CurrentSave->SavedEnemyTurretData[i].TargetRangeRadius);		
+		ATurret* NewTurret = GetWorld()->SpawnActorDeferred<ATurret>(SpawnTurret, Transform,	nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);		
+		NewTurret->SetupCannon(CurrentSave->SavedEnemyTurretData[i].CannonClass);
+		//NewTurret->TargetingRange(CurrentSave->SavedEnemyTurretData[i].TargetRangeRadius);		
 		
 		UGameplayStatics::FinishSpawningActor(NewTurret, Transform);
 		
 		NewTurret->HealthComponent->CurrentHealth = (CurrentSave->SavedEnemyTurretData[i].Health);		
 	}	
+}
+
+void USaveGameManager::CacheExistingSavedSlotsInfo()
+{
+	FString FilePath = FPaths::Combine(FPaths::ProjectContentDir(), ExistingSavedSlotsFilePath);
+
+	FString ExistingSavingsArray = "";
+
+	for (const FString& Slot : ExistingSavedSlots)
+	{
+		ExistingSavingsArray += Slot + ",";
+	}
+
+	FFileHelper::SaveStringToFile(ExistingSavingsArray, *FilePath, FFileHelper::EEncodingOptions::ForceUnicode,
+		&IFileManager::Get(), FILEWRITE_EvenIfReadOnly);
 }
 
 TArray<AActor*> USaveGameManager::GetAllEnemyOfClass(TSubclassOf<AActor> EnemyClass)
@@ -217,4 +236,9 @@ TArray<AActor*> USaveGameManager::GetAllEnemyOfClass(TSubclassOf<AActor> EnemyCl
 	UGameplayStatics::GetAllActorsOfClassWithTag(this, EnemyClass, Tag, CountEnemy);
 	
 	return CountEnemy;
+}
+
+const TArray<FString>& USaveGameManager::GetExistingSavedSlots() const
+{
+	return ExistingSavedSlots;
 }

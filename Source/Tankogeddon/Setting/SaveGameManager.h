@@ -4,6 +4,8 @@
 #include "MySaveGame.h"
 #include "Tankogeddon/ParentTankTurret.h"
 #include "UObject/NoExportTypes.h"
+#include "Tankogeddon/TankPawn.h"
+#include "Tankogeddon/Turret.h"
 #include "SaveGameManager.generated.h"
 
 class USaveGame;
@@ -24,7 +26,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnGameFromSlotAction OnGameSavedToSlot;
 
-
 	UFUNCTION(BlueprintCallable)
 	bool DoesSaveGameExist(const FString& SlotName);
 
@@ -34,14 +35,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveCurrentGame(const FString& SlotName);
 
-	void OnGameLoadedFunc(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame);
-
-	void OnGameSavedFunc(const FString& SlotName, const int32 UserIndex, bool bSuccess);
-
 	TArray<AActor*> GetAllEnemyOfClass(TSubclassOf<AActor> EnemyClass);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
-	TSubclassOf<AParentTankTurret> SpawnClass;
+	UFUNCTION(BlueprintCallable)
+	const TArray<FString>& GetExistingSavedSlots() const;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
+	//TSubclassOf<AParentTankTurret> SpawnClass;
 
 protected:
 	UPROPERTY(BlueprintReadWrite)
@@ -50,8 +50,19 @@ protected:
 	void OnGameLoadedFromSlotHandle(const FString& SlotName, const int32 UserIndex, USaveGame* SaveGame);
 
 	void OnGameSavedToSlotHandle(const FString& SlotName, const int32 UserIndex, bool bSuccess) const;
+
 	void SavePlayer();
+
 	void SaveEnemy();
+
 	void LoadPlayer();
-	void LoadEnemy();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadEnemy(TSubclassOf<ATurret> SpawnTurret, TSubclassOf<ATankPawn> SpawnTank);
+
+	TArray<FString> ExistingSavedSlots;
+	
+	const FString ExistingSavedSlotsFilePath = "existing_slots.txt";
+	
+	void CacheExistingSavedSlotsInfo();
 };

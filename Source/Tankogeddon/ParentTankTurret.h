@@ -97,6 +97,7 @@ public:
 	AParentTankTurret();
 	void PossessedBy(AController* NewController);
 
+	void SetupCannon(TSubclassOf<ACannon> SelectCannonClass);
 	virtual void Fire();
 
 	void TakeDamage(FDamageInfo DamageInfo);
@@ -115,6 +116,8 @@ public:
 
 	ITargetController* TargetController;
 
+	
+	
 	TSubclassOf<ACannon> CurrentCannon;
 
 	UPROPERTY()
