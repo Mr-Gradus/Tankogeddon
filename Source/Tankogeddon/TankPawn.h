@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Tankogeddon/Armory/Cannon.h"
 #include "ParentTankTurret.h"
+#include "QuestList.h"
+#include "QuestListComponent.h"
 #include "Components/WidgetComponent.h"
 #include "TankPawn.generated.h"
 
@@ -75,8 +77,8 @@ public:
 	UFUNCTION()
 	void ChangeCannon();
 
-	UFUNCTION()
-	void SetupCannon(TSubclassOf<ACannon> NewCannonClass);
+	//UFUNCTION()
+	//void SetupCannon(TSubclassOf<ACannon> NewCannonClass);
 
 	UFUNCTION()
 	void SetNewCannon(TSubclassOf<ACannon> SelectCannonClass);
@@ -100,7 +102,18 @@ public:
 	UFUNCTION()
 	void RotateTurretTo(FVector TargetPosition) const;
 	
+    UFUNCTION(BlueprintCallable)
+	void ToggleQuestListVisibility();
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category ="Components")
+	UQuestListComponent* QuestListComp;
+
+	UPROPERTY()
+	UQuestList* QuestList;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UQuestList> QuestListClass;
+	
 protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;

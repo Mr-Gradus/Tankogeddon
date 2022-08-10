@@ -1,4 +1,5 @@
 #include "TankPawn.h"
+
 #include "Tankogeddon/UI/GameHUD.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -80,6 +81,30 @@ void ATankPawn::RotateTurretTo(FVector TargetPosition) const
 	TurretMesh->SetWorldRotation(FMath::Lerp(CurrRotation, TargetRotation, TurretRotationInterpolationKey));
 }
 
+void ATankPawn::ToggleQuestListVisibility()
+{
+	APlayerController * PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	
+	if (QuestList)
+	{
+		QuestList->RemoveFromParent();
+    	
+		QuestList = nullptr;
+	}
+	else
+	{
+		if (QuestListClass)
+		{
+			QuestList = CreateWidget<UQuestList>(GetWorld(), QuestListClass);
+    		
+			QuestList->Init(QuestListComp);
+    		
+			QuestList->AddToViewport();
+    		
+		}
+	}
+}
+
 void ATankPawn::IncreaseAmmo(const int Ammo) const
 {
 	Cannon->SetAmmo(Cannon->GetAmmo() + Ammo);
@@ -147,7 +172,7 @@ void ATankPawn::ChangeCannon()
 		Cannon->SetAmmo(Current);
 	}
 }
-
+/*
 void ATankPawn::SetupCannon(const TSubclassOf<ACannon> SelectCannonClass)
 {
 	if (Cannon)
@@ -162,7 +187,7 @@ void ATankPawn::SetupCannon(const TSubclassOf<ACannon> SelectCannonClass)
 	Cannon = GetWorld()->SpawnActor<ACannon>(SelectCannonClass, Params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
-
+*/
 void ATankPawn::SetNewCannon(const TSubclassOf<ACannon> NewCannonClass)
 {
 	if (CurrentCannon == CannonClass)
